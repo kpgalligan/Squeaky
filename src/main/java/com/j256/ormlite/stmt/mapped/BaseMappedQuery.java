@@ -38,6 +38,15 @@ public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> 
 			colPosMap = columnPositions;
 		}
 
+		if(tableInfo.getGeneratedTableMapper() != null)
+		{
+			T filledRow = tableInfo.getGeneratedTableMapper().fillRow(results, colPosMap);
+			if (columnPositions == null) {
+				columnPositions = colPosMap;
+			}
+			return filledRow;
+		}
+
 		ObjectCache objectCache = results.getObjectCache();
 		if (objectCache != null) {
 			Object id = idField.resultToJava(results, colPosMap);

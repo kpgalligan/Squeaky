@@ -12,6 +12,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.ObjectFactory;
 import com.j256.ormlite.table.TableInfo;
 
@@ -58,6 +59,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	protected final Class<T> dataClass;
 	protected DatabaseTableConfig<T> tableConfig;
 	protected TableInfo<T, ID> tableInfo;
+	protected GeneratedTableMapper<T> generatedTableMapper;
 	protected ConnectionSource connectionSource;
 	protected CloseableIterator<T> lastIterator;
 	protected ObjectFactory<T> objectFactory;
@@ -80,7 +82,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	 *            Class associated with this Dao. This must match the T class parameter.
 	 */
 	protected BaseDaoImpl(Class<T> dataClass) throws SQLException {
-		this(null, dataClass, null);
+		this(null, dataClass, null, null);
 	}
 
 	/**
@@ -93,7 +95,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	 *            Class associated with this Dao. This must match the T class parameter.
 	 */
 	protected BaseDaoImpl(ConnectionSource connectionSource, Class<T> dataClass) throws SQLException {
-		this(connectionSource, dataClass, null);
+		this(connectionSource, dataClass, null, null);
 	}
 
 	/**
@@ -104,14 +106,15 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	 * @param tableConfig
 	 *            Hand or Spring wired table configuration information.
 	 */
-	protected BaseDaoImpl(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig) throws SQLException {
-		this(connectionSource, tableConfig.getDataClass(), tableConfig);
+	protected BaseDaoImpl(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper) throws SQLException {
+		this(connectionSource, tableConfig.getDataClass(), tableConfig, generatedTableMapper);
 	}
 
-	private BaseDaoImpl(ConnectionSource connectionSource, Class<T> dataClass, DatabaseTableConfig<T> tableConfig)
+	private BaseDaoImpl(ConnectionSource connectionSource, Class<T> dataClass, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper)
 			throws SQLException {
 		this.dataClass = dataClass;
 		this.tableConfig = tableConfig;
+		this.generatedTableMapper = generatedTableMapper;
 		if (connectionSource != null) {
 			this.connectionSource = connectionSource;
 			initialize();
@@ -140,7 +143,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 			tableInfo = new TableInfo<T, ID>(connectionSource, this, dataClass);
 		} else {
 			tableConfig.extractFieldTypes(connectionSource);
-			tableInfo = new TableInfo<T, ID>(databaseType, this, tableConfig);
+			tableInfo = new TableInfo<T, ID>(databaseType, this, tableConfig, generatedTableMapper);
 		}
 		statementExecutor = new StatementExecutor<T, ID>(databaseType, tableInfo, this);
 
@@ -969,9 +972,9 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	 * method so you won't have to create the DAO multiple times.
 	 * </p>
 	 */
-	static <T, ID> Dao<T, ID> createDao(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig)
+	static <T, ID> Dao<T, ID> createDao(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper)
 			throws SQLException {
-		return new BaseDaoImpl<T, ID>(connectionSource, tableConfig) {
+		return new BaseDaoImpl<T, ID>(connectionSource, tableConfig, generatedTableMapper) {
 		};
 	}
 

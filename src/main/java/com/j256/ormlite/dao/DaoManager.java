@@ -7,6 +7,7 @@ import com.j256.ormlite.misc.SqlExceptionUtil;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTable;
 import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.table.GeneratedTableMapper;
 
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
@@ -29,10 +30,16 @@ import java.util.Map;
 public class DaoManager {
 
 	private static Map<Class<?>, DatabaseTableConfig<?>> configMap = null;
+	private static Map<Class<?>, GeneratedTableMapper<?>> generatedMap = new HashMap<Class<?>, GeneratedTableMapper<?>>();
 	private static Map<ClassConnectionSource, Dao<?, ?>> classMap = null;
 	private static Map<TableConfigConnectionSource, Dao<?, ?>> tableConfigMap = null;
 
 	private static Logger logger = LoggerFactory.getLogger(DaoManager.class);
+
+	public static void setGeneratedMap(Map<Class<?>, GeneratedTableMapper<?>> generatedMap)
+	{
+		DaoManager.generatedMap = generatedMap;
+	}
 
 	/**
 	 * Helper method to create a DAO object without having to define a class. This checks to see if the DAO has already
@@ -69,7 +76,7 @@ public class DaoManager {
 			if (config == null) {
 				daoTmp = BaseDaoImpl.createDao(connectionSource, clazz);
 			} else {
-				daoTmp = BaseDaoImpl.createDao(connectionSource, config);
+				daoTmp = BaseDaoImpl.createDao(connectionSource, config, (GeneratedTableMapper<T>)generatedMap.get(clazz));
 			}
 			dao = daoTmp;
 			logger.debug("created dao for class {} with reflection", clazz);
@@ -119,7 +126,6 @@ public class DaoManager {
 	/**
 	 * Helper method to create a DAO object without having to define a class. This checks to see if the DAO has already
 	 * been created. If not then it is a call through to
-	 * {@link BaseDaoImpl#createDao(ConnectionSource, DatabaseTableConfig)}.
 	 */
 	public synchronized static <D extends Dao<T, ?>, T> D createDao(ConnectionSource connectionSource,
 			DatabaseTableConfig<T> tableConfig) throws SQLException {
@@ -356,7 +362,7 @@ public class DaoManager {
 		DatabaseTable databaseTable = tableConfig.getDataClass().getAnnotation(DatabaseTable.class);
 		if (databaseTable == null || databaseTable.daoClass() == Void.class
 				|| databaseTable.daoClass() == BaseDaoImpl.class) {
-			Dao<T, ?> daoTmp = BaseDaoImpl.createDao(connectionSource, tableConfig);
+			Dao<T, ?> daoTmp = BaseDaoImpl.createDao(connectionSource, tableConfig, (GeneratedTableMapper<T>)generatedMap.get(dataClass));
 			dao = daoTmp;
 		} else {
 			Class<?> daoClass = databaseTable.daoClass();

@@ -37,6 +37,7 @@ public class TableInfo<T, ID> {
 	private final Constructor<T> constructor;
 	private final boolean foreignAutoCreate;
 	private Map<String, FieldType> fieldNameMap;
+	private final GeneratedTableMapper<T> generatedTableMapper;
 
 	/**
 	 * Creates a holder of information about a table/class.
@@ -51,7 +52,12 @@ public class TableInfo<T, ID> {
 	public TableInfo(ConnectionSource connectionSource, BaseDaoImpl<T, ID> baseDaoImpl, Class<T> dataClass)
 			throws SQLException {
 		this(connectionSource.getDatabaseType(), baseDaoImpl,
-				DatabaseTableConfig.fromClass(connectionSource, dataClass));
+				DatabaseTableConfig.fromClass(connectionSource, dataClass), null);
+	}
+
+	public TableInfo(DatabaseType databaseType, BaseDaoImpl<T, ID> baseDaoImpl, DatabaseTableConfig<T> tableConfig) throws SQLException
+	{
+		this(databaseType, baseDaoImpl, tableConfig, null);
 	}
 
 	/**
@@ -64,7 +70,7 @@ public class TableInfo<T, ID> {
 	 * @param tableConfig
 	 *            Configuration for our table.
 	 */
-	public TableInfo(DatabaseType databaseType, BaseDaoImpl<T, ID> baseDaoImpl, DatabaseTableConfig<T> tableConfig)
+	public TableInfo(DatabaseType databaseType, BaseDaoImpl<T, ID> baseDaoImpl, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper)
 			throws SQLException {
 		this.baseDaoImpl = baseDaoImpl;
 		this.dataClass = tableConfig.getDataClass();
@@ -105,6 +111,8 @@ public class TableInfo<T, ID> {
 				}
 			}
 		}
+
+		this.generatedTableMapper = generatedTableMapper;
 	}
 
 	/**
@@ -225,6 +233,11 @@ public class TableInfo<T, ID> {
 	 */
 	public FieldType[] getForeignCollections() {
 		return foreignCollections;
+	}
+
+	public GeneratedTableMapper<T> getGeneratedTableMapper()
+	{
+		return generatedTableMapper;
 	}
 
 	/**
