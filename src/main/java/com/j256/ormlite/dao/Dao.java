@@ -612,49 +612,6 @@ public interface Dao<T, ID> extends CloseableIterable<T> {
 	public long countOf(PreparedQuery<T> preparedQuery) throws SQLException;
 
 	/**
-	 * <p>
-	 * Creates an empty collection and assigns it to the appropriate field in the parent object. This allows you to add
-	 * things to the collection from the start.
-	 * </p>
-	 * 
-	 * <p>
-	 * For example let's say you have an Account which has the field:
-	 * </p>
-	 * 
-	 * <pre>
-	 * &#064;ForeignCollectionField(columnName = &quot;orders&quot;)
-	 * Collection&lt;Order&gt; orders;
-	 * </pre>
-	 * 
-	 * <p>
-	 * You would then call:
-	 * </p>
-	 * 
-	 * <pre>
-	 * accoundDao.assignEmptyForeignCollection(account, &quot;orders&quot;);
-	 * // this would add it the collection and the internal DAO
-	 * account.orders.add(order1);
-	 * </pre>
-	 * 
-	 * @param parent
-	 *            Parent object that will be associated with all items added to this collection if not already assigned.
-	 * @param fieldName
-	 *            parameter is the field name of the foreign collection field -- you might consider using the
-	 *            {@link ForeignCollectionField#columnName()} to set the name to a static name.
-	 */
-	public void assignEmptyForeignCollection(T parent, String fieldName) throws SQLException;
-
-	/**
-	 * Like {@link #assignEmptyForeignCollection(Object, String)} but it returns the empty collection that you assign to
-	 * the appropriate field.
-	 * 
-	 * <p>
-	 * <b>NOTE:</b> May be deprecated in the future.
-	 * </p>
-	 */
-	public <FT> ForeignCollection<FT> getEmptyForeignCollection(String fieldName) throws SQLException;
-
-	/**
 	 * Call this with true to enable an object cache for the DAO. Set to false to disable any caching. It is (as of
 	 * 9/2011) one of the newer features of ORMLite. It keeps a {@link ReferenceObjectCache} of the objects (using
 	 * {@link WeakReference}) referenced by the DAO. No support for objects returned by the {@link #queryRaw} methods.

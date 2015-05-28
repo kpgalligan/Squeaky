@@ -303,7 +303,7 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Get a RuntimeExceptionDao for our class. This uses the {@link DaoManager} to cache the DAO for future gets.
-	 * 
+	 *
 	 * <p>
 	 * NOTE: This routing does not return RuntimeExceptionDao&lt;T, ID&gt; because of casting issues if we are assigning it to
 	 * a custom DAO. Grumble.

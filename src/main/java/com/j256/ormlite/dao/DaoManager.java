@@ -158,13 +158,13 @@ public class DaoManager {
 	/**
 	 * Register the DAO with the cache. This will allow folks to build a DAO externally and then register so it can be
 	 * used internally as necessary.
-	 * 
+	 *
 	 * <p>
 	 * <b>NOTE:</b> By default this registers the DAO to be associated with the class that it uses. If you need to
 	 * register multiple dao's that use different {@link DatabaseTableConfig}s then you should use
 	 * {@link #registerDaoWithTableConfig(ConnectionSource, Dao)}.
 	 * </p>
-	 * 
+	 *
 	 * <p>
 	 * <b>NOTE:</b> You should maybe use the {@link DatabaseTable#daoClass()} and have the DaoManager construct the DAO
 	 * if possible.

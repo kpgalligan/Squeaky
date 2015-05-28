@@ -1,29 +1,19 @@
 package com.j256.ormlite.field;
 
-import com.j256.ormlite.dao.*;
+import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.db.DatabaseType;
-import com.j256.ormlite.field.types.VoidType;
-import com.j256.ormlite.misc.SqlExceptionUtil;
 import com.j256.ormlite.stmt.mapped.MappedQueryForId;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.DatabaseResults;
-import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableInfo;
 
-import java.io.Serializable;
-import java.lang.reflect.*;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * Per field information configured from the {@link DatabaseField} annotation and the associated {@link Field} in the
- * class. Use the {@link #createFieldType} static method to instantiate the class.
- * 
  * @author graywatson
  */
-public class FieldType {
+public abstract class FieldType {
 
 	/** default suffix added to fields that are id fields of foreign objects */
 	public static final String FOREIGN_ID_FIELD_SUFFIX = "_id";
@@ -42,17 +32,25 @@ public class FieldType {
 	private static float DEFAULT_VALUE_FLOAT;
 	private static double DEFAULT_VALUE_DOUBLE;
 
-	private final ConnectionSource connectionSource;
 	private final String tableName;
-	private final Field field;
 	private final String columnName;
-	private final DatabaseFieldConfig fieldConfig;
 	private final boolean isId;
 	private final boolean isGeneratedId;
-	private final String generatedIdSequence;
-	private final Method fieldGetMethod;
-	private final Method fieldSetMethod;
-	private final Class<?> parentClass;
+	private final boolean isForeign;
+	private final String fieldName;
+	private final DataType dataType;
+	private final int width;
+	private final boolean canBeNull;
+	private final String format;
+	private final boolean unique;
+	private final boolean uniqueCombo;
+	private final boolean index;
+	private final boolean uniqueIndex;
+	private final boolean throwIfNull;
+	private final boolean version;
+	private final boolean readOnly;
+	private String indexName;
+	private String uniqueIndexName;
 
 	private DataPersister dataPersister;
 	private Object defaultValue;
@@ -71,74 +69,33 @@ public class FieldType {
 	 */
 	private static final ThreadLocal<LevelCounters> threadLevelCounters = new ThreadLocal<LevelCounters>();
 
-	/**
-	 * You should use {@link FieldType#createFieldType} to instantiate one of these field if you have a {@link Field}.
-	 */
-	public FieldType(ConnectionSource connectionSource, String tableName, Field field, DatabaseFieldConfig fieldConfig,
-			Class<?> parentClass) throws SQLException {
-		this.connectionSource = connectionSource;
+	public FieldType(DatabaseType databaseType, String tableName, String fieldName, String columnName, boolean isId, boolean isGeneratedId, boolean isForeign, DataType dataType, int width, boolean canBeNull, String format, boolean unique, boolean uniqueCombo, boolean index, boolean uniqueIndex, String indexName, String uniqueIndexName, String configDefaultValue, boolean throwIfNull, boolean version, boolean readOnly) throws SQLException {
+		this.fieldName = fieldName;
 		this.tableName = tableName;
-		DatabaseType databaseType = connectionSource.getDatabaseType();
-		this.field = field;
-		this.parentClass = parentClass;
+		this.width = width;
+		this.canBeNull = canBeNull;
+		this.format = format;
+		this.unique = unique;
+		this.uniqueCombo = uniqueCombo;
+		this.index = index;
+		this.uniqueIndex = uniqueIndex;
+		this.indexName = indexName;
+		this.uniqueIndexName = uniqueIndexName;
+		this.throwIfNull = throwIfNull;
+		this.version = version;
+		this.readOnly = readOnly;
+		this.dataPersister = dataType.getDataPersister();
+		this.isForeign = isForeign;
+		this.dataType = dataType;
 
 		// post process our config settings
-		fieldConfig.postProcess();
+//		fieldConfig.postProcess();
 
-		Class<?> clazz = field.getType();
-		DataPersister dataPersister;
-		if (fieldConfig.getDataPersister() == null) {
-			Class<? extends DataPersister> persisterClass = fieldConfig.getPersisterClass();
-			if (persisterClass == null || persisterClass == VoidType.class) {
-				dataPersister = DataPersisterManager.lookupForField(field);
-			} else {
-				Method method;
-				try {
-					method = persisterClass.getDeclaredMethod("getSingleton");
-				} catch (Exception e) {
-					throw SqlExceptionUtil.create("Could not find getSingleton static method on class "
-							+ persisterClass, e);
-				}
-				Object result;
-				try {
-					result = method.invoke(null);
-				} catch (InvocationTargetException e) {
-					throw SqlExceptionUtil.create("Could not run getSingleton method on class " + persisterClass,
-							e.getTargetException());
-				} catch (Exception e) {
-					throw SqlExceptionUtil.create("Could not run getSingleton method on class " + persisterClass, e);
-				}
-				if (result == null) {
-					throw new SQLException("Static getSingleton method should not return null on class "
-							+ persisterClass);
-				}
-				try {
-					dataPersister = (DataPersister) result;
-				} catch (Exception e) {
-					throw SqlExceptionUtil.create(
-							"Could not cast result of static getSingleton method to DataPersister from class "
-									+ persisterClass, e);
-				}
-			}
-		} else {
-			dataPersister = fieldConfig.getDataPersister();
-			if (!dataPersister.isValidForField(field)) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("Field class ").append(clazz.getName());
-				sb.append(" for field ").append(this);
-				sb.append(" is not valid for type ").append(dataPersister);
-				Class<?> primaryClass = dataPersister.getPrimaryClass();
-				if (primaryClass != null) {
-					sb.append(", maybe should be " + primaryClass);
-				}
-				throw new IllegalArgumentException(sb.toString());
-			}
-		}
-		String foreignColumnName = fieldConfig.getForeignColumnName();
-		String defaultFieldName = field.getName();
-		if (fieldConfig.isForeign() || fieldConfig.isForeignAutoRefresh() || foreignColumnName != null) {
+
+//		String foreignColumnName = fieldConfig.getForeignColumnName();
+		/*if (fieldConfig.isForeign() || fieldConfig.isForeignAutoRefresh() || foreignColumnName != null) {
 			if (dataPersister != null && dataPersister.isPrimitive()) {
-				throw new IllegalArgumentException("Field " + this + " is a primitive class " + clazz
+				throw new IllegalArgumentException("Field " + this + " is a primitive class "
 						+ " but marked as foreign");
 			}
 			if (foreignColumnName == null) {
@@ -146,96 +103,30 @@ public class FieldType {
 			} else {
 				defaultFieldName = defaultFieldName + "_" + foreignColumnName;
 			}
-			if (ForeignCollection.class.isAssignableFrom(clazz)) {
-				throw new SQLException("Field '" + field.getName() + "' in class " + clazz + "' should use the @"
-						+ ForeignCollectionField.class.getSimpleName() + " annotation not foreign=true");
-			}
-		} else if (fieldConfig.isForeignCollection()) {
-			if (clazz != Collection.class && !ForeignCollection.class.isAssignableFrom(clazz)) {
-				throw new SQLException("Field class for '" + field.getName() + "' must be of class "
-						+ ForeignCollection.class.getSimpleName() + " or Collection.");
-			}
-			Type type = field.getGenericType();
-			if (!(type instanceof ParameterizedType)) {
-				throw new SQLException("Field class for '" + field.getName() + "' must be a parameterized Collection.");
-			}
-			Type[] genericArguments = ((ParameterizedType) type).getActualTypeArguments();
-			if (genericArguments.length == 0) {
-				// i doubt this will ever be reached
-				throw new SQLException("Field class for '" + field.getName()
-						+ "' must be a parameterized Collection with at least 1 type.");
-			}
-		} else if (dataPersister == null && (!fieldConfig.isForeignCollection())) {
+		}  else if (dataPersister == null) {
 			if (byte[].class.isAssignableFrom(clazz)) {
-				throw new SQLException("ORMLite does not know how to store " + clazz + " for field '" + field.getName()
+				throw new SQLException("ORMLite does not know how to store " + clazz + " for field '" + fieldName
 						+ "'. byte[] fields must specify dataType=DataType.BYTE_ARRAY or SERIALIZABLE");
 			} else if (Serializable.class.isAssignableFrom(clazz)) {
-				throw new SQLException("ORMLite does not know how to store " + clazz + " for field '" + field.getName()
+				throw new SQLException("ORMLite does not know how to store " + clazz + " for field '" + fieldName
 						+ "'.  Use another class, custom persister, or to serialize it use "
 						+ "dataType=DataType.SERIALIZABLE");
 			} else {
 				throw new IllegalArgumentException("ORMLite does not know how to store " + clazz + " for field "
-						+ field.getName() + ". Use another class or a custom persister.");
+						+ fieldName + ". Use another class or a custom persister.");
 			}
+		}*/
+
+		this.columnName = columnName;
+		this.isId = isId;
+		this.isGeneratedId = isGeneratedId;
+
+		//TODO: Move this to annotation processor code
+		if ((this.isId || this.isGeneratedId )&& this.isForeign) {
+			throw new IllegalArgumentException("Id field " + fieldName + " cannot also be a foreign object");
 		}
-		if (fieldConfig.getColumnName() == null) {
-			this.columnName = defaultFieldName;
-		} else {
-			this.columnName = fieldConfig.getColumnName();
-		}
-		this.fieldConfig = fieldConfig;
-		if (fieldConfig.isId()) {
-			if (fieldConfig.isGeneratedId() || fieldConfig.getGeneratedIdSequence() != null) {
-				throw new IllegalArgumentException("Must specify one of id, generatedId, and generatedIdSequence with "
-						+ field.getName());
-			}
-			this.isId = true;
-			this.isGeneratedId = false;
-			this.generatedIdSequence = null;
-		} else if (fieldConfig.isGeneratedId()) {
-			if (fieldConfig.getGeneratedIdSequence() != null) {
-				throw new IllegalArgumentException("Must specify one of id, generatedId, and generatedIdSequence with "
-						+ field.getName());
-			}
-			this.isId = true;
-			this.isGeneratedId = true;
-			if (databaseType.isIdSequenceNeeded()) {
-				this.generatedIdSequence = databaseType.generateIdSequenceName(tableName, this);
-			} else {
-				this.generatedIdSequence = null;
-			}
-		} else if (fieldConfig.getGeneratedIdSequence() != null) {
-			this.isId = true;
-			this.isGeneratedId = true;
-			String seqName = fieldConfig.getGeneratedIdSequence();
-			if (databaseType.isEntityNamesMustBeUpCase()) {
-				seqName = seqName.toUpperCase();
-			}
-			this.generatedIdSequence = seqName;
-		} else {
-			this.isId = false;
-			this.isGeneratedId = false;
-			this.generatedIdSequence = null;
-		}
-		if (this.isId && (fieldConfig.isForeign() || fieldConfig.isForeignAutoRefresh())) {
-			throw new IllegalArgumentException("Id field " + field.getName() + " cannot also be a foreign object");
-		}
-		if (fieldConfig.isUseGetSet()) {
-			this.fieldGetMethod = DatabaseFieldConfig.findGetMethod(field, true);
-			this.fieldSetMethod = DatabaseFieldConfig.findSetMethod(field, true);
-		} else {
-			if (!field.isAccessible()) {
-				try {
-					this.field.setAccessible(true);
-				} catch (SecurityException e) {
-					throw new IllegalArgumentException("Could not open access to field " + field.getName()
-							+ ".  You may have to set useGetSet=true to fix.");
-				}
-			}
-			this.fieldGetMethod = null;
-			this.fieldSetMethod = null;
-		}
-		if (fieldConfig.isAllowGeneratedIdInsert() && !fieldConfig.isGeneratedId()) {
+		//extra validation
+		/*if (fieldConfig.isAllowGeneratedIdInsert() && !fieldConfig.isGeneratedId()) {
 			throw new IllegalArgumentException("Field " + field.getName()
 					+ " must be a generated-id if allowGeneratedIdInsert = true");
 		}
@@ -254,8 +145,8 @@ public class FieldType {
 		if (fieldConfig.isVersion() && (dataPersister == null || !dataPersister.isValidForVersion())) {
 			throw new IllegalArgumentException("Field " + field.getName()
 					+ " is not a valid type to be a version field");
-		}
-		assignDataType(databaseType, dataPersister);
+		}*/
+		assignDataType(databaseType, dataPersister, configDefaultValue);
 	}
 
 	/**
@@ -264,7 +155,7 @@ public class FieldType {
 	 * 
 	 * @see BaseDaoImpl#initialize()
 	 */
-	public void configDaoInformation(ConnectionSource connectionSource, Class<?> parentClass) throws SQLException {
+	/*public void configDaoInformation(ConnectionSource connectionSource, Class<?> parentClass) throws SQLException {
 		Class<?> fieldClass = field.getType();
 		DatabaseType databaseType = connectionSource.getDatabaseType();
 		TableInfo<?, ?> foreignTableInfo;
@@ -315,12 +206,12 @@ public class FieldType {
 				// NOTE: the cast is necessary for maven
 				foreignDao = (BaseDaoImpl<?, ?>) DaoManager.createDao(connectionSource, tableConfig);
 			} else {
-				/*
+				*//*
 				 * Initially we were only doing this just for BaseDaoEnabled.class and isForeignAutoCreate(). But we
 				 * need it also for foreign fields because the alternative was to use reflection. Chances are if it is
 				 * foreign we're going to need the DAO in the future anyway so we might as well create it. This also
 				 * allows us to make use of any table configs.
-				 */
+				 *//*
 				// NOTE: the cast is necessary for maven
 				foreignDao = (BaseDaoImpl<?, ?>) DaoManager.createDao(connectionSource, fieldClass);
 			}
@@ -335,51 +226,6 @@ public class FieldType {
 						+ " must have id field with generatedId = true");
 			}
 			foreignFieldType = null;
-			mappedQueryForId = null;
-		} else if (fieldConfig.isForeignCollection()) {
-			if (fieldClass != Collection.class && !ForeignCollection.class.isAssignableFrom(fieldClass)) {
-				throw new SQLException("Field class for '" + field.getName() + "' must be of class "
-						+ ForeignCollection.class.getSimpleName() + " or Collection.");
-			}
-			Type type = field.getGenericType();
-			if (!(type instanceof ParameterizedType)) {
-				throw new SQLException("Field class for '" + field.getName() + "' must be a parameterized Collection.");
-			}
-			Type[] genericArguments = ((ParameterizedType) type).getActualTypeArguments();
-			if (genericArguments.length == 0) {
-				// i doubt this will ever be reached
-				throw new SQLException("Field class for '" + field.getName()
-						+ "' must be a parameterized Collection with at least 1 type.");
-			}
-
-			// If argument is a type variable we need to get arguments from superclass
-			if (genericArguments[0] instanceof TypeVariable) {
-				genericArguments = ((ParameterizedType) parentClass.getGenericSuperclass()).getActualTypeArguments();
-			}
-
-			if (!(genericArguments[0] instanceof Class)) {
-				throw new SQLException("Field class for '" + field.getName()
-						+ "' must be a parameterized Collection whose generic argument is an entity class not: "
-						+ genericArguments[0]);
-			}
-			Class<?> collectionClazz = (Class<?>) genericArguments[0];
-			DatabaseTableConfig<?> tableConfig = fieldConfig.getForeignTableConfig();
-			BaseDaoImpl<Object, Object> foundDao;
-			if (tableConfig == null) {
-				@SuppressWarnings("unchecked")
-				BaseDaoImpl<Object, Object> castDao =
-						(BaseDaoImpl<Object, Object>) DaoManager.createDao(connectionSource, collectionClazz);
-				foundDao = castDao;
-			} else {
-				@SuppressWarnings("unchecked")
-				BaseDaoImpl<Object, Object> castDao =
-						(BaseDaoImpl<Object, Object>) DaoManager.createDao(connectionSource, tableConfig);
-				foundDao = castDao;
-			}
-			foreignDao = foundDao;
-			foreignFieldType = findForeignFieldType(collectionClazz, parentClass, (BaseDaoImpl<?, ?>) foundDao);
-			foreignIdField = null;
-			foreignTableInfo = null;
 			mappedQueryForId = null;
 		} else {
 			foreignTableInfo = null;
@@ -399,25 +245,14 @@ public class FieldType {
 		if (this.foreignIdField != null) {
 			assignDataType(databaseType, this.foreignIdField.getDataPersister());
 		}
-	}
-
-	public Field getField() {
-		return field;
-	}
+	}*/
 
 	public String getTableName() {
 		return tableName;
 	}
 
 	public String getFieldName() {
-		return field.getName();
-	}
-
-	/**
-	 * Return the class of the field associated with this field type.
-	 */
-	public Class<?> getType() {
-		return field.getType();
+		return fieldName;
 	}
 
 	public String getColumnName() {
@@ -436,19 +271,16 @@ public class FieldType {
 		return fieldConverter.getSqlType();
 	}
 
-	/**
-	 * Return the default value as parsed from the {@link DatabaseFieldConfig#getDefaultValue()}.
-	 */
 	public Object getDefaultValue() {
 		return defaultValue;
 	}
 
 	public int getWidth() {
-		return fieldConfig.getWidth();
+		return width;
 	}
 
 	public boolean isCanBeNull() {
-		return fieldConfig.isCanBeNull();
+		return canBeNull;
 	}
 
 	/**
@@ -467,40 +299,25 @@ public class FieldType {
 		return isGeneratedId;
 	}
 
-	/**
-	 * Return whether the field is a generated-id-sequence field. This is true if
-	 * {@link DatabaseField#generatedIdSequence} is specified OR if {@link DatabaseField#generatedId} is enabled and the
-	 * {@link DatabaseType#isIdSequenceNeeded} is enabled. If the latter is true then the sequence name will be
-	 * auto-generated.
-	 */
-	public boolean isGeneratedIdSequence() {
-		return generatedIdSequence != null;
-	}
-
-	/**
-	 * Return the generated-id-sequence associated with the field or null if {@link #isGeneratedIdSequence} is false.
-	 */
-	public String getGeneratedIdSequence() {
-		return generatedIdSequence;
-	}
-
 	public boolean isForeign() {
-		return fieldConfig.isForeign();
+		return isForeign;
 	}
+
+	public abstract void assignField(Object data, Object val, boolean parentObject) throws SQLException;
 
 	/**
 	 * Assign to the data object the val corresponding to the fieldType.
 	 */
-	public void assignField(Object data, Object val, boolean parentObject, ObjectCache objectCache) throws SQLException {
+	/*public void assignField(Object data, Object val, boolean parentObject) throws SQLException {
 		// if this is a foreign object then val is the foreign object's id val
-		if (foreignIdField != null && val != null) {
+		*//*if (foreignIdField != null && val != null) {
 			// get the current field value which is the foreign-id
 			Object foreignId = extractJavaFieldValue(data);
-			/*
+			*//**//*
 			 * See if we don't need to create a new foreign object. If we are refreshing and the id field has not
 			 * changed then there is no need to create a new foreign object and maybe lose previously refreshed field
 			 * information.
-			 */
+			 *//**//*
 			if (foreignId != null && foreignId.equals(val)) {
 				return;
 			}
@@ -518,7 +335,7 @@ public class FieldType {
 				// the value we are to assign to our field is now the foreign object itself
 				val = createForeignObject(val, objectCache);
 			}
-		}
+		}*//*
 
 		if (fieldSetMethod == null) {
 			try {
@@ -538,17 +355,17 @@ public class FieldType {
 						+ this, e);
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Assign an ID value to this field.
 	 */
-	public Object assignIdValue(Object data, Number val, ObjectCache objectCache) throws SQLException {
+	public Object assignIdValue(Object data, Number val) throws SQLException {
 		Object idVal = dataPersister.convertIdNumber(val);
 		if (idVal == null) {
 			throw new SQLException("Invalid class " + dataPersister + " for sequence-id " + this);
 		} else {
-			assignField(data, idVal, false, objectCache);
+			assignField(data, idVal, false);
 			return idVal;
 		}
 	}
@@ -556,27 +373,20 @@ public class FieldType {
 	/**
 	 * Return the value from the field in the object that is defined by this FieldType.
 	 */
-	public <FV> FV extractRawJavaFieldValue(Object object) throws SQLException {
+	public abstract  <FV> FV extractRawJavaFieldValue(Object object) throws SQLException ;
+	/*{
 		Object val;
-		if (fieldGetMethod == null) {
 			try {
 				// field object may not be a T yet
 				val = field.get(object);
 			} catch (Exception e) {
 				throw SqlExceptionUtil.create("Could not get field value for " + this, e);
 			}
-		} else {
-			try {
-				val = fieldGetMethod.invoke(object);
-			} catch (Exception e) {
-				throw SqlExceptionUtil.create("Could not call " + fieldGetMethod + " for " + this, e);
-			}
-		}
 
 		@SuppressWarnings("unchecked")
 		FV converted = (FV) val;
 		return converted;
-	}
+	}*/
 
 	/**
 	 * Return the value from the field in the object that is defined by this FieldType. If the field is a foreign object
@@ -648,31 +458,54 @@ public class FieldType {
 		return dataPersister.isEscapedValue();
 	}
 
+	//Figure out enums
 	public Enum<?> getUnknownEnumVal() {
-		return fieldConfig.getUnknownEnumValue();
+		return null;
 	}
 
 	/**
 	 * Return the format of the field.
 	 */
 	public String getFormat() {
-		return fieldConfig.getFormat();
+		return format;
 	}
 
 	public boolean isUnique() {
-		return fieldConfig.isUnique();
+		return unique;
 	}
 
 	public boolean isUniqueCombo() {
-		return fieldConfig.isUniqueCombo();
+		return uniqueCombo;
 	}
 
 	public String getIndexName() {
-		return fieldConfig.getIndexName(tableName);
+		return getIndexName(tableName);
+	}
+
+	public String getIndexName(String tableName) {
+		if (index && indexName == null) {
+			indexName = findIndexName(tableName);
+		}
+		return indexName;
+	}
+
+	public String getUniqueIndexName(String tableName) {
+		if (uniqueIndex && uniqueIndexName == null) {
+			uniqueIndexName = findIndexName(tableName);
+		}
+		return uniqueIndexName;
+	}
+
+	private String findIndexName(String tableName) {
+		if (columnName == null) {
+			return tableName + "_" + fieldName + "_idx";
+		} else {
+			return tableName + "_" + columnName + "_idx";
+		}
 	}
 
 	public String getUniqueIndexName() {
-		return fieldConfig.getUniqueIndexName(tableName);
+		return getUniqueIndexName(tableName);
 	}
 
 	/**
@@ -686,9 +519,6 @@ public class FieldType {
 	 * Call through to {@link DataPersister#isComparable()}
 	 */
 	public boolean isComparable() throws SQLException {
-		if (fieldConfig.isForeignCollection()) {
-			return false;
-		}
 		/*
 		 * We've seen dataPersister being null here in some strange cases. Why? It may because someone is searching on
 		 * an improper field. Or maybe a table-config does not match the Java object?
@@ -709,67 +539,6 @@ public class FieldType {
 	}
 
 	/**
-	 * Call through to {@link DatabaseFieldConfig#isForeignCollection()}
-	 */
-	public boolean isForeignCollection() {
-		return fieldConfig.isForeignCollection();
-	}
-
-	/**
-	 * Build and return a foreign collection based on the field settings that matches the id argument. This can return
-	 * null in certain circumstances.
-	 * 
-	 * @param parent
-	 *            The parent object that we will set on each item in the collection.
-	 * @param id
-	 *            The id of the foreign object we will look for. This can be null if we are creating an empty
-	 *            collection.
-	 */
-	public <FT, FID> BaseForeignCollection<FT, FID> buildForeignCollection(Object parent, FID id) throws SQLException {
-		// this can happen if we have a foreign-auto-refresh scenario
-		if (foreignFieldType == null) {
-			return null;
-		}
-		@SuppressWarnings("unchecked")
-		Dao<FT, FID> castDao = (Dao<FT, FID>) foreignDao;
-		if (!fieldConfig.isForeignCollectionEager()) {
-			// we know this won't go recursive so no need for the counters
-			return new LazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
-		}
-
-		// try not to create level counter objects unless we have to
-		LevelCounters levelCounters = threadLevelCounters.get();
-		if (levelCounters == null) {
-			if (fieldConfig.getForeignCollectionMaxEagerLevel() == 0) {
-				// then return a lazy collection instead
-				return new LazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-						fieldConfig.getForeignCollectionOrderColumnName(),
-						fieldConfig.isForeignCollectionOrderAscending());
-			}
-			levelCounters = new LevelCounters();
-			threadLevelCounters.set(levelCounters);
-		}
-
-		if (levelCounters.foreignCollectionLevel == 0) {
-			levelCounters.foreignCollectionLevelMax = fieldConfig.getForeignCollectionMaxEagerLevel();
-		}
-		// are we over our level limit?
-		if (levelCounters.foreignCollectionLevel >= levelCounters.foreignCollectionLevelMax) {
-			// then return a lazy collection instead
-			return new LazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
-		}
-		levelCounters.foreignCollectionLevel++;
-		try {
-			return new EagerForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
-		} finally {
-			levelCounters.foreignCollectionLevel--;
-		}
-	}
-
-	/**
 	 * Get the result object from the results. A call through to {@link FieldConverter#resultToJava}.
 	 */
 	public <T> T resultToJava(DatabaseResults results, Map<String, Integer> columnPositions) throws SQLException {
@@ -780,7 +549,7 @@ public class FieldType {
 		}
 		@SuppressWarnings("unchecked")
 		T converted = (T) fieldConverter.resultToJava(this, results, dbColumnPos);
-		if (fieldConfig.isForeign()) {
+		if (isForeign()) {
 			/*
 			 * Subtle problem here. If your foreign field is a primitive and the value was null then this would return 0
 			 * from getInt(). We have to specifically test to see if we have a foreign field so if it is null we return
@@ -790,8 +559,8 @@ public class FieldType {
 				return null;
 			}
 		} else if (dataPersister.isPrimitive()) {
-			if (fieldConfig.isThrowIfNull() && results.wasNull(dbColumnPos)) {
-				throw new SQLException("Results value for primitive field '" + field.getName()
+			if (throwIfNull && results.wasNull(dbColumnPos)) {
+				throw new SQLException("Results value for primitive field '" + fieldName
 						+ "' was an invalid null value");
 			}
 		} else if (!fieldConverter.isStreamType() && results.wasNull(dbColumnPos)) {
@@ -809,31 +578,23 @@ public class FieldType {
 	}
 
 	/**
-	 * Call through to {@link DatabaseFieldConfig#isAllowGeneratedIdInsert()}
+	 * TODO: What the fuck is this?
 	 */
 	public boolean isAllowGeneratedIdInsert() {
-		return fieldConfig.isAllowGeneratedIdInsert();
+		return false;
 	}
 
-	/**
-	 * Call through to {@link DatabaseFieldConfig#getColumnDefinition()}
-	 */
-	public String getColumnDefinition() {
-		return fieldConfig.getColumnDefinition();
-	}
+/*
+	*/
+/*
 
-	/**
-	 * Call through to {@link DatabaseFieldConfig#isForeignAutoCreate()}
-	 */
 	public boolean isForeignAutoCreate() {
 		return fieldConfig.isForeignAutoCreate();
 	}
+*/
 
-	/**
-	 * Call through to {@link DatabaseFieldConfig#isVersion()}
-	 */
 	public boolean isVersion() {
-		return fieldConfig.isVersion();
+		return version;
 	}
 
 	/**
@@ -843,11 +604,8 @@ public class FieldType {
 		return dataPersister.generateId();
 	}
 
-	/**
-	 * Call through to {@link DatabaseFieldConfig#isReadOnly()}
-	 */
 	public boolean isReadOnly() {
-		return fieldConfig.isReadOnly();
+		return readOnly;
 	}
 
 	/**
@@ -877,21 +635,23 @@ public class FieldType {
 	 * true.
 	 */
 	public Object getJavaDefaultValueDefault() {
-		if (field.getType() == boolean.class) {
+		if(dataType == null)
+			return null;
+		else if (dataType == DataType.BOOLEAN) {
 			return DEFAULT_VALUE_BOOLEAN;
-		} else if (field.getType() == byte.class || field.getType() == Byte.class) {
+		} else if (dataType == DataType.BYTE || dataType == DataType.CHAR_OBJ) {
 			return DEFAULT_VALUE_BYTE;
-		} else if (field.getType() == char.class || field.getType() == Character.class) {
+		} else if (dataType == DataType.CHAR || dataType == DataType.CHAR_OBJ) {
 			return DEFAULT_VALUE_CHAR;
-		} else if (field.getType() == short.class || field.getType() == Short.class) {
+		} else if (dataType == DataType.SHORT || dataType == DataType.SHORT_OBJ) {
 			return DEFAULT_VALUE_SHORT;
-		} else if (field.getType() == int.class || field.getType() == Integer.class) {
+		} else if (dataType == DataType.INTEGER || dataType == DataType.INTEGER_OBJ) {
 			return DEFAULT_VALUE_INT;
-		} else if (field.getType() == long.class || field.getType() == Long.class) {
+		} else if (dataType == DataType.LONG || dataType == DataType.LONG_OBJ) {
 			return DEFAULT_VALUE_LONG;
-		} else if (field.getType() == float.class || field.getType() == Float.class) {
+		} else if (dataType == DataType.FLOAT || dataType == DataType.FLOAT_OBJ) {
 			return DEFAULT_VALUE_FLOAT;
-		} else if (field.getType() == double.class || field.getType() == Double.class) {
+		} else if (dataType == DataType.DOUBLE || dataType == DataType.DOUBLE_OBJ) {
 			return DEFAULT_VALUE_DOUBLE;
 		} else {
 			return null;
@@ -907,21 +667,7 @@ public class FieldType {
 		return castDao.create(foreignData);
 	}
 
-	/**
-	 * Return An instantiated {@link FieldType} or null if the field does not have a {@link DatabaseField} annotation.
-	 */
-	public static FieldType createFieldType(ConnectionSource connectionSource, String tableName, Field field,
-			Class<?> parentClass) throws SQLException {
-		DatabaseType databaseType = connectionSource.getDatabaseType();
-		DatabaseFieldConfig fieldConfig = DatabaseFieldConfig.fromField(databaseType, tableName, field);
-		if (fieldConfig == null) {
-			return null;
-		} else {
-			return new FieldType(connectionSource, tableName, field, fieldConfig, parentClass);
-		}
-	}
-
-	@Override
+	/*@Override
 	public boolean equals(Object arg) {
 		if (arg == null || arg.getClass() != this.getClass()) {
 			return false;
@@ -934,15 +680,15 @@ public class FieldType {
 	@Override
 	public int hashCode() {
 		return field.hashCode();
-	}
+	}*/
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + ":name=" + field.getName() + ",class="
-				+ field.getDeclaringClass().getSimpleName();
+		return getClass().getSimpleName() + ":name=" + fieldName + ",type="
+				+ dataType;
 	}
 
-	private Object createForeignObject(Object val, ObjectCache objectCache) throws SQLException {
+	/*private Object createForeignObject(Object val, ObjectCache objectCache) throws SQLException {
 
 		// try to stop the level counters objects from being created
 		LevelCounters levelCounters = threadLevelCounters.get();
@@ -968,10 +714,10 @@ public class FieldType {
 			return createForeignShell(val, objectCache);
 		}
 
-		/*
+		*//*
 		 * We may not have a mapped query for id because we aren't auto-refreshing ourselves. But a parent class may be
 		 * auto-refreshing us with a level > 1 so we may need to build our query-for-id optimization on the fly here.
-		 */
+		 *//*
 		if (mappedQueryForId == null) {
 			@SuppressWarnings("unchecked")
 			MappedQueryForId<Object, Object> castMappedQueryForId =
@@ -994,14 +740,14 @@ public class FieldType {
 				threadLevelCounters.remove();
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * Create a shell object and assign its id field.
 	 */
-	private Object createForeignShell(Object val, ObjectCache objectCache) throws SQLException {
+	private Object createForeignShell(Object val) throws SQLException {
 		Object foreignObject = foreignTableInfo.createObject();
-		foreignIdField.assignField(foreignObject, val, false, objectCache);
+		foreignIdField.assignField(foreignObject, val, false);
 		return foreignObject;
 	}
 
@@ -1021,7 +767,7 @@ public class FieldType {
 	 * If we have a class Foo with a collection of Bar's then we go through Bar's DAO looking for a Foo field. We need
 	 * this field to build the query that is able to find all Bar's that have foo_id that matches our id.
 	 */
-	private FieldType findForeignFieldType(Class<?> clazz, Class<?> foreignClass, BaseDaoImpl<?, ?> foreignDao)
+	/*private FieldType findForeignFieldType(Class<?> clazz, Class<?> foreignClass, BaseDaoImpl<?, ?> foreignDao)
 			throws SQLException {
 		String foreignColumnName = fieldConfig.getForeignCollectionForeignFieldName();
 		for (FieldType fieldType : foreignDao.getTableInfo().getFieldTypes()) {
@@ -1044,28 +790,18 @@ public class FieldType {
 		}
 		sb.append(" of class ").append(foreignClass.getName());
 		throw new SQLException(sb.toString());
-	}
+	}*/
 
-	/**
-	 * Configure our data persister and any dependent fields. We have to do this here because both the constructor and
-	 * {@link #configDaoInformation} method can set the data-type.
-	 */
-	private void assignDataType(DatabaseType databaseType, DataPersister dataPersister) throws SQLException {
+	private void assignDataType(DatabaseType databaseType, DataPersister dataPersister, String defaultStr) throws SQLException {
 		dataPersister = databaseType.getDataPersister(dataPersister, this);
 		this.dataPersister = dataPersister;
-		if (dataPersister == null) {
-			if (!fieldConfig.isForeign() && !fieldConfig.isForeignCollection()) {
-				// may never happen but let's be careful out there
-				throw new SQLException("Data persister for field " + this
-						+ " is null but the field is not a foreign or foreignCollection");
-			}
-			return;
-		}
 		this.fieldConverter = databaseType.getFieldConverter(dataPersister, this);
+
+		//TODO: Probably move to annotation processor
 		if (this.isGeneratedId && !dataPersister.isValidGeneratedType()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Generated-id field '").append(field.getName());
-			sb.append("' in ").append(field.getDeclaringClass().getSimpleName());
+			sb.append("Generated-id field '").append(fieldName);
+			sb.append("'");
 			sb.append(" can't be type ").append(dataPersister.getSqlType());
 			sb.append(".  Must be one of: ");
 			for (DataType dataType : DataType.values()) {
@@ -1076,19 +812,17 @@ public class FieldType {
 			}
 			throw new IllegalArgumentException(sb.toString());
 		}
-		if (fieldConfig.isThrowIfNull() && !dataPersister.isPrimitive()) {
-			throw new SQLException("Field " + field.getName() + " must be a primitive if set with throwIfNull");
-		}
+
 		if (this.isId && !dataPersister.isAppropriateId()) {
-			throw new SQLException("Field '" + field.getName() + "' is of data type " + dataPersister
+			throw new SQLException("Field '" + fieldName + "' is of data type " + dataPersister
 					+ " which cannot be the ID field");
 		}
+
 		this.dataTypeConfigObj = dataPersister.makeConfigObject(this);
-		String defaultStr = fieldConfig.getDefaultValue();
 		if (defaultStr == null) {
 			this.defaultValue = null;
 		} else if (this.isGeneratedId) {
-			throw new SQLException("Field '" + field.getName() + "' cannot be a generatedId and have a default value '"
+			throw new SQLException("Field '" + fieldName + "' cannot be a generatedId and have a default value '"
 					+ defaultStr + "'");
 		} else {
 			this.defaultValue = this.fieldConverter.parseDefaultString(this, defaultStr);

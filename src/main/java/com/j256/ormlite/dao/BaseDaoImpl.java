@@ -741,14 +741,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		}
 	}
 
-	public void assignEmptyForeignCollection(T parent, String fieldName) throws SQLException {
-		makeEmptyForeignCollection(parent, fieldName);
-	}
-
-	public <FT> ForeignCollection<FT> getEmptyForeignCollection(String fieldName) throws SQLException {
-		return makeEmptyForeignCollection(null, fieldName);
-	}
-
 	public void setObjectCache(boolean enabled) throws SQLException {
 		if (enabled) {
 			if (objectCache == null) {
@@ -982,27 +974,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		if (!initialized) {
 			throw new IllegalStateException("you must call initialize() before you can use the dao");
 		}
-	}
-
-	private <FT> ForeignCollection<FT> makeEmptyForeignCollection(T parent, String fieldName) throws SQLException {
-		checkForInitialized();
-		ID id;
-		if (parent == null) {
-			id = null;
-		} else {
-			id = extractId(parent);
-		}
-		for (FieldType fieldType : tableInfo.getFieldTypes()) {
-			if (fieldType.getColumnName().equals(fieldName)) {
-				@SuppressWarnings("unchecked")
-				ForeignCollection<FT> collection = (ForeignCollection<FT>) fieldType.buildForeignCollection(parent, id);
-				if (parent != null) {
-					fieldType.assignField(parent, collection, true, null);
-				}
-				return collection;
-			}
-		}
-		throw new IllegalArgumentException("Could not find a field named " + fieldName);
 	}
 
 	private CloseableIterator<T> createIterator(int resultFlags) {
