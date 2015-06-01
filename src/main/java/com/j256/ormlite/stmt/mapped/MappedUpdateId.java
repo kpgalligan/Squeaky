@@ -5,6 +5,7 @@ import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.misc.SqlExceptionUtil;
 import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
@@ -30,16 +31,17 @@ public class MappedUpdateId<T, ID> extends BaseMappedStatement<T, ID> {
 			Object[] args = new Object[] { convertIdToFieldObject(newId), extractIdToFieldObject(data) };
 			int rowC = databaseConnection.update(statement, args, argFieldTypes);
 			if (rowC > 0) {
+				GeneratedTableMapper<T, ID> generatedTableMapper = tableInfo.getGeneratedTableMapper();
 				if (objectCache != null) {
-					Object oldId = idField.extractJavaFieldValue(data);
+					Object oldId = generatedTableMapper.extractId(data);
 					T obj = objectCache.updateId(clazz, oldId, newId);
 					if (obj != null && obj != data) {
 						// if our cached value is not the data that will be updated then we need to update it specially
-						idField.assignField(obj, newId, false, objectCache);
+						generatedTableMapper.assignId(obj, newId);
 					}
 				}
 				// adjust the object to assign the new id
-				idField.assignField(data, newId, false, objectCache);
+				generatedTableMapper.assignId(data, newId);
 			}
 			logger.debug("updating-id with statement '{}' and {} args, changed {} rows", statement, args.length, rowC);
 			if (args.length > 0) {
@@ -72,6 +74,7 @@ public class MappedUpdateId<T, ID> extends BaseMappedStatement<T, ID> {
 	 * Return a field-object for the id extracted from the data.
 	 */
 	private Object extractIdToFieldObject(T data) throws SQLException {
-		return idField.extractJavaFieldToSqlArgValue(data);
+		ID idVal = tableInfo.getGeneratedTableMapper().extractId(data);
+		return idField.convertJavaFieldToSqlArgValue(idVal);
 	}
 }

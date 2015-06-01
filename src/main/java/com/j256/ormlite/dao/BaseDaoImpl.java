@@ -59,7 +59,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	protected final Class<T> dataClass;
 	protected DatabaseTableConfig<T> tableConfig;
 	protected TableInfo<T, ID> tableInfo;
-	protected GeneratedTableMapper<T> generatedTableMapper;
+	protected GeneratedTableMapper<T, ID> generatedTableMapper;
 	protected ConnectionSource connectionSource;
 	protected CloseableIterator<T> lastIterator;
 	protected ObjectFactory<T> objectFactory;
@@ -106,11 +106,11 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	 * @param tableConfig
 	 *            Hand or Spring wired table configuration information.
 	 */
-	protected BaseDaoImpl(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper) throws SQLException {
+	protected BaseDaoImpl(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T, ID> generatedTableMapper) throws SQLException {
 		this(connectionSource, tableConfig.getDataClass(), tableConfig, generatedTableMapper);
 	}
 
-	private BaseDaoImpl(ConnectionSource connectionSource, Class<T> dataClass, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper)
+	private BaseDaoImpl(ConnectionSource connectionSource, Class<T> dataClass, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T, ID> generatedTableMapper)
 			throws SQLException {
 		this.dataClass = dataClass;
 		this.tableConfig = tableConfig;
@@ -139,12 +139,8 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 			throw new IllegalStateException("connectionSource is getting a null DatabaseType in "
 					+ getClass().getSimpleName());
 		}
-		if (tableConfig == null) {
-			tableInfo = new TableInfo<T, ID>(connectionSource, this, dataClass);
-		} else {
-			tableConfig.extractFieldTypes(connectionSource);
-			tableInfo = new TableInfo<T, ID>(databaseType, this, tableConfig, generatedTableMapper);
-		}
+
+		tableInfo = new TableInfo<T, ID>(databaseType, this, tableConfig, generatedTableMapper);
 		statementExecutor = new StatementExecutor<T, ID>(databaseType, tableInfo, this);
 
 		/*
@@ -187,7 +183,8 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 				 */
 				DaoManager.registerDao(connectionSource, dao);
 
-				try {
+				//TODO: Need to make sure we're good on foreign stuff
+				/*try {
 					// config our fields which may go recursive
 					for (FieldType fieldType : dao.getTableInfo().getFieldTypes()) {
 						fieldType.configDaoInformation(connectionSource, dao.getDataClass());
@@ -196,7 +193,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 					// unregister the DAO we just pre-registered
 					DaoManager.unregisterDao(connectionSource, dao);
 					throw e;
-				}
+				}*/
 
 				// it's now been fully initialized
 				dao.initialized = true;
@@ -255,14 +252,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	public List<T> query(PreparedQuery<T> preparedQuery) throws SQLException {
 		checkForInitialized();
 		return statementExecutor.query(connectionSource, preparedQuery, objectCache);
-	}
-
-	public List<T> queryForMatching(T matchObj) throws SQLException {
-		return queryForMatching(matchObj, false);
-	}
-
-	public List<T> queryForMatchingArgs(T matchObj) throws SQLException {
-		return queryForMatching(matchObj, true);
 	}
 
 	public List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException {
@@ -409,7 +398,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	public int refresh(T data) throws SQLException {
 		checkForInitialized();
 		// ignore refreshing a null object
-		if (data == null) {
+		/*if (data == null) {
 			return 0;
 		}
 		if (data instanceof BaseDaoEnabled) {
@@ -422,7 +411,8 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 			return statementExecutor.refresh(connection, data, objectCache);
 		} finally {
 			connectionSource.releaseConnection(connection);
-		}
+		}*/
+		throw new UnsupportedOperationException("TODO: add refresh back");
 	}
 
 	public int delete(T data) throws SQLException {
@@ -567,26 +557,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		}
 	}
 
-	public <GR> GenericRawResults<GR> queryRaw(String query, RawRowMapper<GR> mapper, String... arguments)
-			throws SQLException {
-		checkForInitialized();
-		try {
-			return statementExecutor.queryRaw(connectionSource, query, mapper, arguments, objectCache);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not perform raw query for " + query, e);
-		}
-	}
-
-	public <UO> GenericRawResults<UO> queryRaw(String query, DataType[] columnTypes, RawRowObjectMapper<UO> mapper,
-			String... arguments) throws SQLException {
-		checkForInitialized();
-		try {
-			return statementExecutor.queryRaw(connectionSource, query, columnTypes, mapper, arguments, objectCache);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not perform raw query for " + query, e);
-		}
-	}
-
 	public GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments)
 			throws SQLException {
 		checkForInitialized();
@@ -667,7 +637,8 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 
 	public boolean objectsEqual(T data1, T data2) throws SQLException {
 		checkForInitialized();
-		for (FieldType fieldType : tableInfo.getFieldTypes()) {
+		throw new UnsupportedOperationException("TODO: Review need");
+		/*for (FieldType fieldType : tableInfo.getFieldTypes()) {
 			Object fieldObj1 = fieldType.extractJavaFieldValue(data1);
 			Object fieldObj2 = fieldType.extractJavaFieldValue(data2);
 			// we can't just do fieldObj1.equals(fieldObj2) because of byte[].equals()
@@ -675,7 +646,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 				return false;
 			}
 		}
-		return true;
+		return true;*/
 	}
 
 	public ID extractId(T data) throws SQLException {
@@ -685,7 +656,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 			throw new SQLException("Class " + dataClass + " does not have an id field");
 		}
 		@SuppressWarnings("unchecked")
-		ID id = (ID) idField.extractJavaFieldValue(data);
+		ID id = tableInfo.getGeneratedTableMapper().extractId(data);
 		return id;
 	}
 
@@ -695,11 +666,12 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 
 	public FieldType findForeignFieldType(Class<?> clazz) {
 		checkForInitialized();
-		for (FieldType fieldType : tableInfo.getFieldTypes()) {
+		//TODO: Fix for foreign
+		/*for (FieldType fieldType : tableInfo.getFieldTypes()) {
 			if (fieldType.getType() == clazz) {
 				return fieldType;
 			}
-		}
+		}*/
 		return null;
 	}
 
@@ -845,10 +817,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		return statementExecutor.getSelectStarRowMapper();
 	}
 
-	public RawRowMapper<T> getRawRowMapper() {
-		return statementExecutor.getRawRowMapper();
-	}
-
 	public boolean idExists(ID id) throws SQLException {
 		DatabaseConnection connection = connectionSource.getReadOnlyConnection();
 		try {
@@ -964,7 +932,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	 * method so you won't have to create the DAO multiple times.
 	 * </p>
 	 */
-	static <T, ID> Dao<T, ID> createDao(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper)
+	static <T, ID> Dao<T, ID> createDao(ConnectionSource connectionSource, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T, ID> generatedTableMapper)
 			throws SQLException {
 		return new BaseDaoImpl<T, ID>(connectionSource, tableConfig, generatedTableMapper) {
 		};
@@ -993,29 +961,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 			return iterator;
 		} catch (SQLException e) {
 			throw SqlExceptionUtil.create("Could not build prepared-query iterator for " + dataClass, e);
-		}
-	}
-
-	private List<T> queryForMatching(T matchObj, boolean useArgs) throws SQLException {
-		checkForInitialized();
-		QueryBuilder<T, ID> qb = queryBuilder();
-		Where<T, ID> where = qb.where();
-		int fieldC = 0;
-		for (FieldType fieldType : tableInfo.getFieldTypes()) {
-			Object fieldValue = fieldType.getFieldValueIfNotDefault(matchObj);
-			if (fieldValue != null) {
-				if (useArgs) {
-					fieldValue = new SelectArg(fieldValue);
-				}
-				where.eq(fieldType.getColumnName(), fieldValue);
-				fieldC++;
-			}
-		}
-		if (fieldC == 0) {
-			return Collections.emptyList();
-		} else {
-			where.and(fieldC);
-			return qb.query();
 		}
 	}
 

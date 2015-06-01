@@ -84,16 +84,18 @@ abstract class BaseComparison implements Comparison {
 			// conversion is done when the getValue() is called
 			argHolder.setValue(argOrValue);
 			argList.add(argHolder);
-		} else if (fieldType.isForeign() && fieldType.getType().isAssignableFrom(argOrValue.getClass())) {
-			/*
+		}
+		//TODO: foreign
+		/*else if (fieldType.isForeign() && fieldType.getType().isAssignableFrom(argOrValue.getClass())) {
+			*//*
 			 * If we have a foreign field and our argument is an instance of the foreign object (i.e. not its id), then
 			 * we need to extract the id. We allow super-classes of the field but not sub-classes.
-			 */
+			 *//*
 			FieldType idFieldType = fieldType.getForeignIdField();
 			appendArgOrValue(databaseType, idFieldType, sb, argList, idFieldType.extractJavaFieldValue(argOrValue));
 			// no need for the space since it was done in the recursion
 			appendSpace = false;
-		} else if (fieldType.isEscapedValue()) {
+		}*/ else if (fieldType.isEscapedValue()) {
 			databaseType.appendEscapedWord(sb, fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
 		} else if (fieldType.isForeign()) {
 			/*

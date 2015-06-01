@@ -3,7 +3,6 @@ package com.j256.ormlite.dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.stmt.*;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
@@ -70,25 +69,12 @@ public interface Dao<T, ID> extends CloseableIterable<T> {
 	/**
 	 * Query for the items in the object table that match a simple where with a single field = value type of WHERE
 	 * clause. This is a convenience method for calling queryBuilder().where().eq(fieldName, value).query().
-	 * 
+	 *
 	 * @return A list of the objects in the table that match the fieldName = value;
 	 * @throws SQLException
 	 *             on any SQL problems.
 	 */
 	public List<T> queryForEq(String fieldName, Object value) throws SQLException;
-
-	/**
-	 * Query for the rows in the database that match the object passed in as a parameter. Any fields in the matching
-	 * object that are not the default value (null, false, 0, 0.0, etc.) are used as the matching parameters with AND.
-	 * If you are worried about SQL quote escaping, you should use {@link #queryForMatchingArgs(Object)}.
-	 */
-	public List<T> queryForMatching(T matchObj) throws SQLException;
-
-	/**
-	 * Same as {@link #queryForMatching(Object)} but this uses {@link SelectArg} and SQL ? arguments. This is slightly
-	 * more expensive but you don't have to worry about SQL quote escaping.
-	 */
-	public List<T> queryForMatchingArgs(T matchObj) throws SQLException;
 
 	/**
 	 * Query for the rows in the database that matches all of the field to value entries from the map passed in. If you
@@ -423,79 +409,6 @@ public interface Dao<T, ID> extends CloseableIterable<T> {
 	public void closeLastIterator() throws IOException;
 
 	/**
-	 * <p>
-	 * Similar to the {@link #iterator(PreparedQuery)} except it returns a GenericRawResults object associated with the
-	 * SQL select query argument. Although you should use the {@link #iterator()} for most queries, this method allows
-	 * you to do special queries that aren't supported otherwise. Like the above iterator methods, you must call close
-	 * on the returned RawResults object once you are done with it. The arguments are optional but can be set with
-	 * strings to expand ? type of SQL.
-	 * </p>
-	 * 
-	 * <p>
-	 * You can use the {@link QueryBuilder#prepareStatementString()} method here if you want to build the query using
-	 * the structure of the QueryBuilder.
-	 * </p>
-	 * 
-	 * <pre>
-	 * QueryBuilder&lt;Account, Integer&gt; qb = accountDao.queryBuilder();
-	 * qb.where().ge(&quot;orderCount&quot;, 10);
-	 * results = accountDao.queryRaw(qb.prepareStatementString());
-	 * </pre>
-	 * 
-	 * <p>
-	 * If you want to use the QueryBuilder with arguments to the raw query then you should do something like:
-	 * </p>
-	 * 
-	 * <pre>
-	 * QueryBuilder&lt;Account, Integer&gt; qb = accountDao.queryBuilder();
-	 * // we specify a SelectArg here to generate a ? in the statement string below
-	 * qb.where().ge(&quot;orderCount&quot;, new SelectArg());
-	 * // the 10 at the end is an optional argument to fulfill the SelectArg above
-	 * results = accountDao.queryRaw(qb.prepareStatementString(), rawRowMapper, 10);
-	 * </pre>
-	 * 
-	 * <p>
-	 * <b>NOTE:</b> If you are using the {@link QueryBuilder#prepareStatementString()} to build your query, it may have
-	 * added the id column to the selected column list if the Dao object has an id you did not include it in the columns
-	 * you selected. So the results might have one more column than you are expecting.
-	 * </p>
-	 */
-	public GenericRawResults<String[]> queryRaw(String query, String... arguments) throws SQLException;
-
-	/**
-	 * Similar to the {@link #queryRaw(String, String...)} but this iterator returns rows that you can map yourself. For
-	 * every result that is returned by the database, the {@link RawRowMapper#mapRow(String[], String[])} method is
-	 * called so you can convert the result columns into an object to be returned by the iterator. The arguments are
-	 * optional but can be set with strings to expand ? type of SQL. For a simple implementation of a raw row mapper,
-	 * see {@link #getRawRowMapper()}.
-	 */
-	public <UO> GenericRawResults<UO> queryRaw(String query, RawRowMapper<UO> mapper, String... arguments)
-			throws SQLException;
-
-	/**
-	 * Similar to the {@link #queryRaw(String, RawRowMapper, String...)} but uses the column-types array to present an
-	 * array of object results to the mapper instead of strings. The arguments are optional but can be set with strings
-	 * to expand ? type of SQL.
-	 */
-	public <UO> GenericRawResults<UO> queryRaw(String query, DataType[] columnTypes, RawRowObjectMapper<UO> mapper,
-											   String... arguments) throws SQLException;
-
-	/**
-	 * Similar to the {@link #queryRaw(String, String...)} but instead of an array of String results being returned by
-	 * the iterator, this uses the column-types parameter to return an array of Objects instead. The arguments are
-	 * optional but can be set with strings to expand ? type of SQL.
-	 */
-	public GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments)
-			throws SQLException;
-
-	/**
-	 * Similar to the {@link #queryRaw(String, RawRowMapper, String...)} but this iterator returns rows that you can map
-	 * yourself using {@link DatabaseResultsMapper}.
-	 */
-	public <UO> GenericRawResults<UO> queryRaw(String query, DatabaseResultsMapper<UO> mapper, String... arguments)
-			throws SQLException;
-
-	/**
 	 * Perform a raw query that returns a single value (usually an aggregate function like MAX or COUNT). If the query
 	 * does not return a single long value then it will throw a SQLException.
 	 */
@@ -651,13 +564,6 @@ public interface Dao<T, ID> extends CloseableIterable<T> {
 	 * Return a row mapper that is suitable for mapping results from a query to select * (star).
 	 */
 	public GenericRowMapper<T> getSelectStarRowMapper() throws SQLException;
-
-	/**
-	 * Return a row mapper that is suitable for use with {@link #queryRaw(String, RawRowMapper, String...)}. This is a
-	 * bit experimental at this time. It most likely will _not_ work with all databases since the string output for each
-	 * data type is hard to forecast. Please provide feedback.
-	 */
-	public RawRowMapper<T> getRawRowMapper();
 
 	/**
 	 * Returns true if an object exists that matches this ID otherwise false.

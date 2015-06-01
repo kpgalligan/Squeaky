@@ -17,13 +17,11 @@ import com.j256.ormlite.android.AndroidConnectionSource;
 import com.j256.ormlite.android.AndroidDatabaseConnection;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 import com.j256.ormlite.misc.IOUtils;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.table.DatabaseTableConfigLoader;
 
 /**
  * SQLite database open helper which can be extended by your application to help manage when the application needs to
@@ -145,10 +143,10 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
 		try {
 			reader = new BufferedReader(new InputStreamReader(stream), 4096);
 			stream = null;
-			DaoManager.addCachedDatabaseConfigs(DatabaseTableConfigLoader.loadDatabaseConfigFromReader(reader));
-		} catch (SQLException e) {
+//			DaoManager.addCachedDatabaseConfigs(DatabaseTableConfigLoader.loadDatabaseConfigFromReader(reader));
+		}/* catch (SQLException e) {
 			throw new IllegalStateException("Could not load object config file", e);
-		} finally {
+		}*/ finally {
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(stream);
 		}
@@ -299,25 +297,6 @@ public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper {
 		@SuppressWarnings("unchecked")
 		D castDao = (D) dao;
 		return castDao;
-	}
-
-	/**
-	 * Get a RuntimeExceptionDao for our class. This uses the {@link DaoManager} to cache the DAO for future gets.
-	 *
-	 * <p>
-	 * NOTE: This routing does not return RuntimeExceptionDao&lt;T, ID&gt; because of casting issues if we are assigning it to
-	 * a custom DAO. Grumble.
-	 * </p>
-	 */
-	public <D extends RuntimeExceptionDao<T, ?>, T> D getRuntimeExceptionDao(Class<T> clazz) {
-		try {
-			Dao<T, ?> dao = getDao(clazz);
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			D castDao = (D) new RuntimeExceptionDao(dao);
-			return castDao;
-		} catch (SQLException e) {
-			throw new RuntimeException("Could not create RuntimeExcepitionDao for class " + clazz, e);
-		}
 	}
 
 	@Override

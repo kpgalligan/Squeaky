@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.stmt.mapped.MappedQueryForId;
 import com.j256.ormlite.support.DatabaseResults;
+import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
@@ -13,7 +14,13 @@ import java.util.Map;
 /**
  * @author graywatson
  */
-public abstract class FieldType {
+public class FieldType<T, ID> {
+
+	/*public interface Implem
+	{
+		void assignField(Object data, Object val, boolean parentObject) throws SQLException;
+		<FV> FV extractRawJavaFieldValue(Object object) throws SQLException ;
+	}*/
 
 	/** default suffix added to fields that are id fields of foreign objects */
 	public static final String FOREIGN_ID_FIELD_SUFFIX = "_id";
@@ -62,6 +69,7 @@ public abstract class FieldType {
 	private FieldType foreignFieldType;
 	private BaseDaoImpl<?, ?> foreignDao;
 	private MappedQueryForId<Object, Object> mappedQueryForId;
+	private GeneratedTableMapper<T, ID> generatedTableMapper;
 
 	/**
 	 * ThreadLocal counters to detect initialization loops. Notice that there is _not_ an initValue() method on purpose.
@@ -69,7 +77,29 @@ public abstract class FieldType {
 	 */
 	private static final ThreadLocal<LevelCounters> threadLevelCounters = new ThreadLocal<LevelCounters>();
 
-	public FieldType(DatabaseType databaseType, String tableName, String fieldName, String columnName, boolean isId, boolean isGeneratedId, boolean isForeign, DataType dataType, int width, boolean canBeNull, String format, boolean unique, boolean uniqueCombo, boolean index, boolean uniqueIndex, String indexName, String uniqueIndexName, String configDefaultValue, boolean throwIfNull, boolean version, boolean readOnly) throws SQLException {
+	public FieldType(
+			DatabaseType databaseType,
+			String tableName,
+			String fieldName,
+			String columnName,
+			boolean isId,
+			boolean isGeneratedId,
+			boolean isForeign,
+			DataType dataType,
+			int width,
+			boolean canBeNull,
+			String format,
+			boolean unique,
+			boolean uniqueCombo,
+			boolean index,
+			boolean uniqueIndex,
+			String indexName,
+			String uniqueIndexName,
+			String configDefaultValue,
+			boolean throwIfNull,
+			boolean version,
+			boolean readOnly
+	) throws SQLException {
 		this.fieldName = fieldName;
 		this.tableName = tableName;
 		this.width = width;
@@ -303,7 +333,15 @@ public abstract class FieldType {
 		return isForeign;
 	}
 
-	public abstract void assignField(Object data, Object val, boolean parentObject) throws SQLException;
+	/*public void assignField(Object data, Object val, boolean parentObject) throws SQLException
+	{
+		implem.assignField(data, val, parentObject);
+	}
+
+	public <FV> FV extractRawJavaFieldValue(Object object) throws SQLException
+	{
+		return implem.extractRawJavaFieldValue(object);
+	}*/
 
 	/**
 	 * Assign to the data object the val corresponding to the fieldType.
@@ -362,18 +400,15 @@ public abstract class FieldType {
 	 */
 	public Object assignIdValue(Object data, Number val) throws SQLException {
 		Object idVal = dataPersister.convertIdNumber(val);
+
 		if (idVal == null) {
 			throw new SQLException("Invalid class " + dataPersister + " for sequence-id " + this);
 		} else {
-			assignField(data, idVal, false);
+			generatedTableMapper.assignId((T)data, idVal);
 			return idVal;
 		}
 	}
 
-	/**
-	 * Return the value from the field in the object that is defined by this FieldType.
-	 */
-	public abstract  <FV> FV extractRawJavaFieldValue(Object object) throws SQLException ;
 	/*{
 		Object val;
 			try {
@@ -388,28 +423,17 @@ public abstract class FieldType {
 		return converted;
 	}*/
 
-	/**
-	 * Return the value from the field in the object that is defined by this FieldType. If the field is a foreign object
-	 * then the ID of the field is returned instead.
-	 */
-	public Object extractJavaFieldValue(Object object) throws SQLException {
+	/*private Object extractJavaFieldValue(Object object) throws SQLException {
 
-		Object val = extractRawJavaFieldValue(object);
+		Object val = implem.extractRawJavaFieldValue(object);
 
 		// if this is a foreign object then we want its id field
 		if (foreignIdField != null && val != null) {
-			val = foreignIdField.extractRawJavaFieldValue(val);
+			val = foreignIdField.implem.extractRawJavaFieldValue(val);
 		}
 
 		return val;
-	}
-
-	/**
-	 * Extract a field from an object and convert to something suitable to be passed to SQL as an argument.
-	 */
-	public Object extractJavaFieldToSqlArgValue(Object object) throws SQLException {
-		return convertJavaFieldToSqlArgValue(extractJavaFieldValue(object));
-	}
+	}*/
 
 	/**
 	 * Convert a field value to something suitable to be stored in the database.
@@ -608,27 +632,10 @@ public abstract class FieldType {
 		return readOnly;
 	}
 
-	/**
-	 * Return the value of field in the data argument if it is not the default value for the class. If it is the default
-	 * then null is returned.
-	 */
-	public <FV> FV getFieldValueIfNotDefault(Object object) throws SQLException {
-		@SuppressWarnings("unchecked")
-		FV fieldValue = (FV) extractJavaFieldValue(object);
-		if (isFieldValueDefault(fieldValue)) {
-			return null;
-		} else {
-			return fieldValue;
-		}
-	}
-
-	/**
-	 * Return whether or not the data object has a default value passed for this field of this type.
-	 */
-	public boolean isObjectsFieldValueDefault(Object object) throws SQLException {
+	/*public boolean isObjectsFieldValueDefault(Object object) throws SQLException {
 		Object fieldValue = extractJavaFieldValue(object);
 		return isFieldValueDefault(fieldValue);
-	}
+	}*/
 
 	/**
 	 * Return whether or not the field value passed in is the default value for the type of the field. Null will return
@@ -745,11 +752,12 @@ public abstract class FieldType {
 	/**
 	 * Create a shell object and assign its id field.
 	 */
-	private Object createForeignShell(Object val) throws SQLException {
+	//TODO: foreign
+	/*private Object createForeignShell(Object val) throws SQLException {
 		Object foreignObject = foreignTableInfo.createObject();
 		foreignIdField.assignField(foreignObject, val, false);
 		return foreignObject;
-	}
+	}*/
 
 	/**
 	 * Return whether or not the field value passed in is the default value for the type of the field. Null will return

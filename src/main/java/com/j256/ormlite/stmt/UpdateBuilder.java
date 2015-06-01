@@ -45,9 +45,10 @@ public class UpdateBuilder<T, ID> extends StatementBuilder<T, ID> {
 	 */
 	public UpdateBuilder<T, ID> updateColumnValue(String columnName, Object value) throws SQLException {
 		FieldType fieldType = verifyColumnName(columnName);
-		if (fieldType.isForeignCollection()) {
+		//TODO: foreign
+		/*if (fieldType.isForeignCollection()) {
 			throw new SQLException("Can't update foreign colletion field: " + columnName);
-		}
+		}*/
 		addUpdateColumnToList(columnName, new SetValue(columnName, fieldType, value));
 		return this;
 	}
@@ -64,9 +65,10 @@ public class UpdateBuilder<T, ID> extends StatementBuilder<T, ID> {
 	 */
 	public UpdateBuilder<T, ID> updateColumnExpression(String columnName, String expression) throws SQLException {
 		FieldType fieldType = verifyColumnName(columnName);
-		if (fieldType.isForeignCollection()) {
+		//TODO: foreign
+		/*if (fieldType.isForeignCollection()) {
 			throw new SQLException("Can't update foreign colletion field: " + columnName);
-		}
+		}*/
 		addUpdateColumnToList(columnName, new SetExpression(columnName, fieldType, expression));
 		return this;
 	}

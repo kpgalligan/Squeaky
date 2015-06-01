@@ -46,7 +46,8 @@ public class MappedDelete<T, ID> extends BaseMappedStatement<T, ID> {
 				logger.trace("delete arguments: {}", (Object) args);
 			}
 			if (rowC > 0 && objectCache != null) {
-				Object id = idField.extractJavaFieldToSqlArgValue(data);
+				ID idVal = tableInfo.getGeneratedTableMapper().extractId(data);
+				Object id = idField.convertJavaFieldToSqlArgValue(idVal);
 				objectCache.remove(clazz, id);
 			}
 			return rowC;

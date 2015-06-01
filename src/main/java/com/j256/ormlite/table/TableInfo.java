@@ -1,13 +1,11 @@
 package com.j256.ormlite.table;
 
 import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.misc.BaseDaoEnabled;
 import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.support.ConnectionSource;
 
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
@@ -37,23 +35,7 @@ public class TableInfo<T, ID> {
 	private final Constructor<T> constructor;
 	private final boolean foreignAutoCreate;
 	private Map<String, FieldType> fieldNameMap;
-	private final GeneratedTableMapper<T> generatedTableMapper;
-
-	/**
-	 * Creates a holder of information about a table/class.
-	 * 
-	 * @param connectionSource
-	 *            Source of our database connections.
-	 * @param baseDaoImpl
-	 *            Associated BaseDaoImpl.
-	 * @param dataClass
-	 *            Class that we are holding information about.
-	 */
-	public TableInfo(ConnectionSource connectionSource, BaseDaoImpl<T, ID> baseDaoImpl, Class<T> dataClass)
-			throws SQLException {
-		this(connectionSource.getDatabaseType(), baseDaoImpl,
-				DatabaseTableConfig.fromClass(connectionSource, dataClass), null);
-	}
+	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 
 	public TableInfo(DatabaseType databaseType, BaseDaoImpl<T, ID> baseDaoImpl, DatabaseTableConfig<T> tableConfig) throws SQLException
 	{
@@ -70,30 +52,31 @@ public class TableInfo<T, ID> {
 	 * @param tableConfig
 	 *            Configuration for our table.
 	 */
-	public TableInfo(DatabaseType databaseType, BaseDaoImpl<T, ID> baseDaoImpl, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T> generatedTableMapper)
+	public TableInfo(DatabaseType databaseType, BaseDaoImpl<T, ID> baseDaoImpl, DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T, ID> generatedTableMapper)
 			throws SQLException {
 		this.baseDaoImpl = baseDaoImpl;
 		this.dataClass = tableConfig.getDataClass();
 		this.tableName = tableConfig.getTableName();
-		this.fieldTypes = tableConfig.getFieldTypes(databaseType);
+		this.fieldTypes = tableConfig.getFieldTypes();
 		// find the id field
 		FieldType findIdFieldType = null;
 		boolean foreignAutoCreate = false;
 		int foreignCollectionCount = 0;
 		for (FieldType fieldType : fieldTypes) {
-			if (fieldType.isId() || fieldType.isGeneratedId() || fieldType.isGeneratedIdSequence()) {
+			if (fieldType.isId() || fieldType.isGeneratedId() ) {
 				if (findIdFieldType != null) {
 					throw new SQLException("More than 1 idField configured for class " + dataClass + " ("
 							+ findIdFieldType + "," + fieldType + ")");
 				}
 				findIdFieldType = fieldType;
 			}
-			if (fieldType.isForeignAutoCreate()) {
+			//TODO: foreign
+			/*if (fieldType.isForeignAutoCreate()) {
 				foreignAutoCreate = true;
 			}
 			if (fieldType.isForeignCollection()) {
 				foreignCollectionCount++;
-			}
+			}*/
 		}
 		// can be null if there is no id field
 		this.idField = findIdFieldType;
@@ -105,10 +88,11 @@ public class TableInfo<T, ID> {
 			this.foreignCollections = new FieldType[foreignCollectionCount];
 			foreignCollectionCount = 0;
 			for (FieldType fieldType : fieldTypes) {
-				if (fieldType.isForeignCollection()) {
+				//TODO: foreign
+				/*if (fieldType.isForeignCollection()) {
 					this.foreignCollections[foreignCollectionCount] = fieldType;
 					foreignCollectionCount++;
-				}
+				}*/
 			}
 		}
 
@@ -180,14 +164,15 @@ public class TableInfo<T, ID> {
 	public String objectToString(T object) {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append(object.getClass().getSimpleName());
-		for (FieldType fieldType : fieldTypes) {
+		//TODO: write out fields
+		/*for (FieldType fieldType : fieldTypes) {
 			sb.append(' ').append(fieldType.getColumnName()).append("=");
 			try {
 				sb.append(fieldType.extractJavaFieldValue(object));
 			} catch (Exception e) {
 				throw new IllegalStateException("Could not generate toString of field " + fieldType, e);
 			}
-		}
+		}*/
 		return sb.toString();
 	}
 
@@ -228,14 +213,11 @@ public class TableInfo<T, ID> {
 		return foreignAutoCreate;
 	}
 
-	/**
-	 * Return an array with the fields that are {@link ForeignCollection}s or a blank array if none.
-	 */
 	public FieldType[] getForeignCollections() {
 		return foreignCollections;
 	}
 
-	public GeneratedTableMapper<T> getGeneratedTableMapper()
+	public GeneratedTableMapper<T, ID> getGeneratedTableMapper()
 	{
 		return generatedTableMapper;
 	}

@@ -1,6 +1,5 @@
 package com.j256.ormlite.stmt.mapped;
 
-import com.j256.ormlite.dao.BaseForeignCollection;
 import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.GenericRowMapper;
@@ -62,29 +61,32 @@ public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> 
 		// populate its fields
 		Object id = null;
 		boolean foreignCollections = false;
-		for (FieldType fieldType : resultsFieldTypes) {
-			if (fieldType.isForeignCollection()) {
-				foreignCollections = true;
-			} else {
-				Object val = fieldType.resultToJava(results, colPosMap);
-				/*
-				 * This is pretty subtle. We introduced multiple foreign fields to the same type which use the {@link
-				 * ForeignCollectionField} foreignColumnName field. The bug that was created was that all the fields
-				 * were then set with the parent class. Only the fields that have a matching id value should be set to
-				 * the parent. We had to add the val.equals logic.
-				 */
-				if (val != null && parent != null && fieldType.getField().getType() == parent.getClass()
-						&& val.equals(parentId)) {
-					fieldType.assignField(instance, parent, true, objectCache);
-				} else {
-					fieldType.assignField(instance, val, false, objectCache);
-				}
-				if (fieldType == idField) {
-					id = val;
-				}
-			}
-		}
-		if (foreignCollections) {
+//		for (FieldType fieldType : resultsFieldTypes) {
+//			//TODO: foreign
+//			/*if (fieldType.isForeignCollection()) {
+//				foreignCollections = true;
+//			} else*/ {
+//				Object val = fieldType.resultToJava(results, colPosMap);
+//				/*
+//				 * This is pretty subtle. We introduced multiple foreign fields to the same type which use the {@link
+//				 * ForeignCollectionField} foreignColumnName field. The bug that was created was that all the fields
+//				 * were then set with the parent class. Only the fields that have a matching id value should be set to
+//				 * the parent. We had to add the val.equals logic.
+//				 */
+//				//TODO: foreign
+//				/*if (val != null && parent != null && fieldType.getField().getType() == parent.getClass()
+//						&& val.equals(parentId)) {
+//					fieldType.assignField(instance, parent, true, objectCache);
+//				} else*/ {
+//					fieldType.assignField(instance, val, false);
+//				}
+//				if (fieldType == idField) {
+//					id = val;
+//				}
+//			}
+//		}
+		//TODO: foreign
+		/*if (foreignCollections) {
 			// go back and initialize any foreign collections
 			for (FieldType fieldType : resultsFieldTypes) {
 				if (fieldType.isForeignCollection()) {
@@ -94,7 +96,7 @@ public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> 
 					}
 				}
 			}
-		}
+		}*/
 		// if we have a cache and we have an id then add it to the cache
 		if (objectCache != null && id != null) {
 			objectCache.put(clazz, id, instance);

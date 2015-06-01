@@ -132,9 +132,10 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		 * NOTE: the configure id methods must be in this order since isGeneratedIdSequence is also isGeneratedId and
 		 * isId. isGeneratedId is also isId.
 		 */
-		if (fieldType.isGeneratedIdSequence() && !fieldType.isSelfGeneratedId()) {
+		//TODO: I don't think we need this
+		/*if (fieldType.isGeneratedIdSequence() && !fieldType.isSelfGeneratedId()) {
 			configureGeneratedIdSequence(sb, fieldType, statementsBefore, additionalArgs, queriesAfter);
-		} else if (fieldType.isGeneratedId() && !fieldType.isSelfGeneratedId()) {
+		} else */if (fieldType.isGeneratedId() && !fieldType.isSelfGeneratedId()) {
 			configureGeneratedId(tableName, sb, fieldType, statementsBefore, statementsAfter, additionalArgs,
 					queriesAfter);
 		} else if (fieldType.isId()) {

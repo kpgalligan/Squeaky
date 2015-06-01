@@ -5,6 +5,7 @@ import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.misc.SqlExceptionUtil;
 import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
@@ -93,31 +94,36 @@ public class MappedUpdate<T, ID> extends BaseMappedStatement<T, ID> {
 			}
 			Object[] args = getFieldObjects(data);
 			Object newVersion = null;
+			GeneratedTableMapper<T, ID> generatedTableMapper = tableInfo.getGeneratedTableMapper();
+
 			if (versionFieldType != null) {
-				newVersion = versionFieldType.extractJavaFieldValue(data);
+				newVersion = generatedTableMapper.extractVersion(data);
 				newVersion = versionFieldType.moveToNextValue(newVersion);
 				args[versionFieldTypeIndex] = versionFieldType.convertJavaFieldToSqlArgValue(newVersion);
 			}
+
+
 			int rowC = databaseConnection.update(statement, args, argFieldTypes);
 			if (rowC > 0) {
 				if (newVersion != null) {
 					// if we have updated a row then update the version field in our object to the new value
-					versionFieldType.assignField(data, newVersion, false, null);
+					generatedTableMapper.assignVersion(data, newVersion);
 				}
-				if (objectCache != null) {
+				//TODO: review cache
+				/*if (objectCache != null) {
 					// if we've changed something then see if we need to update our cache
 					Object id = idField.extractJavaFieldValue(data);
 					T cachedData = objectCache.get(clazz, id);
 					if (cachedData != null && cachedData != data) {
 						// copy each field from the updated data into the cached object
+						generatedTableMapper.fillRow()
 						for (FieldType fieldType : tableInfo.getFieldTypes()) {
 							if (fieldType != idField) {
-								fieldType.assignField(cachedData, fieldType.extractJavaFieldValue(data), false,
-										objectCache);
+								fieldType.assignField(cachedData, fieldType.extractJavaFieldValue(data), false);
 							}
 						}
 					}
-				}
+				}*/
 			}
 			logger.debug("update data with statement '{}' and {} args, changed {} rows", statement, args.length, rowC);
 			if (args.length > 0) {
@@ -131,7 +137,8 @@ public class MappedUpdate<T, ID> extends BaseMappedStatement<T, ID> {
 	}
 
 	private static boolean isFieldUpdatable(FieldType fieldType, FieldType idField) {
-		if (fieldType == idField || fieldType.isForeignCollection() || fieldType.isReadOnly()) {
+		//TODO: foreign
+		if (fieldType == idField /*|| fieldType.isForeignCollection()*/ || fieldType.isReadOnly()) {
 			return false;
 		} else {
 			return true;

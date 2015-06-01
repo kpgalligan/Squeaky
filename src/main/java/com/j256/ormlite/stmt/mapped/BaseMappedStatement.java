@@ -36,7 +36,9 @@ public abstract class BaseMappedStatement<T, ID> {
 	 * Return the array of field objects pulled from the data object.
 	 */
 	protected Object[] getFieldObjects(Object data) throws SQLException {
-		Object[] objects = new Object[argFieldTypes.length];
+		return tableInfo.getGeneratedTableMapper().extractVals((T)data);
+		//TODO: review generated default logic
+		/*Object[] objects = new Object[argFieldTypes.length];
 		for (int i = 0; i < argFieldTypes.length; i++) {
 			FieldType fieldType = argFieldTypes[i];
 			if (fieldType.isAllowGeneratedIdInsert()) {
@@ -48,7 +50,7 @@ public abstract class BaseMappedStatement<T, ID> {
 				objects[i] = fieldType.getDefaultValue();
 			}
 		}
-		return objects;
+		return objects;*/
 	}
 
 	/**

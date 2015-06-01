@@ -30,13 +30,13 @@ import java.util.Map;
 public class DaoManager {
 
 	private static Map<Class<?>, DatabaseTableConfig<?>> configMap = null;
-	private static Map<Class<?>, GeneratedTableMapper<?>> generatedMap = new HashMap<Class<?>, GeneratedTableMapper<?>>();
+	private static Map<Class<?>, GeneratedTableMapper<?, ?>> generatedMap = new HashMap<Class<?>, GeneratedTableMapper<?, ?>>();
 	private static Map<ClassConnectionSource, Dao<?, ?>> classMap = null;
 	private static Map<TableConfigConnectionSource, Dao<?, ?>> tableConfigMap = null;
 
 	private static Logger logger = LoggerFactory.getLogger(DaoManager.class);
 
-	public static void setGeneratedMap(Map<Class<?>, GeneratedTableMapper<?>> generatedMap)
+	public static void setGeneratedMap(Map<Class<?>, GeneratedTableMapper<?, ?>> generatedMap)
 	{
 		DaoManager.generatedMap = generatedMap;
 	}
@@ -76,7 +76,7 @@ public class DaoManager {
 			if (config == null) {
 				daoTmp = BaseDaoImpl.createDao(connectionSource, clazz);
 			} else {
-				daoTmp = BaseDaoImpl.createDao(connectionSource, config, (GeneratedTableMapper<T>)generatedMap.get(clazz));
+				daoTmp = BaseDaoImpl.createDao(connectionSource, config, (GeneratedTableMapper<T, ?>)generatedMap.get(clazz));
 			}
 			dao = daoTmp;
 			logger.debug("created dao for class {} with reflection", clazz);
@@ -362,7 +362,7 @@ public class DaoManager {
 		DatabaseTable databaseTable = tableConfig.getDataClass().getAnnotation(DatabaseTable.class);
 		if (databaseTable == null || databaseTable.daoClass() == Void.class
 				|| databaseTable.daoClass() == BaseDaoImpl.class) {
-			Dao<T, ?> daoTmp = BaseDaoImpl.createDao(connectionSource, tableConfig, (GeneratedTableMapper<T>)generatedMap.get(dataClass));
+			Dao<T, ?> daoTmp = BaseDaoImpl.createDao(connectionSource, tableConfig, (GeneratedTableMapper<T, ?>)generatedMap.get(dataClass));
 			dao = daoTmp;
 		} else {
 			Class<?> daoClass = databaseTable.daoClass();

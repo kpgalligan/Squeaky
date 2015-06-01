@@ -5,7 +5,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.stmt.query.ColumnNameOrRawSql;
 import com.j256.ormlite.stmt.query.OrderBy;
 import com.j256.ormlite.table.TableInfo;
@@ -150,9 +149,10 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 	 */
 	public QueryBuilder<T, ID> groupBy(String columnName) {
 		FieldType fieldType = verifyColumnName(columnName);
-		if (fieldType.isForeignCollection()) {
+		//TODO: foreign
+		/*if (fieldType.isForeignCollection()) {
 			throw new IllegalArgumentException("Can't groupBy foreign colletion field: " + columnName);
-		}
+		}*/
 		addGroupBy(ColumnNameOrRawSql.withColumnName(columnName));
 		return this;
 	}
@@ -171,9 +171,10 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 	 */
 	public QueryBuilder<T, ID> orderBy(String columnName, boolean ascending) {
 		FieldType fieldType = verifyColumnName(columnName);
-		if (fieldType.isForeignCollection()) {
+		//TODO: foreign
+		/*if (fieldType.isForeignCollection()) {
 			throw new IllegalArgumentException("Can't orderBy foreign colletion field: " + columnName);
-		}
+		}*/
 		addOrderBy(new OrderBy(columnName, ascending));
 		return this;
 	}
@@ -704,10 +705,11 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 			 * If this is a foreign-collection then we add it to our field-list but _not_ to the select list because
 			 * foreign collections don't have a column in the database.
 			 */
-			if (fieldType.isForeignCollection()) {
+			//TODO: foreign
+			/*if (fieldType.isForeignCollection()) {
 				fieldTypeList.add(fieldType);
 				continue;
-			}
+			}*/
 			if (first) {
 				first = false;
 			} else {
