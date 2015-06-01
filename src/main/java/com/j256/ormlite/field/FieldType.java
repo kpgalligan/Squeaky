@@ -637,6 +637,13 @@ public class FieldType<T, ID> {
 		return isFieldValueDefault(fieldValue);
 	}*/
 
+	public boolean isObjectsIdValueDefault(Object object) throws SQLException {
+		ID id = generatedTableMapper.extractId((T)object);
+		Object defaultValue = getJavaDefaultValueDefault();
+
+		return id != null && defaultValue != null && id.equals(defaultValue);
+	}
+
 	/**
 	 * Return whether or not the field value passed in is the default value for the type of the field. Null will return
 	 * true.
