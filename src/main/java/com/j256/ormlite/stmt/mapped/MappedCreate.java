@@ -36,10 +36,13 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 	public int insert(DatabaseType databaseType, DatabaseConnection databaseConnection, T data, ObjectCache objectCache)
 			throws SQLException {
 		//TODO: insert
-		/*KeyHolder keyHolder = null;
+		KeyHolder keyHolder = null;
 		if (idField != null) {
 			boolean assignId;
-			if (idField.isAllowGeneratedIdInsert() && !idField.isObjectsFieldValueDefault(data)) {
+			Object javaDefaultValueDefault = idField.getJavaDefaultValueDefault();
+			ID id = tableInfo.getGeneratedTableMapper().extractId(data);
+			boolean defaultId = javaDefaultValueDefault != null && id != null && javaDefaultValueDefault.equals(id);
+			if (idField.isAllowGeneratedIdInsert() && !defaultId) {
 				assignId = false;
 			} else {
 				assignId = true;
@@ -67,19 +70,23 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 			if (tableInfo.isForeignAutoCreate()) {
 				for (FieldType fieldType : tableInfo.getFieldTypes()) {
 					//TODO: foreign
-					*//*if (!fieldType.isForeignAutoCreate()) {
+					/*if (!fieldType.isForeignAutoCreate()) {
 						continue;
-					}*//*
+					}*/
 					// get the field value
 
-					*//*Object foreignObj = fieldType.extractRawJavaFieldValue(data);
+					/*Object foreignObj = fieldType.extractRawJavaFieldValue(data);
 					if (foreignObj != null && fieldType.getForeignIdField().isObjectsFieldValueDefault(foreignObj)) {
 						fieldType.createWithForeignDao(foreignObj);
-					}*//*
+					}*/
 				}
 			}
 
 			Object[] args = getFieldObjects(data);
+			Object[] copyArgs = new Object[args.length - 1];
+			System.arraycopy(args, 1, copyArgs, 0, args.length - 1);
+			args = copyArgs;
+
 			Object versionDefaultValue = null;
 			// implement {@link DatabaseField#version()}
 			if (versionFieldTypeIndex >= 0 && args[versionFieldTypeIndex] == null) {
@@ -125,10 +132,10 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 					}
 					assignIdValue(data, key, "keyholder", objectCache);
 				}
-				*//*
+				/*
 				 * If we have a cache and if all of the foreign-collection fields have been assigned then add to cache.
 				 * However, if one of the foreign collections has not be assigned then don't add it to the cache.
-				 *//*
+				 */
 				if (objectCache != null && foreignCollectionsAreAssigned(tableInfo.getForeignCollections(), data)) {
 					Object id = tableInfo.getGeneratedTableMapper().extractId(data);
 					objectCache.put(clazz, id, data);
@@ -138,9 +145,7 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 			return rowC;
 		} catch (SQLException e) {
 			throw SqlExceptionUtil.create("Unable to run insert stmt on object " + data + ": " + statement, e);
-		}*/
-
-		return 0;
+		}
 	}
 
 	public static <T, ID> MappedCreate<T, ID> build(DatabaseType databaseType, TableInfo<T, ID> tableInfo) {
@@ -258,7 +263,7 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 
 	private void assignIdValue(T data, Number val, String label, ObjectCache objectCache) throws SQLException {
 		// better to do this in one please with consistent logging
-		idField.assignIdValue(data, val);
+		tableInfo.getGeneratedTableMapper().assignId(data, val);
 		if (logger.isLevelEnabled(Level.DEBUG)) {
 			logger.debug("assigned id '{}' from {} to '{}' in {} object",
 					new Object[] { val, label, idField.getFieldName(), dataClassName });

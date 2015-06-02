@@ -5,7 +5,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.stmt.mapped.MappedQueryForId;
 import com.j256.ormlite.support.DatabaseResults;
-import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
@@ -69,7 +68,6 @@ public class FieldType<T, ID> {
 	private FieldType foreignFieldType;
 	private BaseDaoImpl<?, ?> foreignDao;
 	private MappedQueryForId<Object, Object> mappedQueryForId;
-	private GeneratedTableMapper<T, ID> generatedTableMapper;
 
 	/**
 	 * ThreadLocal counters to detect initialization loops. Notice that there is _not_ an initValue() method on purpose.
@@ -98,8 +96,7 @@ public class FieldType<T, ID> {
 			String configDefaultValue,
 			boolean throwIfNull,
 			boolean version,
-			boolean readOnly
-	) throws SQLException {
+			boolean readOnly) throws SQLException {
 		this.fieldName = fieldName;
 		this.tableName = tableName;
 		this.width = width;
@@ -395,20 +392,6 @@ public class FieldType<T, ID> {
 		}
 	}*/
 
-	/**
-	 * Assign an ID value to this field.
-	 */
-	public Object assignIdValue(Object data, Number val) throws SQLException {
-		Object idVal = dataPersister.convertIdNumber(val);
-
-		if (idVal == null) {
-			throw new SQLException("Invalid class " + dataPersister + " for sequence-id " + this);
-		} else {
-			generatedTableMapper.assignId((T)data, idVal);
-			return idVal;
-		}
-	}
-
 	/*{
 		Object val;
 			try {
@@ -507,14 +490,14 @@ public class FieldType<T, ID> {
 	}
 
 	public String getIndexName(String tableName) {
-		if (index && indexName == null) {
+		if (index && (indexName == null || indexName.equals(""))) {
 			indexName = findIndexName(tableName);
 		}
 		return indexName;
 	}
 
 	public String getUniqueIndexName(String tableName) {
-		if (uniqueIndex && uniqueIndexName == null) {
+		if (uniqueIndex && (uniqueIndexName == null || uniqueIndexName.equals(""))) {
 			uniqueIndexName = findIndexName(tableName);
 		}
 		return uniqueIndexName;
@@ -637,12 +620,6 @@ public class FieldType<T, ID> {
 		return isFieldValueDefault(fieldValue);
 	}*/
 
-	public boolean isObjectsIdValueDefault(Object object) throws SQLException {
-		ID id = generatedTableMapper.extractId((T)object);
-		Object defaultValue = getJavaDefaultValueDefault();
-
-		return id != null && defaultValue != null && id.equals(defaultValue);
-	}
 
 	/**
 	 * Return whether or not the field value passed in is the default value for the type of the field. Null will return
