@@ -15,5 +15,6 @@ public interface GeneratedTableMapper<T, ID>
 	void assignId(T data, Object val);
 	ID extractId(T data);
 	Object extractVersion(T data);
-	Object[] extractVals(T data);
+	Object[] extractVals(T data)throws SQLException;
+	Object[] extractCreateVals(T data)throws SQLException;
 }

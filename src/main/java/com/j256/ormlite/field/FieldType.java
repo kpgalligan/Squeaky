@@ -515,6 +515,11 @@ public class FieldType<T, ID> {
 		return getUniqueIndexName(tableName);
 	}
 
+	public DataType getDataType()
+	{
+		return dataType;
+	}
+
 	/**
 	 * Call through to {@link DataPersister#isEscapedDefaultValue()}
 	 */

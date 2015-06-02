@@ -82,10 +82,7 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 				}
 			}
 
-			Object[] args = getFieldObjects(data);
-			Object[] copyArgs = new Object[args.length - 1];
-			System.arraycopy(args, 1, copyArgs, 0, args.length - 1);
-			args = copyArgs;
+			Object[] args = tableInfo.getGeneratedTableMapper().extractCreateVals(data);
 
 			Object versionDefaultValue = null;
 			// implement {@link DatabaseField#version()}
