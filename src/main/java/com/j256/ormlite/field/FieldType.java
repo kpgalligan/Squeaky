@@ -63,6 +63,7 @@ public class FieldType<T, ID> {
 	private Object dataTypeConfigObj;
 
 	private FieldConverter fieldConverter;
+	private boolean foreign;
 	private FieldType foreignIdField;
 	private TableInfo<?, ?> foreignTableInfo;
 	private FieldType foreignFieldType;

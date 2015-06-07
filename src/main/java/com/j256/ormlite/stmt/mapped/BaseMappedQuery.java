@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.GenericRowMapper;
 import com.j256.ormlite.support.DatabaseResults;
+import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
@@ -37,9 +38,12 @@ public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> 
 			colPosMap = columnPositions;
 		}
 
-		if(tableInfo.getGeneratedTableMapper() != null)
+		GeneratedTableMapper<T, ID> generatedTableMapper = tableInfo.getGeneratedTableMapper();
+		if(generatedTableMapper != null)
 		{
-			T filledRow = tableInfo.getGeneratedTableMapper().fillRow(results, colPosMap);
+			T filledRow = generatedTableMapper.createObject();
+			generatedTableMapper.fillRow(filledRow, results);
+
 			if (columnPositions == null) {
 				columnPositions = colPosMap;
 			}

@@ -10,11 +10,15 @@ import java.util.Map;
  */
 public interface GeneratedTableMapper<T, ID>
 {
-	T fillRow(DatabaseResults results, Map<String, Integer> columnPositions) throws SQLException;
+	T createObject();
+	void fillRow(T data, DatabaseResults results) throws SQLException;
 	void assignVersion(T data, Object val);
 	void assignId(T data, Object val);
 	ID extractId(T data);
 	Object extractVersion(T data);
 	Object[] extractVals(T data)throws SQLException;
 	Object[] extractCreateVals(T data)throws SQLException;
+
+	//Foreign
+
 }
