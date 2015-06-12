@@ -11,6 +11,8 @@ import java.sql.SQLException;
 
 /**
  * A mapped statement for deleting an object.
+ *
+ * //TODO: DELETE shouldn't grab all values
  * 
  * @author graywatson
  */
@@ -47,8 +49,8 @@ public class MappedDelete<T, ID> extends BaseMappedStatement<T, ID> {
 			}
 			if (rowC > 0 && objectCache != null) {
 				ID idVal = tableInfo.getGeneratedTableMapper().extractId(data);
-				Object id = idField.convertJavaFieldToSqlArgValue(idVal);
-				objectCache.remove(clazz, id);
+				Object id = tableInfo.getIdField().convertJavaFieldToSqlArgValue(idVal);
+				objectCache.remove(tableInfo.dataClass, id);
 			}
 			return rowC;
 		} catch (SQLException e) {
@@ -69,7 +71,7 @@ public class MappedDelete<T, ID> extends BaseMappedStatement<T, ID> {
 				logger.trace("delete arguments: {}", (Object) args);
 			}
 			if (rowC > 0 && objectCache != null) {
-				objectCache.remove(clazz, id);
+				objectCache.remove(tableInfo.dataClass, id);
 			}
 			return rowC;
 		} catch (SQLException e) {

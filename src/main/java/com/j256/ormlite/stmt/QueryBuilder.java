@@ -2,7 +2,6 @@ package com.j256.ormlite.stmt;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.query.ColumnNameOrRawSql;
@@ -31,13 +30,11 @@ import java.util.List;
 public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 
 	private final FieldType idField;
-	private FieldType[] resultFieldTypes;
 
 	private boolean distinct;
 	private boolean selectIdColumn;
 	private List<ColumnNameOrRawSql> selectList;
 	private List<OrderBy> orderByList;
-	private List<ColumnNameOrRawSql> groupByList;
 	private boolean isInnerQuery;
 	private String countOfQuery;
 	private String having;
@@ -126,44 +123,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 		return this;
 	}
 
-	/**
-	 * Add raw columns or aggregate functions (COUNT, MAX, ...) to the query. This will turn the query into something
-	 * only suitable for the {@link Dao#queryRaw(String, String...)} type of statement. This can be called multiple
-	 * times to add more columns to select.
-	 */
-	public QueryBuilder<T, ID> selectRaw(String... columns) {
-		for (String column : columns) {
-			addSelectToList(ColumnNameOrRawSql.withRawSql(column));
-		}
-		return this;
-	}
-
-	/**
-	 * Add "GROUP BY" clause to the SQL query statement. This can be called multiple times to add additional "GROUP BY"
-	 * clauses.
-	 * 
-	 * <p>
-	 * NOTE: Use of this means that the resulting objects may not have a valid ID column value so cannot be deleted or
-	 * updated.
-	 * </p>
-	 */
-	public QueryBuilder<T, ID> groupBy(String columnName) {
-		FieldType fieldType = verifyColumnName(columnName);
-		//TODO: foreign
-		/*if (fieldType.isForeignCollection()) {
-			throw new IllegalArgumentException("Can't groupBy foreign colletion field: " + columnName);
-		}*/
-		addGroupBy(ColumnNameOrRawSql.withColumnName(columnName));
-		return this;
-	}
-
-	/**
-	 * Add a raw SQL "GROUP BY" clause to the SQL query statement. This should not include the "GROUP BY".
-	 */
-	public QueryBuilder<T, ID> groupByRaw(String rawSql) {
-		addGroupBy(ColumnNameOrRawSql.withRawSql(rawSql));
-		return this;
-	}
 
 	/**
 	 * Add "ORDER BY" clause to the SQL query statement. This can be called multiple times to add additional "ORDER BY"
@@ -381,25 +340,12 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 	}
 
 	/**
-	 * A short cut to {@link Dao#queryRaw(String, String...)}.
-	 */
-	public GenericRawResults<String[]> queryRaw() throws SQLException {
-		return dao.queryRaw(prepareStatementString());
-	}
-
-	/**
 	 * A short cut to {@link Dao#queryForFirst(PreparedQuery)}.
 	 */
 	public T queryForFirst() throws SQLException {
 		return dao.queryForFirst(prepare());
 	}
 
-	/**
-	 * A short cut to {@link Dao#queryRaw(String, String...)} and {@link GenericRawResults#getFirstResult()}.
-	 */
-	public String[] queryRawFirst() throws SQLException {
-		return dao.queryRaw(prepareStatementString()).getFirstResult();
-	}
 
 	/**
 	 * A short cut to {@link Dao#iterator(PreparedQuery)}.
@@ -459,10 +405,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 			orderByList.clear();
 			orderByList = null;
 		}
-		if (groupByList != null) {
-			groupByList.clear();
-			groupByList = null;
-		}
 		isInnerQuery = false;
 		countOfQuery = null;
 		having = null;
@@ -506,11 +448,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 	}
 
 	@Override
-	protected FieldType[] getResultFieldTypes() {
-		return resultFieldTypes;
-	}
-
-	@Override
 	protected boolean appendWhereStatement(StringBuilder sb, List<ArgumentHolder> argList, WhereOperation operation)
 			throws SQLException {
 		boolean first = (operation == WhereOperation.FIRST);
@@ -533,7 +470,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 	@Override
 	protected void appendStatementEnd(StringBuilder sb, List<ArgumentHolder> argList) throws SQLException {
 		// 'group by' comes before 'order by'
-		appendGroupBys(sb);
 		appendHaving(sb);
 		appendOrderBys(sb, argList);
 		if (!databaseType.isLimitAfterSelect()) {
@@ -554,14 +490,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 			orderByList = new ArrayList<OrderBy>();
 		}
 		orderByList.add(orderBy);
-	}
-
-	private void addGroupBy(ColumnNameOrRawSql groupBy) {
-		if (groupByList == null) {
-			groupByList = new ArrayList<ColumnNameOrRawSql>();
-		}
-		groupByList.add(groupBy);
-		selectIdColumn = false;
 	}
 
 	private void setAddTableName(boolean addTableName) {
@@ -670,14 +598,16 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 		type = StatementType.SELECT;
 
 		// if no columns were specified then * is the default
+
 		if (selectList == null) {
-			if (addTableName) {
+			throw new IllegalStateException("Need select list");
+			/*if (addTableName) {
 				databaseType.appendEscapedEntityName(sb, tableName);
 				sb.append('.');
 			}
 			sb.append("* ");
 			resultFieldTypes = tableInfo.getFieldTypes();
-			return;
+			return;*/
 		}
 
 		boolean first = true;
@@ -689,17 +619,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 		}
 		List<FieldType> fieldTypeList = new ArrayList<FieldType>(selectList.size() + 1);
 		for (ColumnNameOrRawSql select : selectList) {
-			if (select.getRawSql() != null) {
-				// if any are raw-sql then that's our type
-				type = StatementType.SELECT_RAW;
-				if (first) {
-					first = false;
-				} else {
-					sb.append(", ");
-				}
-				sb.append(select.getRawSql());
-				continue;
-			}
 			FieldType fieldType = tableInfo.getFieldTypeByColumnName(select.getColumnName());
 			/*
 			 * If this is a foreign-collection then we add it to our field-list but _not_ to the select list because
@@ -721,17 +640,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 			}
 		}
 
-		if (type != StatementType.SELECT_RAW) {
-			// we have to add the idField even if it isn't in the columnNameSet
-			if (!hasId && selectIdColumn) {
-				if (!first) {
-					sb.append(',');
-				}
-				appendFieldColumnName(sb, idField, fieldTypeList);
-			}
-
-			resultFieldTypes = fieldTypeList.toArray(new FieldType[fieldTypeList.size()]);
-		}
 		sb.append(' ');
 	}
 
@@ -759,49 +667,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 		} else {
 			databaseType.appendOffsetValue(sb, offset);
 		}
-	}
-
-	private void appendGroupBys(StringBuilder sb) {
-		boolean first = true;
-		if (hasGroupStuff()) {
-			appendGroupBys(sb, first);
-			first = false;
-		}
-		/*
-		 * NOTE: this may not be legal and doesn't seem to work with some database types but we'll check this out
-		 * anyway.
-		 */
-		if (joinList != null) {
-			for (JoinInfo joinInfo : joinList) {
-				if (joinInfo.queryBuilder != null && joinInfo.queryBuilder.hasGroupStuff()) {
-					joinInfo.queryBuilder.appendGroupBys(sb, first);
-					first = false;
-				}
-			}
-		}
-	}
-
-	private boolean hasGroupStuff() {
-		return (groupByList != null && !groupByList.isEmpty());
-	}
-
-	private void appendGroupBys(StringBuilder sb, boolean first) {
-		if (first) {
-			sb.append("GROUP BY ");
-		}
-		for (ColumnNameOrRawSql groupBy : groupByList) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
-			}
-			if (groupBy.getRawSql() == null) {
-				appendColumnName(sb, groupBy.getColumnName());
-			} else {
-				sb.append(groupBy.getRawSql());
-			}
-		}
-		sb.append(' ');
 	}
 
 	private void appendOrderBys(StringBuilder sb, List<ArgumentHolder> argList) {
@@ -902,10 +767,6 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 
 		public void appendStatementString(StringBuilder sb, List<ArgumentHolder> argList) throws SQLException {
 			queryBuilder.appendStatementString(sb, argList);
-		}
-
-		public FieldType[] getResultFieldTypes() {
-			return queryBuilder.getResultFieldTypes();
 		}
 	}
 

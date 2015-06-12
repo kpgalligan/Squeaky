@@ -27,11 +27,11 @@ public class TableInfo<T, ID> {
 	private static final FieldType[] NO_FOREIGN_COLLECTIONS = new FieldType[0];
 
 	private final BaseDaoImpl<T, ID> baseDaoImpl;
-	private final Class<T> dataClass;
+	public final Class<T> dataClass;
 	private final String tableName;
 	private final FieldType[] fieldTypes;
 	private final FieldType[] foreignCollections;
-	private final FieldType idField;
+	public final FieldType idField;
 	private final Constructor<T> constructor;
 	private final boolean foreignAutoCreate;
 	private Map<String, FieldType> fieldNameMap;

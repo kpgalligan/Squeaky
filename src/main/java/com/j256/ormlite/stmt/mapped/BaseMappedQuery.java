@@ -1,6 +1,5 @@
 package com.j256.ormlite.stmt.mapped;
 
-import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.GenericRowMapper;
 import com.j256.ormlite.support.DatabaseResults;
@@ -8,63 +7,33 @@ import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Abstract mapped statement for queries which handle the creating of a new object and the row mapping functionality.
- * 
+ *
  * @author graywatson
  */
-public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> implements GenericRowMapper<T> {
-
-	protected final FieldType[] resultsFieldTypes;
-	// cache of column names to results position
-	private Map<String, Integer> columnPositions = null;
-	private Object parent = null;
-	private Object parentId = null;
-
-	protected BaseMappedQuery(TableInfo<T, ID> tableInfo, String statement, FieldType[] argFieldTypes,
-			FieldType[] resultsFieldTypes) {
+public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> implements GenericRowMapper<T>
+{
+	protected BaseMappedQuery(TableInfo<T, ID> tableInfo, String statement, FieldType[] argFieldTypes)
+	{
 		super(tableInfo, statement, argFieldTypes);
-		this.resultsFieldTypes = resultsFieldTypes;
 	}
 
-	public T mapRow(DatabaseResults results) throws SQLException {
-		Map<String, Integer> colPosMap;
-		if (columnPositions == null) {
-			colPosMap = new HashMap<String, Integer>();
-		} else {
-			colPosMap = columnPositions;
-		}
-
+	public T mapRow(DatabaseResults results) throws SQLException
+	{
 		GeneratedTableMapper<T, ID> generatedTableMapper = tableInfo.getGeneratedTableMapper();
-		if(generatedTableMapper != null)
-		{
-			T filledRow = generatedTableMapper.createObject();
-			generatedTableMapper.fillRow(filledRow, results);
+		T filledRow = generatedTableMapper.createObject();
+		generatedTableMapper.fillRow(filledRow, results);
 
-			if (columnPositions == null) {
-				columnPositions = colPosMap;
-			}
-			return filledRow;
-		}
-
-		ObjectCache objectCache = results.getObjectCache();
-		if (objectCache != null) {
-			Object id = idField.resultToJava(results, colPosMap);
-			T cachedInstance = objectCache.get(clazz, id);
-			if (cachedInstance != null) {
-				// if we have a cached instance for this id then return it
-				return cachedInstance;
-			}
-		}
+		return filledRow;
+/*
 
 		// create our instance
 		T instance = tableInfo.createObject();
 		// populate its fields
 		Object id = null;
-		boolean foreignCollections = false;
+		boolean foreignCollections = false;*/
 //		for (FieldType fieldType : resultsFieldTypes) {
 //			//TODO: foreign
 //			/*if (fieldType.isForeignCollection()) {
@@ -102,20 +71,21 @@ public abstract class BaseMappedQuery<T, ID> extends BaseMappedStatement<T, ID> 
 			}
 		}*/
 		// if we have a cache and we have an id then add it to the cache
-		if (objectCache != null && id != null) {
+		/*if (objectCache != null && id != null) {
 			objectCache.put(clazz, id, instance);
 		}
 		if (columnPositions == null) {
 			columnPositions = colPosMap;
 		}
-		return instance;
+		return instance;*/
 	}
 
 	/**
 	 * If we have a foreign collection object then this sets the value on the foreign object in the class.
 	 */
-	public void setParentInformation(Object parent, Object parentId) {
+	/*public void setParentInformation(Object parent, Object parentId)
+	{
 		this.parent = parent;
 		this.parentId = parentId;
-	}
+	}*/
 }

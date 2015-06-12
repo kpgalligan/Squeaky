@@ -8,6 +8,8 @@ import com.j256.ormlite.stmt.*;
 import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
+import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
@@ -25,8 +27,8 @@ public class MappedPreparedStmt<T, ID> extends BaseMappedQuery<T, ID> implements
 	private final StatementType type;
 
 	public MappedPreparedStmt(TableInfo<T, ID> tableInfo, String statement, FieldType[] argFieldTypes,
-			FieldType[] resultFieldTypes, ArgumentHolder[] argHolders, Long limit, StatementType type) {
-		super(tableInfo, statement, argFieldTypes, resultFieldTypes);
+			ArgumentHolder[] argHolders, Long limit, StatementType type) {
+		super(tableInfo, statement, argFieldTypes);
 		this.argHolders = argHolders;
 		// this is an Integer because it may be null
 		this.limit = limit;

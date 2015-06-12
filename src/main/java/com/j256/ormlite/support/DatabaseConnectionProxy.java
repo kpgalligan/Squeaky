@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.GenericRowMapper;
 import com.j256.ormlite.stmt.StatementBuilder.StatementType;
+import com.j256.ormlite.table.GeneratedTableMapper;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -118,6 +119,14 @@ public class DatabaseConnectionProxy implements DatabaseConnection {
 			return null;
 		} else {
 			return proxy.queryForOne(statement, args, argfieldTypes, rowMapper, objectCache);
+		}
+	}
+
+	public <T, ID> void queryForOneRefresh(String statement, Object[] args, FieldType[] argFieldTypes,
+							GeneratedTableMapper<T, ID> rowMapper, T data, ObjectCache objectCache) throws SQLException
+	{
+		if (proxy != null) {
+			proxy.queryForOneRefresh(statement, args, argFieldTypes, rowMapper, data, objectCache);
 		}
 	}
 

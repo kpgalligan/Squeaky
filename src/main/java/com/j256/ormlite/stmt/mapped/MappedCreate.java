@@ -37,6 +37,7 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 			throws SQLException {
 		//TODO: insert
 		KeyHolder keyHolder = null;
+		FieldType idField = tableInfo.getIdField();
 		if (idField != null) {
 			boolean assignId;
 			Object javaDefaultValueDefault = idField.getJavaDefaultValueDefault();
@@ -135,7 +136,7 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 				 */
 				if (objectCache != null && foreignCollectionsAreAssigned(tableInfo.getForeignCollections(), data)) {
 					Object id = tableInfo.getGeneratedTableMapper().extractId(data);
-					objectCache.put(clazz, id, data);
+					objectCache.put(tableInfo.dataClass, id, data);
 				}
 			}
 
@@ -263,7 +264,7 @@ public class MappedCreate<T, ID> extends BaseMappedStatement<T, ID> {
 		tableInfo.getGeneratedTableMapper().assignId(data, val);
 		if (logger.isLevelEnabled(Level.DEBUG)) {
 			logger.debug("assigned id '{}' from {} to '{}' in {} object",
-					new Object[] { val, label, idField.getFieldName(), dataClassName });
+					new Object[] { val, label, tableInfo.getIdField().getFieldName(), dataClassName });
 		}
 	}
 

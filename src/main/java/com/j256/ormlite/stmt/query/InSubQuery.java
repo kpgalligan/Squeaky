@@ -40,7 +40,7 @@ public class InSubQuery extends BaseComparison {
 			throws SQLException {
 		sb.append('(');
 		subQueryBuilder.appendStatementString(sb, argList);
-		FieldType[] resultFieldTypes = subQueryBuilder.getResultFieldTypes();
+		/*FieldType[] resultFieldTypes = subQueryBuilder.getResultFieldTypes();
 		if (resultFieldTypes == null) {
 			// we assume that if someone is doing a raw select, they know what they are doing
 		} else if (resultFieldTypes.length != 1) {
@@ -49,7 +49,7 @@ public class InSubQuery extends BaseComparison {
 		} else if (fieldType.getSqlType() != resultFieldTypes[0].getSqlType()) {
 			throw new SQLException("Outer column " + fieldType + " is not the same type as inner column "
 					+ resultFieldTypes[0]);
-		}
+		}*/
 		sb.append(") ");
 	}
 }

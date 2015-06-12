@@ -35,7 +35,8 @@ import java.util.concurrent.Callable;
  *            needs an ID parameter however so you can use Void or Object to satisfy the compiler.
  * @author graywatson
  */
-public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
+public class StatementExecutor<T, ID>
+{
 
 	private static Logger logger = LoggerFactory.getLogger(StatementExecutor.class);
 	private static final FieldType[] noFieldTypes = new FieldType[0];
@@ -49,6 +50,7 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 	private MappedUpdate<T, ID> mappedUpdate;
 	private MappedUpdateId<T, ID> mappedUpdateId;
 	private MappedDelete<T, ID> mappedDelete;
+	private MappedRefresh<T, ID> mappedRefresh;
 	private String countStarQuery;
 	private String ifExistsQuery;
 	private FieldType[] ifExistsFieldTypes;
@@ -75,7 +77,7 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 	 */
 	public T queryForId(DatabaseConnection databaseConnection, ID id, ObjectCache objectCache) throws SQLException {
 		if (mappedQueryForId == null) {
-			mappedQueryForId = MappedQueryForId.build(databaseType, tableInfo, null);
+			mappedQueryForId = MappedQueryForId.build(databaseType, tableInfo, dao, null);
 		}
 		return mappedQueryForId.execute(databaseConnection, id, objectCache);
 	}
@@ -236,147 +238,6 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 	}
 
 	/**
-	 * Return a results object associated with an internal iterator that returns String[] results.
-	 */
-	public GenericRawResults<String[]> queryRaw(ConnectionSource connectionSource, String query, String[] arguments,
-			ObjectCache objectCache) throws SQLException {
-		logger.debug("executing raw query for: {}", query);
-		if (arguments.length > 0) {
-			// need to do the (Object) cast to force args to be a single object
-			logger.trace("query arguments: {}", (Object) arguments);
-		}
-		DatabaseConnection connection = connectionSource.getReadOnlyConnection();
-		CompiledStatement compiledStatement = null;
-		try {
-			compiledStatement =
-					connection.compileStatement(query, StatementType.SELECT, noFieldTypes,
-							DatabaseConnection.DEFAULT_RESULT_FLAGS);
-			assignStatementArguments(compiledStatement, arguments);
-			GenericRawResults<String[]> rawResults =
-					new RawResultsImpl<String[]>(connectionSource, connection, query, String[].class,
-							compiledStatement, this, objectCache);
-			compiledStatement = null;
-			connection = null;
-			return rawResults;
-		} finally {
-			IOUtils.closeThrowSqlException(compiledStatement, "compiled statement");
-			if (connection != null) {
-				connectionSource.releaseConnection(connection);
-			}
-		}
-	}
-
-	/**
-	 * Return a results object associated with an internal iterator that returns Object[] results.
-	 */
-	public GenericRawResults<Object[]> queryRaw(ConnectionSource connectionSource, String query,
-			DataType[] columnTypes, String[] arguments, ObjectCache objectCache) throws SQLException {
-		logger.debug("executing raw query for: {}", query);
-		if (arguments.length > 0) {
-			// need to do the (Object) cast to force args to be a single object
-			logger.trace("query arguments: {}", (Object) arguments);
-		}
-		DatabaseConnection connection = connectionSource.getReadOnlyConnection();
-		CompiledStatement compiledStatement = null;
-		try {
-			compiledStatement =
-					connection.compileStatement(query, StatementType.SELECT, noFieldTypes,
-							DatabaseConnection.DEFAULT_RESULT_FLAGS);
-			assignStatementArguments(compiledStatement, arguments);
-			RawResultsImpl<Object[]> rawResults =
-					new RawResultsImpl<Object[]>(connectionSource, connection, query, Object[].class,
-							compiledStatement, new ObjectArrayRowMapper(columnTypes), objectCache);
-			compiledStatement = null;
-			connection = null;
-			return rawResults;
-		} finally {
-			IOUtils.closeThrowSqlException(compiledStatement, "compiled statement");
-			if (connection != null) {
-				connectionSource.releaseConnection(connection);
-			}
-		}
-	}
-
-	/**
-	 * Return a results object associated with an internal iterator is mapped by the user's rowMapper.
-	 */
-	public <UO> GenericRawResults<UO> queryRaw(ConnectionSource connectionSource, String query,
-			DatabaseResultsMapper<UO> mapper, String[] arguments, ObjectCache objectCache) throws SQLException {
-		logger.debug("executing raw query for: {}", query);
-		if (arguments.length > 0) {
-			// need to do the (Object) cast to force args to be a single object
-			logger.trace("query arguments: {}", (Object) arguments);
-		}
-		DatabaseConnection connection = connectionSource.getReadOnlyConnection();
-		CompiledStatement compiledStatement = null;
-		try {
-			compiledStatement =
-					connection.compileStatement(query, StatementType.SELECT, noFieldTypes,
-							DatabaseConnection.DEFAULT_RESULT_FLAGS);
-			assignStatementArguments(compiledStatement, arguments);
-			RawResultsImpl<UO> rawResults =
-					new RawResultsImpl<UO>(connectionSource, connection, query, Object[].class, compiledStatement,
-							new UserDatabaseResultsMapper<UO>(mapper), objectCache);
-			compiledStatement = null;
-			connection = null;
-			return rawResults;
-		} finally {
-			IOUtils.closeThrowSqlException(compiledStatement, "compiled statement");
-			if (connection != null) {
-				connectionSource.releaseConnection(connection);
-			}
-		}
-	}
-
-	/**
-	 * Return the number of rows affected.
-	 */
-	public int updateRaw(DatabaseConnection connection, String statement, String[] arguments) throws SQLException {
-		logger.debug("running raw update statement: {}", statement);
-		if (arguments.length > 0) {
-			// need to do the (Object) cast to force args to be a single object
-			logger.trace("update arguments: {}", (Object) arguments);
-		}
-		CompiledStatement compiledStatement =
-				connection.compileStatement(statement, StatementType.UPDATE, noFieldTypes,
-						DatabaseConnection.DEFAULT_RESULT_FLAGS);
-		try {
-			assignStatementArguments(compiledStatement, arguments);
-			return compiledStatement.runUpdate();
-		} finally {
-			IOUtils.closeThrowSqlException(compiledStatement, "compiled statement");
-		}
-	}
-
-	/**
-	 * Return true if it worked else false.
-	 */
-	public int executeRawNoArgs(DatabaseConnection connection, String statement) throws SQLException {
-		logger.debug("running raw execute statement: {}", statement);
-		return connection.executeStatement(statement, DatabaseConnection.DEFAULT_RESULT_FLAGS);
-	}
-
-	/**
-	 * Return true if it worked else false.
-	 */
-	public int executeRaw(DatabaseConnection connection, String statement, String[] arguments) throws SQLException {
-		logger.debug("running raw execute statement: {}", statement);
-		if (arguments.length > 0) {
-			// need to do the (Object) cast to force args to be a single object
-			logger.trace("execute arguments: {}", (Object) arguments);
-		}
-		CompiledStatement compiledStatement =
-				connection.compileStatement(statement, StatementType.EXECUTE, noFieldTypes,
-						DatabaseConnection.DEFAULT_RESULT_FLAGS);
-		try {
-			assignStatementArguments(compiledStatement, arguments);
-			return compiledStatement.runExecute();
-		} finally {
-			IOUtils.closeThrowSqlException(compiledStatement, "compiled statement");
-		}
-	}
-
-	/**
 	 * Create a new entry in the database from an object.
 	 */
 	public int create(DatabaseConnection databaseConnection, T data, ObjectCache objectCache) throws SQLException {
@@ -439,13 +300,12 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 	 * Does a query for the object's Id and copies in each of the field values from the database to refresh the data
 	 * parameter.
 	 */
-	//TODO: Review adding this back
-	/*public int refresh(DatabaseConnection databaseConnection, T data, ObjectCache objectCache) throws SQLException {
+	public void refresh(DatabaseConnection databaseConnection, T data, ObjectCache objectCache) throws SQLException {
 		if (mappedRefresh == null) {
-			mappedRefresh = MappedRefresh.build(databaseType, tableInfo);
+			mappedRefresh = MappedRefresh.build(databaseType, tableInfo, dao);
 		}
-		return mappedRefresh.executeRefresh(databaseConnection, data, objectCache);
-	}*/
+		mappedRefresh.executeRefresh(databaseConnection, data, objectCache);
+	}
 
 	/**
 	 * Delete an object from the database.
@@ -518,100 +378,15 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 		}
 	}
 
-	/**
-	 * Call batch tasks inside of a connection which may, or may not, have been "saved".
-	 */
-	public <CT> CT callBatchTasks(ConnectionSource connectionSource, Callable<CT> callable) throws SQLException {
-		if (connectionSource.isSingleConnection()) {
-			synchronized (this) {
-				return doCallBatchTasks(connectionSource, callable);
-			}
-		} else {
-			return doCallBatchTasks(connectionSource, callable);
-		}
-	}
-
-	private <CT> CT doCallBatchTasks(ConnectionSource connectionSource, Callable<CT> callable) throws SQLException {
-		boolean saved = false;
-		DatabaseConnection connection = connectionSource.getReadWriteConnection();
-		try {
-			/*
-			 * We are using a thread-local boolean to detect whether we are in the middle of running a number of
-			 * changes. This disables the dao change notification for every batched call.
-			 */
-			localIsInBatchMode.set(true);
-			/*
-			 * We need to save the connection because we are going to be disabling auto-commit on it and we don't want
-			 * pooled connection factories to give us another connection where auto-commit might still be enabled.
-			 */
-			saved = connectionSource.saveSpecialConnection(connection);
-			return doCallBatchTasks(connection, saved, callable);
-		} finally {
-			if (saved) {
-				connectionSource.clearSpecialConnection(connection);
-			}
-			connectionSource.releaseConnection(connection);
-			localIsInBatchMode.set(false);
-			if (dao != null) {
-				// only at the end is the DAO notified of changes
-				dao.notifyChanges();
-			}
-		}
-	}
-
-	private <CT> CT doCallBatchTasks(DatabaseConnection connection, boolean saved, Callable<CT> callable)
-			throws SQLException {
-		if (databaseType.isBatchUseTransaction()) {
-			return TransactionManager.callInTransaction(connection, saved, databaseType, callable);
-		}
-		boolean resetAutoCommit = false;
-		try {
-			if (connection.isAutoCommitSupported()) {
-				if (connection.isAutoCommit()) {
-					// disable auto-commit mode if supported and enabled at start
-					connection.setAutoCommit(false);
-					resetAutoCommit = true;
-					logger.debug("disabled auto-commit on table {} before batch tasks", tableInfo.getTableName());
-				}
-			}
-			try {
-				return callable.call();
-			} catch (SQLException e) {
-				throw e;
-			} catch (Exception e) {
-				throw SqlExceptionUtil.create("Batch tasks callable threw non-SQL exception", e);
-			}
-		} finally {
-			if (resetAutoCommit) {
-				/**
-				 * Try to restore if we are in auto-commit mode.
-				 * 
-				 * NOTE: we do _not_ have to do a commit here. According to {@link Connection#setAutoCommit(boolean)},
-				 * this will start a transaction when auto-commit is turned off and it will be committed here.
-				 */
-				connection.setAutoCommit(true);
-				logger.debug("re-enabled auto-commit on table {} after batch tasks", tableInfo.getTableName());
-			}
-		}
-	}
-
-	public String[] mapRow(DatabaseResults results) throws SQLException {
-		int columnN = results.getColumnCount();
-		String[] result = new String[columnN];
-		for (int colC = 0; colC < columnN; colC++) {
-			result[colC] = results.getString(colC);
-		}
-		return result;
-	}
-
 	public boolean ifExists(DatabaseConnection connection, ID id) throws SQLException {
-		if (ifExistsQuery == null) {
+		throw new UnsupportedOperationException("need single value query");
+		/*if (ifExistsQuery == null) {
 			QueryBuilder<T, ID> qb = new QueryBuilder<T, ID>(databaseType, tableInfo, dao);
 			qb.selectRaw("COUNT(*)");
-			/*
+			*//*
 			 * NOTE: bit of a hack here because the select arg is never used but it _can't_ be a constant because we set
 			 * field-name and field-type on it.
-			 */
+			 *//*
 			qb.where().eq(tableInfo.getIdField().getColumnName(), new SelectArg());
 			ifExistsQuery = qb.prepareStatementString();
 			ifExistsFieldTypes = new FieldType[] { tableInfo.getIdField() };
@@ -619,7 +394,7 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 		Object idSqlArg = tableInfo.getIdField().convertJavaFieldToSqlArgValue(id);
 		long count = connection.queryForLong(ifExistsQuery, new Object[] { idSqlArg }, ifExistsFieldTypes);
 		logger.debug("query of '{}' returned {}", ifExistsQuery, count);
-		return (count != 0);
+		return (count != 0);*/
 	}
 
 	private void assignStatementArguments(CompiledStatement compiledStatement, String[] arguments) throws SQLException {
@@ -631,51 +406,6 @@ public class StatementExecutor<T, ID> implements GenericRowMapper<String[]> {
 	private void prepareQueryForAll() throws SQLException {
 		if (preparedQueryForAll == null) {
 			preparedQueryForAll = new QueryBuilder<T, ID>(databaseType, tableInfo, dao).prepare();
-		}
-	}
-
-
-
-	/**
-	 * Map raw results to return Object[].
-	 */
-	private static class ObjectArrayRowMapper implements GenericRowMapper<Object[]> {
-
-		private final DataType[] columnTypes;
-
-		public ObjectArrayRowMapper(DataType[] columnTypes) {
-			this.columnTypes = columnTypes;
-		}
-
-		public Object[] mapRow(DatabaseResults results) throws SQLException {
-			int columnN = results.getColumnCount();
-			Object[] result = new Object[columnN];
-			for (int colC = 0; colC < columnN; colC++) {
-				DataType dataType;
-				if (colC >= columnTypes.length) {
-					dataType = DataType.STRING;
-				} else {
-					dataType = columnTypes[colC];
-				}
-				result[colC] = dataType.getDataPersister().resultToJava(null, results, colC);
-			}
-			return result;
-		}
-	}
-
-	/**
-	 * Mapper which uses the {@link DatabaseResults} directly.
-	 */
-	private static class UserDatabaseResultsMapper<UO> implements GenericRowMapper<UO> {
-
-		public final DatabaseResultsMapper<UO> mapper;
-
-		private UserDatabaseResultsMapper(DatabaseResultsMapper<UO> mapper) {
-			this.mapper = mapper;
-		}
-
-		public UO mapRow(DatabaseResults results) throws SQLException {
-			return mapper.mapRow(results);
 		}
 	}
 }

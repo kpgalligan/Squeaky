@@ -21,6 +21,7 @@ import com.j256.ormlite.stmt.StatementBuilder.StatementType;
 import com.j256.ormlite.support.CompiledStatement;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.support.GeneratedKeyHolder;
+import com.j256.ormlite.table.GeneratedTableMapper;
 
 /**
  * Database connection for Android.
@@ -181,6 +182,23 @@ public class AndroidDatabaseConnection implements DatabaseConnection {
 	public int delete(String statement, Object[] args, FieldType[] argFieldTypes) throws SQLException {
 		// delete is the same as update
 		return update(statement, args, argFieldTypes, "deleted");
+	}
+
+	public <T, ID> void queryForOneRefresh(String statement, Object[] args, FieldType[] argFieldTypes,
+										 GeneratedTableMapper<T, ID> rowMapper, T data, ObjectCache objectCache) throws SQLException {
+		Cursor cursor = null;
+		try {
+			cursor = db.rawQuery(statement, toStrings(args));
+			AndroidDatabaseResults results = new AndroidDatabaseResults(cursor, objectCache);
+			logger.trace("{}: queried for one result: {}", this, statement);
+			if (results.first()) {
+				rowMapper.fillRow(data, results);
+			}
+		} catch (android.database.SQLException e) {
+			throw SqlExceptionUtil.create("queryForOne from database failed: " + statement, e);
+		} finally {
+			closeQuietly(cursor);
+		}
 	}
 
 	public <T> Object queryForOne(String statement, Object[] args, FieldType[] argFieldTypes,

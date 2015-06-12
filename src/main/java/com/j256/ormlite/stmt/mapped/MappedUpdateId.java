@@ -34,7 +34,7 @@ public class MappedUpdateId<T, ID> extends BaseMappedStatement<T, ID> {
 				GeneratedTableMapper<T, ID> generatedTableMapper = tableInfo.getGeneratedTableMapper();
 				if (objectCache != null) {
 					Object oldId = generatedTableMapper.extractId(data);
-					T obj = objectCache.updateId(clazz, oldId, newId);
+					T obj = objectCache.updateId(tableInfo.dataClass, oldId, newId);
 					if (obj != null && obj != data) {
 						// if our cached value is not the data that will be updated then we need to update it specially
 						generatedTableMapper.assignId(obj, newId);
@@ -75,6 +75,6 @@ public class MappedUpdateId<T, ID> extends BaseMappedStatement<T, ID> {
 	 */
 	private Object extractIdToFieldObject(T data) throws SQLException {
 		ID idVal = tableInfo.getGeneratedTableMapper().extractId(data);
-		return idField.convertJavaFieldToSqlArgValue(idVal);
+		return tableInfo.getIdField().convertJavaFieldToSqlArgValue(idVal);
 	}
 }

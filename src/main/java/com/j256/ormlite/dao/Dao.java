@@ -415,51 +415,6 @@ public interface Dao<T, ID> extends CloseableIterable<T> {
 	public long queryRawValue(String query, String... arguments) throws SQLException;
 
 	/**
-	 * Run a raw execute SQL statement to the database. The arguments are optional but can be set with strings to expand
-	 * ? type of SQL. If you have no arguments, you may want to call {@link #executeRawNoArgs(String)}.
-	 * 
-	 * @return number of rows affected.
-	 */
-	public int executeRaw(String statement, String... arguments) throws SQLException;
-
-	/**
-	 * Run a raw execute SQL statement on the database without any arguments. This may use a different mechanism to
-	 * execute the query depending on the database backend.
-	 * 
-	 * @return number of rows affected.
-	 */
-	public int executeRawNoArgs(String statement) throws SQLException;
-
-	/**
-	 * Run a raw update SQL statement to the database. The statement must be an SQL INSERT, UPDATE or DELETE
-	 * statement.The arguments are optional but can be set with strings to expand ? type of SQL.
-	 * 
-	 * @return number of rows affected.
-	 */
-	public int updateRaw(String statement, String... arguments) throws SQLException;
-
-	/**
-	 * Call the call-able that will perform a number of batch tasks. This is for performance when you want to run a
-	 * number of database operations at once -- maybe loading data from a file. This will turn off what databases call
-	 * "auto-commit" mode, run the call-able, and then re-enable "auto-commit". If auto-commit is not supported then a
-	 * transaction will be used instead.
-	 * 
-	 * <p>
-	 * <b>NOTE:</b> If neither auto-commit nor transactions are supported by the database type then this may just call
-	 * the callable. Also, "commit()" is <i>not</i> called on the connection at all. If "auto-commit" is disabled then
-	 * this will leave it off and nothing will have been persisted.
-	 * </p>
-	 * 
-	 * <p>
-	 * <b>NOTE:</b> Depending on your underlying database implementation and whether or not you are working with a
-	 * single database connection, this may synchronize internally to ensure that there are not race-conditions around
-	 * the transactions on the single connection. Android (for example) will synchronize. Also, you may also need to
-	 * synchronize calls to here and calls to {@link #setAutoCommit(DatabaseConnection, boolean)}.
-	 * </p>
-	 */
-	public <CT> CT callBatchTasks(Callable<CT> callable) throws Exception;
-
-	/**
 	 * Return the string version of the object with each of the known field values shown. Useful for testing and
 	 * debugging.
 	 * 
@@ -554,16 +509,6 @@ public interface Dao<T, ID> extends CloseableIterable<T> {
 	 * memory. Any future queries will re-request them from the database.
 	 */
 	public void clearObjectCache();
-
-	/**
-	 * Return the latest row from the database results from a query to select * (star).
-	 */
-	public T mapSelectStarRow(DatabaseResults results) throws SQLException;
-
-	/**
-	 * Return a row mapper that is suitable for mapping results from a query to select * (star).
-	 */
-	public GenericRowMapper<T> getSelectStarRowMapper() throws SQLException;
 
 	/**
 	 * Returns true if an object exists that matches this ID otherwise false.

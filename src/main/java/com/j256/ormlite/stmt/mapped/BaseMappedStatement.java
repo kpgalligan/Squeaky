@@ -19,15 +19,11 @@ public abstract class BaseMappedStatement<T, ID> {
 	protected static Logger logger = LoggerFactory.getLogger(BaseMappedStatement.class);
 
 	protected final TableInfo<T, ID> tableInfo;
-	protected final Class<T> clazz;
-	protected final FieldType idField;
 	protected final String statement;
 	protected final FieldType[] argFieldTypes;
 
 	protected BaseMappedStatement(TableInfo<T, ID> tableInfo, String statement, FieldType[] argFieldTypes) {
 		this.tableInfo = tableInfo;
-		this.clazz = tableInfo.getDataClass();
-		this.idField = tableInfo.getIdField();
 		this.statement = statement;
 		this.argFieldTypes = argFieldTypes;
 	}
@@ -57,7 +53,7 @@ public abstract class BaseMappedStatement<T, ID> {
 	 * Return a field object converted from an id.
 	 */
 	protected Object convertIdToFieldObject(ID id) throws SQLException {
-		return idField.convertJavaFieldToSqlArgValue(id);
+		return tableInfo.idField.convertJavaFieldToSqlArgValue(id);
 	}
 
 	static void appendWhereFieldEq(DatabaseType databaseType, FieldType fieldType, StringBuilder sb,

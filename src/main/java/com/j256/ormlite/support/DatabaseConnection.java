@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.ObjectCache;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.GenericRowMapper;
 import com.j256.ormlite.stmt.StatementBuilder.StatementType;
+import com.j256.ormlite.table.GeneratedTableMapper;
 
 import java.io.Closeable;
 import java.sql.SQLException;
@@ -125,6 +126,8 @@ public interface DatabaseConnection extends Closeable {
 	 */
 	public int delete(String statement, Object[] args, FieldType[] argfieldTypes) throws SQLException;
 
+	<T, ID> void queryForOneRefresh(String statement, Object[] args, FieldType[] argFieldTypes,
+							GeneratedTableMapper<T, ID> rowMapper, T data, ObjectCache objectCache) throws SQLException;
 	/**
 	 * Perform a SQL query with the associated SQL statement, arguments, and types and returns a single result.
 	 * 

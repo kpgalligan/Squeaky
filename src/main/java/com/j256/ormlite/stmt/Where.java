@@ -2,7 +2,6 @@ package com.j256.ormlite.stmt;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.QueryBuilder.InternalQueryBuilderWrapper;
@@ -469,25 +468,12 @@ public class Where<T, ID> {
 		return checkQueryBuilderMethod("query()").query();
 	}
 
-	/**
-	 * A short-cut for calling {@link QueryBuilder#queryRaw()}.
-	 */
-	public GenericRawResults<String[]> queryRaw() throws SQLException {
-		return checkQueryBuilderMethod("queryRaw()").queryRaw();
-	}
 
 	/**
 	 * A short-cut for calling {@link QueryBuilder#queryForFirst()}.
 	 */
 	public T queryForFirst() throws SQLException {
 		return checkQueryBuilderMethod("queryForFirst()").queryForFirst();
-	}
-
-	/**
-	 * A short-cut for calling {@link QueryBuilder#queryRawFirst()}.
-	 */
-	public String[] queryRawFirst() throws SQLException {
-		return checkQueryBuilderMethod("queryRawFirst()").queryRawFirst();
 	}
 
 	/**

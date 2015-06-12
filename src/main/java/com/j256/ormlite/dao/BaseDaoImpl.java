@@ -309,15 +309,11 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		 */
 		final DatabaseConnection connection = connectionSource.getReadWriteConnection();
 		try {
-			return callBatchTasks(new Callable<Integer>() {
-				public Integer call() throws SQLException {
-					int modCount = 0;
-					for (T data : datas) {
-						modCount += statementExecutor.create(connection, data, objectCache);
-					}
-					return modCount;
-				}
-			});
+			int modCount = 0;
+			for (T data : datas) {
+				modCount += statementExecutor.create(connection, data, objectCache);
+			}
+			return modCount;
 		} finally {
 			connectionSource.releaseConnection(connection);
 		}
@@ -398,7 +394,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 	public int refresh(T data) throws SQLException {
 		checkForInitialized();
 		// ignore refreshing a null object
-		/*if (data == null) {
+		if (data == null) {
 			return 0;
 		}
 		if (data instanceof BaseDaoEnabled) {
@@ -408,11 +404,12 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		}
 		DatabaseConnection connection = connectionSource.getReadOnlyConnection();
 		try {
-			return statementExecutor.refresh(connection, data, objectCache);
+			statementExecutor.refresh(connection, data, objectCache);
 		} finally {
 			connectionSource.releaseConnection(connection);
-		}*/
-		throw new UnsupportedOperationException("TODO: add refresh back");
+		}
+
+		return 1;
 	}
 
 	public int delete(T data) throws SQLException {
@@ -548,34 +545,7 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		return lastIterator;
 	}
 
-	public GenericRawResults<String[]> queryRaw(String query, String... arguments) throws SQLException {
-		checkForInitialized();
-		try {
-			return statementExecutor.queryRaw(connectionSource, query, arguments, objectCache);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not perform raw query for " + query, e);
-		}
-	}
 
-	public GenericRawResults<Object[]> queryRaw(String query, DataType[] columnTypes, String... arguments)
-			throws SQLException {
-		checkForInitialized();
-		try {
-			return statementExecutor.queryRaw(connectionSource, query, columnTypes, arguments, objectCache);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not perform raw query for " + query, e);
-		}
-	}
-
-	public <UO> GenericRawResults<UO> queryRaw(String query, DatabaseResultsMapper<UO> mapper, String... arguments)
-			throws SQLException {
-		checkForInitialized();
-		try {
-			return statementExecutor.queryRaw(connectionSource, query, mapper, arguments, objectCache);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not perform raw query for " + query, e);
-		}
-	}
 
 	public long queryRawValue(String query, String... arguments) throws SQLException {
 		checkForInitialized();
@@ -587,47 +557,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 		} finally {
 			connectionSource.releaseConnection(connection);
 		}
-	}
-
-	public int executeRaw(String statement, String... arguments) throws SQLException {
-		checkForInitialized();
-		DatabaseConnection connection = connectionSource.getReadWriteConnection();
-		try {
-			return statementExecutor.executeRaw(connection, statement, arguments);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not run raw execute statement " + statement, e);
-		} finally {
-			connectionSource.releaseConnection(connection);
-		}
-	}
-
-	public int executeRawNoArgs(String statement) throws SQLException {
-		checkForInitialized();
-		DatabaseConnection connection = connectionSource.getReadWriteConnection();
-		try {
-			return statementExecutor.executeRawNoArgs(connection, statement);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not run raw execute statement " + statement, e);
-		} finally {
-			connectionSource.releaseConnection(connection);
-		}
-	}
-
-	public int updateRaw(String statement, String... arguments) throws SQLException {
-		checkForInitialized();
-		DatabaseConnection connection = connectionSource.getReadWriteConnection();
-		try {
-			return statementExecutor.updateRaw(connection, statement, arguments);
-		} catch (SQLException e) {
-			throw SqlExceptionUtil.create("Could not run raw update statement " + statement, e);
-		} finally {
-			connectionSource.releaseConnection(connection);
-		}
-	}
-
-	public <CT> CT callBatchTasks(Callable<CT> callable) throws SQLException {
-		checkForInitialized();
-		return statementExecutor.callBatchTasks(connectionSource, callable);
 	}
 
 	public String objectToString(T data) {
@@ -811,10 +740,6 @@ public abstract class BaseDaoImpl<T, ID> implements Dao<T, ID> {
 				daoObserverMap.remove(observer);
 			}
 		}
-	}
-
-	public GenericRowMapper<T> getSelectStarRowMapper() throws SQLException {
-		return statementExecutor.getSelectStarRowMapper();
 	}
 
 	public boolean idExists(ID id) throws SQLException {

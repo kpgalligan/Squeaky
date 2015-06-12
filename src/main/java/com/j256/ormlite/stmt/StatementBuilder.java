@@ -73,7 +73,6 @@ public abstract class StatementBuilder<T, ID> {
 		List<ArgumentHolder> argList = new ArrayList<ArgumentHolder>();
 		String statement = buildStatementString(argList);
 		ArgumentHolder[] selectArgs = argList.toArray(new ArgumentHolder[argList.size()]);
-		FieldType[] resultFieldTypes = getResultFieldTypes();
 		FieldType[] argFieldTypes = new FieldType[argList.size()];;
 		for (int selectC = 0; selectC < selectArgs.length; selectC++) {
 			argFieldTypes[selectC] = selectArgs[selectC].getFieldType();
@@ -81,7 +80,7 @@ public abstract class StatementBuilder<T, ID> {
 		if (!type.isOkForStatementBuilder()) {
 			throw new IllegalStateException("Building a statement from a " + type + " statement is not allowed");
 		}
-		return new MappedPreparedStmt<T, ID>(tableInfo, statement, argFieldTypes, resultFieldTypes, selectArgs,
+		return new MappedPreparedStmt<T, ID>(tableInfo, statement, argFieldTypes, selectArgs,
 				(databaseType.isLimitSqlSupported() ? null : limit), type);
 	}
 
@@ -173,14 +172,6 @@ public abstract class StatementBuilder<T, ID> {
 	}
 
 	/**
-	 * Get the result array from our statement after the {@link #appendStatementStart(StringBuilder, List)} was called.
-	 * This will be null except for the QueryBuilder.
-	 */
-	protected FieldType[] getResultFieldTypes() {
-		return null;
-	}
-
-	/**
 	 * Verify the columnName is valid and return its FieldType.
 	 * 
 	 * @throws IllegalArgumentException
@@ -205,8 +196,6 @@ public abstract class StatementBuilder<T, ID> {
 		SELECT(true, true, false, false),
 		/** SQL statement in the form of SELECT COUNT(*)... or something */
 		SELECT_LONG(true, true, false, false),
-		/** SQL statement in the form of SELECT... with aggregate functions or something */
-		SELECT_RAW(true, true, false, false),
 		/** SQL statement in the form of UPDATE ... */
 		UPDATE(true, false, true, false),
 		/** SQL statement in the form of DELETE ... */
