@@ -600,14 +600,14 @@ public class QueryBuilder<T, ID> extends StatementBuilder<T, ID> {
 		// if no columns were specified then * is the default
 
 		if (selectList == null) {
-			throw new IllegalStateException("Need select list");
-			/*if (addTableName) {
+//			throw new IllegalStateException("Need select list");
+			if (addTableName) {
 				databaseType.appendEscapedEntityName(sb, tableName);
 				sb.append('.');
 			}
 			sb.append("* ");
-			resultFieldTypes = tableInfo.getFieldTypes();
-			return;*/
+//			resultFieldTypes = tableInfo.getFieldTypes();
+			return;
 		}
 
 		boolean first = true;

@@ -97,7 +97,7 @@ public class FieldType<T, ID> {
 			String configDefaultValue,
 			boolean throwIfNull,
 			boolean version,
-			boolean readOnly) throws SQLException {
+			boolean readOnly){
 		this.fieldName = fieldName;
 		this.tableName = tableName;
 		this.width = width;
@@ -174,7 +174,13 @@ public class FieldType<T, ID> {
 			throw new IllegalArgumentException("Field " + field.getName()
 					+ " is not a valid type to be a version field");
 		}*/
-		assignDataType(databaseType, dataPersister, configDefaultValue);
+		try
+		{
+			assignDataType(databaseType, dataPersister, configDefaultValue);
+		} catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
