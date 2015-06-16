@@ -1,9 +1,9 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -47,7 +47,7 @@ public class DateLongType extends BaseDateType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
 		return results.getLong(columnPos);
 	}
 

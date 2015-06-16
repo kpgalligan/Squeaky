@@ -1,7 +1,6 @@
 package com.j256.ormlite.field;
 
-import com.j256.ormlite.db.BaseDatabaseType;
-import com.j256.ormlite.support.DatabaseResults;
+import android.database.Cursor;
 
 import java.sql.SQLException;
 
@@ -34,13 +33,13 @@ public interface FieldConverter {
 	 * @param fieldType
 	 *            Associated FieldType which may be null.
 	 */
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException;
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
 	/**
 	 * This is usually just a call that takes the result from {@link #resultToSqlArg(FieldType, DatabaseResults, int)}
 	 * and passes it through {@link #sqlArgToJava(FieldType, Object, int)}.
 	 */
-	public Object resultToJava(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException;
+	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
 	/**
 	 * Return the object converted from the SQL arg to java. This takes the database representation and converts it into

@@ -1,14 +1,9 @@
 package com.j256.ormlite.field;
 
-import com.j256.ormlite.dao.BaseDaoImpl;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.db.DatabaseType;
-import com.j256.ormlite.stmt.mapped.MappedQueryForId;
-import com.j256.ormlite.support.DatabaseResults;
 import com.j256.ormlite.table.TableInfo;
+import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * @author graywatson
@@ -67,8 +62,6 @@ public class FieldType<T, ID> {
 	private FieldType foreignIdField;
 	private TableInfo<?, ?> foreignTableInfo;
 	private FieldType foreignFieldType;
-	private BaseDaoImpl<?, ?> foreignDao;
-	private MappedQueryForId<Object, Object> mappedQueryForId;
 
 	/**
 	 * ThreadLocal counters to detect initialization loops. Notice that there is _not_ an initValue() method on purpose.
@@ -77,7 +70,6 @@ public class FieldType<T, ID> {
 	private static final ThreadLocal<LevelCounters> threadLevelCounters = new ThreadLocal<LevelCounters>();
 
 	public FieldType(
-			DatabaseType databaseType,
 			String tableName,
 			String fieldName,
 			String columnName,
@@ -176,7 +168,7 @@ public class FieldType<T, ID> {
 		}*/
 		try
 		{
-			assignDataType(databaseType, dataPersister, configDefaultValue);
+			assignDataType(dataPersister, configDefaultValue);
 		} catch (SQLException e)
 		{
 			throw new RuntimeException(e);
@@ -560,7 +552,7 @@ public class FieldType<T, ID> {
 	/**
 	 * Get the result object from the results. A call through to {@link FieldConverter#resultToJava}.
 	 */
-	public <T> T resultToJava(DatabaseResults results, Map<String, Integer> columnPositions) throws SQLException {
+	/*public <T> T resultToJava(DatabaseResults results, Map<String, Integer> columnPositions) throws SQLException {
 		Integer dbColumnPos = columnPositions.get(columnName);
 		if (dbColumnPos == null) {
 			dbColumnPos = results.findColumn(columnName);
@@ -569,11 +561,11 @@ public class FieldType<T, ID> {
 		@SuppressWarnings("unchecked")
 		T converted = (T) fieldConverter.resultToJava(this, results, dbColumnPos);
 		if (isForeign()) {
-			/*
+			*//*
 			 * Subtle problem here. If your foreign field is a primitive and the value was null then this would return 0
 			 * from getInt(). We have to specifically test to see if we have a foreign field so if it is null we return
 			 * a null value to not create the sub-object.
-			 */
+			 *//*
 			if (results.wasNull(dbColumnPos)) {
 				return null;
 			}
@@ -587,7 +579,7 @@ public class FieldType<T, ID> {
 			return null;
 		}
 		return converted;
-	}
+	}*/
 
 	/**
 	 * Call through to {@link DataPersister#isSelfGeneratedId()}
@@ -664,11 +656,11 @@ public class FieldType<T, ID> {
 	/**
 	 * Pass the foreign data argument to the foreign {@link Dao#create(Object)} method.
 	 */
-	public <T> int createWithForeignDao(T foreignData) throws SQLException {
+	/*public <T> int createWithForeignDao(T foreignData) throws SQLException {
 		@SuppressWarnings("unchecked")
 		Dao<T, ?> castDao = (Dao<T, ?>) foreignDao;
 		return castDao.create(foreignData);
-	}
+	}*/
 
 	/*@Override
 	public boolean equals(Object arg) {
@@ -796,10 +788,11 @@ public class FieldType<T, ID> {
 		throw new SQLException(sb.toString());
 	}*/
 
-	private void assignDataType(DatabaseType databaseType, DataPersister dataPersister, String defaultStr) throws SQLException {
-		dataPersister = databaseType.getDataPersister(dataPersister, this);
+	private void assignDataType(DataPersister dataPersister, String defaultStr) throws SQLException {
+
+		dataPersister = TableUtils.databaseType.getDataPersister(dataPersister, this);
 		this.dataPersister = dataPersister;
-		this.fieldConverter = databaseType.getFieldConverter(dataPersister, this);
+		this.fieldConverter = TableUtils.databaseType.getFieldConverter(dataPersister, this);
 
 		//TODO: Probably move to annotation processor
 		if (this.isGeneratedId && !dataPersister.isValidGeneratedType()) {

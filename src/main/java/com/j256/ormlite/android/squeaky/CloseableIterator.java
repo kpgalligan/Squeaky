@@ -1,6 +1,4 @@
-package com.j256.ormlite.dao;
-
-import com.j256.ormlite.support.DatabaseResults;
+package com.j256.ormlite.android.squeaky;
 
 import java.io.Closeable;
 import java.sql.SQLException;
@@ -22,12 +20,6 @@ public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 	 * Close any underlying SQL statements but swallow any SQLExceptions.
 	 */
 	public void closeQuietly();
-
-	/**
-	 * Return the underlying database results object if any. May return null. This should not be used unless you know
-	 * what you are doing.
-	 */
-	public DatabaseResults getRawResults();
 
 	/**
 	 * Move to the next item in the iterator without calling {@link #next()}.

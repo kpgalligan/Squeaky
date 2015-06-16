@@ -1,8 +1,8 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.sql.SQLException;
 
@@ -37,8 +37,12 @@ public class BooleanObjectType extends BaseDataType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
-		return (Boolean) results.getBoolean(columnPos);
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+		if (results.isNull(columnPos) || results.getShort(columnPos) == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override

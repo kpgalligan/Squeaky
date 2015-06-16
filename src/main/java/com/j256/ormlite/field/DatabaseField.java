@@ -1,7 +1,5 @@
 package com.j256.ormlite.field;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.db.DatabaseType;
 import com.j256.ormlite.field.types.VoidType;
 
 import java.lang.annotation.Retention;

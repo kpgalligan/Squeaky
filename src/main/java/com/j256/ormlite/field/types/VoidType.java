@@ -1,7 +1,7 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.lang.reflect.Field;
 
@@ -22,7 +22,7 @@ public class VoidType extends BaseDataType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) {
 		return null;
 	}
 

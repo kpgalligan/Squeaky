@@ -1,10 +1,10 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.BaseFieldConverter;
 import com.j256.ormlite.field.DataPersister;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -59,7 +59,7 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 
 	public abstract Object parseDefaultString(FieldType fieldType, String defaultStr) throws SQLException;
 
-	public abstract Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos)
+	public abstract Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos)
 			throws SQLException;
 
 	public boolean isValidForField(Field field) {

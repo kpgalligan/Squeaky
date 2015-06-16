@@ -1,7 +1,5 @@
 package com.j256.ormlite.table;
 
-import com.j256.ormlite.dao.DaoManager;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

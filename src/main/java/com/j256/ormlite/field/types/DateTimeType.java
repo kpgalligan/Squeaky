@@ -1,10 +1,10 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -62,7 +62,7 @@ public class DateTimeType extends BaseDataType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
 		return results.getLong(columnPos);
 	}
 

@@ -1,9 +1,9 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -45,8 +45,8 @@ public class BigDecimalNumericType extends BaseDataType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
-		return results.getBigDecimal(columnPos);
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+		throw new SQLException("Android does not support BigDecimal type.  Use BIG_DECIMAL or BIG_DECIMAL_STRING types");
 	}
 
 	@Override

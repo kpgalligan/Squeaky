@@ -1,47 +1,152 @@
-package com.j256.ormlite.db;
+package com.j256.ormlite.table;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.*;
-import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.support.DatabaseResults;
-import com.j256.ormlite.table.DatabaseTableConfig;
+import com.j256.ormlite.field.types.BigDecimalStringType;
+import com.j256.ormlite.field.types.DateStringType;
+import com.j256.ormlite.field.types.TimeStampStringType;
+import com.j256.ormlite.field.types.TimeStampType;
 
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Base class for all of the {@link DatabaseType} classes that provide the per-database type functionality to create
- * tables and build queries.
- * 
- * <p>
- * Here's a good page which shows some of the <a href="http://troels.arvin.dk/db/rdbms/" >differences between SQL
- * databases</a>.
- * </p>
- * 
- * @author graywatson
+ * Created by kgalligan on 6/15/15.
  */
-public abstract class BaseDatabaseType implements DatabaseType {
-
+public class AndroidDatabaseType
+{
 	protected static String DEFAULT_SEQUENCE_SUFFIX = "_id_seq";
 	protected Driver driver;
 
-	/**
-	 * Return the name of the driver class associated with this database type.
-	 */
-	protected abstract String getDriverClassName();
+//	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
 
-	public void loadDriver() throws SQLException {
-		String className = getDriverClassName();
-		if (className != null) {
-			// this instantiates the driver class which wires in the JDBC glue
-			try {
-				Class.forName(className);
-			} catch (ClassNotFoundException e) {
-				throw SqlExceptionUtil.create("Driver class was not found for " + getDatabaseName()
-						+ " database.  Missing jar with class " + className + ".", e);
-			}
+	
+
+	
+	public DataPersister getDataPersister(DataPersister defaultPersister, FieldType fieldType) {
+		if (defaultPersister == null) {
+			return null;
 		}
+		// we are only overriding certain types
+		switch (defaultPersister.getSqlType()) {
+			case DATE :
+				if (defaultPersister instanceof TimeStampType) {
+					return TimeStampStringType.getSingleton();
+				} else {
+					return DateStringType.getSingleton();
+				}
+			default :
+				return defaultPersister;
+		}
+	}
+
+	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
+	public FieldConverter getFieldConverter(DataPersister dataPersister, FieldType fieldType) {
+		// we are only overriding certain types
+		switch (dataPersister.getSqlType()) {
+			case BOOLEAN :
+				return booleanConverter;
+			case BIG_DECIMAL :
+				return BigDecimalStringType.getSingleton();
+			default :
+				return dataPersister;
+		}
+	}
+
+	protected static class BooleanNumberFieldConverter extends BaseFieldConverter
+	{
+		public SqlType getSqlType() {
+			return SqlType.BOOLEAN;
+		}
+		public Object parseDefaultString(FieldType fieldType, String defaultStr) {
+			boolean bool = (boolean) Boolean.parseBoolean(defaultStr);
+			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
+		}
+		@Override
+		public Object javaToSqlArg(FieldType fieldType, Object obj) {
+			Boolean bool = (Boolean) obj;
+			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
+		}
+		public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+			return (byte)results.getShort(columnPos);
+		}
+		@Override
+		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
+			byte arg = (Byte) sqlArg;
+			return (arg == 1 ? (Boolean) true : (Boolean) false);
+		}
+		public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
+			return sqlArgToJava(fieldType, Byte.parseByte(stringValue), columnPos);
+		}
+	}
+
+	
+	protected void appendLongType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+		/*
+		 * This is unfortunate. SQLIte requires that a generated-id have the string "INTEGER PRIMARY KEY AUTOINCREMENT"
+		 * even though the maximum generated value is 64-bit. See configureGeneratedId below.
+		 */
+		if (fieldType.getSqlType() == SqlType.LONG && fieldType.isGeneratedId()) {
+			sb.append("INTEGER");
+		} else {
+			sb.append("BIGINT");
+		}
+	}
+
+	
+	protected void configureGeneratedId(String tableName, StringBuilder sb, FieldType fieldType,
+										List<String> statementsBefore, List<String> statementsAfter, List<String> additionalArgs,
+										List<String> queriesAfter) {
+		/*
+		 * Even though the documentation talks about INTEGER, it is 64-bit with a maximum value of 9223372036854775807.
+		 * See http://www.sqlite.org/faq.html#q1 and http://www.sqlite.org/autoinc.html
+		 */
+		if (fieldType.getSqlType() != SqlType.INTEGER && fieldType.getSqlType() != SqlType.LONG) {
+			throw new IllegalArgumentException(
+					"Sqlite requires that auto-increment generated-id be integer or long type");
+		}
+		sb.append("PRIMARY KEY AUTOINCREMENT ");
+		// no additional call to configureId here
+	}
+
+	
+	protected boolean generatedIdSqlAtEnd() {
+		return false;
+	}
+
+	
+	public boolean isVarcharFieldWidthSupported() {
+		return false;
+	}
+
+	
+	public boolean isCreateTableReturnsZero() {
+		// 'CREATE TABLE' statements seem to return 1 for some reason
+		return false;
+	}
+
+	
+	public boolean isCreateIfNotExistsSupported() {
+		return true;
+	}
+
+	
+	/*public FieldConverter getFieldConverter(DataPersister dataPersister, FieldType fieldType) {
+		// we are only overriding certain types
+		switch (dataPersister.getSqlType()) {
+			case BOOLEAN :
+				return booleanConverter;
+			case BIG_DECIMAL :
+				return BigDecimalStringType.getSingleton();
+			default :
+				return super.getFieldConverter(dataPersister, fieldType);
+		}
+	}*/
+
+	
+	public void appendInsertNoColumns(StringBuilder sb) {
+		sb.append("DEFAULT VALUES");
 	}
 
 	public void setDriver(Driver driver) {
@@ -49,7 +154,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
 	}
 
 	public void appendColumnArg(String tableName, StringBuilder sb, FieldType fieldType, List<String> additionalArgs,
-			List<String> statementsBefore, List<String> statementsAfter, List<String> queriesAfter) throws SQLException {
+								List<String> statementsBefore, List<String> statementsAfter, List<String> queriesAfter) throws SQLException {
 		appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ');
 		DataPersister dataPersister = fieldType.getDataPersister();
@@ -132,7 +237,6 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		 * NOTE: the configure id methods must be in this order since isGeneratedIdSequence is also isGeneratedId and
 		 * isId. isGeneratedId is also isId.
 		 */
-		//TODO: I don't think we need this
 		/*if (fieldType.isGeneratedIdSequence() && !fieldType.isSelfGeneratedId()) {
 			configureGeneratedIdSequence(sb, fieldType, statementsBefore, additionalArgs, queriesAfter);
 		} else */if (fieldType.isGeneratedId() && !fieldType.isSelfGeneratedId()) {
@@ -229,13 +333,6 @@ public abstract class BaseDatabaseType implements DatabaseType {
 	}
 
 	/**
-	 * Output the SQL type for a Java long.
-	 */
-	protected void appendLongType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
-		sb.append("BIGINT");
-	}
-
-	/**
 	 * Output the SQL type for a Java float.
 	 */
 	private void appendFloatType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
@@ -284,41 +381,41 @@ public abstract class BaseDatabaseType implements DatabaseType {
 	/**
 	 * Output the SQL necessary to configure a generated-id column. This may add to the before statements list or
 	 * additional arguments later.
-	 * 
+	 *
 	 * NOTE: Only one of configureGeneratedIdSequence, configureGeneratedId, or configureId will be called.
 	 */
 	protected void configureGeneratedIdSequence(StringBuilder sb, FieldType fieldType, List<String> statementsBefore,
-			List<String> additionalArgs, List<String> queriesAfter) throws SQLException {
-		throw new SQLException("GeneratedIdSequence is not supported by database " + getDatabaseName() + " for field "
+												List<String> additionalArgs, List<String> queriesAfter) throws SQLException {
+		throw new SQLException("GeneratedIdSequence is not supported by database  for field "
 				+ fieldType);
 	}
 
 	/**
 	 * Output the SQL necessary to configure a generated-id column. This may add to the before statements list or
 	 * additional arguments later.
-	 * 
+	 *
 	 * NOTE: Only one of configureGeneratedIdSequence, configureGeneratedId, or configureId will be called.
 	 */
-	protected void configureGeneratedId(String tableName, StringBuilder sb, FieldType fieldType,
-			List<String> statementsBefore, List<String> statementsAfter, List<String> additionalArgs,
-			List<String> queriesAfter) {
-		throw new IllegalStateException("GeneratedId is not supported by database " + getDatabaseName() + " for field "
+	/*protected void configureGeneratedId(String tableName, StringBuilder sb, FieldType fieldType,
+										List<String> statementsBefore, List<String> statementsAfter, List<String> additionalArgs,
+										List<String> queriesAfter) {
+		throw new IllegalStateException("GeneratedId is not supported by database  for field "
 				+ fieldType);
-	}
+	}*/
 
 	/**
 	 * Output the SQL necessary to configure an id column. This may add to the before statements list or additional
 	 * arguments later.
-	 * 
+	 *
 	 * NOTE: Only one of configureGeneratedIdSequence, configureGeneratedId, or configureId will be called.
 	 */
 	protected void configureId(StringBuilder sb, FieldType fieldType, List<String> statementsBefore,
-			List<String> additionalArgs, List<String> queriesAfter) {
+							   List<String> additionalArgs, List<String> queriesAfter) {
 		// default is noop since we do it at the end in appendPrimaryKeys()
 	}
 
 	public void addPrimaryKeySql(FieldType[] fieldTypes, List<String> additionalArgs, List<String> statementsBefore,
-			List<String> statementsAfter, List<String> queriesAfter) {
+								 List<String> statementsAfter, List<String> queriesAfter) {
 		StringBuilder sb = null;
 		for (FieldType fieldType : fieldTypes) {
 			if (fieldType.isGeneratedId() && !generatedIdSqlAtEnd() && !fieldType.isSelfGeneratedId()) {
@@ -339,16 +436,8 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		}
 	}
 
-	/**
-	 * Return true if we should add generated-id SQL in the {@link #addPrimaryKeySql} method at the end. If false then
-	 * it needs to be done by hand inline.
-	 */
-	protected boolean generatedIdSqlAtEnd() {
-		return true;
-	}
-
 	public void addUniqueComboSql(FieldType[] fieldTypes, List<String> additionalArgs, List<String> statementsBefore,
-			List<String> statementsAfter, List<String> queriesAfter) {
+								  List<String> statementsAfter, List<String> queriesAfter) {
 		StringBuilder sb = null;
 		for (FieldType fieldType : fieldTypes) {
 			if (fieldType.isUniqueCombo()) {
@@ -392,22 +481,8 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		return "-- ";
 	}
 
-	public DataPersister getDataPersister(DataPersister defaultPersister, FieldType fieldType) {
-		// default is noop
-		return defaultPersister;
-	}
-
-	public FieldConverter getFieldConverter(DataPersister dataPersister, FieldType fieldType) {
-		// default is to use the dataPersister itself
-		return dataPersister;
-	}
-
 	public boolean isIdSequenceNeeded() {
 		return false;
-	}
-
-	public boolean isVarcharFieldWidthSupported() {
-		return true;
 	}
 
 	public boolean isLimitSqlSupported() {
@@ -442,9 +517,6 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		// noop by default.
 	}
 
-	public boolean isCreateTableReturnsZero() {
-		return true;
-	}
 
 	public boolean isCreateTableReturnsNegative() {
 		return false;
@@ -470,10 +542,6 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		return false;
 	}
 
-	public boolean isCreateIfNotExistsSupported() {
-		return false;
-	}
-
 	public boolean isCreateIndexIfNotExistsSupported() {
 		return isCreateIfNotExistsSupported();
 	}
@@ -484,20 +552,6 @@ public abstract class BaseDatabaseType implements DatabaseType {
 
 	public boolean isAllowGeneratedIdInsertSupported() {
 		return true;
-	}
-
-	/**
-	 * @throws SQLException
-	 *             for sub classes.
-	 */
-	public <T> DatabaseTableConfig<T> extractDatabaseTableConfig(ConnectionSource connectionSource, Class<T> clazz)
-			throws SQLException {
-		// default is no default extractor
-		return null;
-	}
-
-	public void appendInsertNoColumns(StringBuilder sb) {
-		sb.append("() VALUES ()");
 	}
 
 	/**
@@ -513,7 +567,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
 	 * Add SQL to handle a unique=true field. THis is not for uniqueCombo=true.
 	 */
 	private void addSingleUnique(StringBuilder sb, FieldType fieldType, List<String> additionalArgs,
-			List<String> statementsAfter) {
+								 List<String> statementsAfter) {
 		StringBuilder alterSb = new StringBuilder();
 		alterSb.append(" UNIQUE (");
 		appendEscapedEntityName(alterSb, fieldType.getColumnName());
@@ -524,7 +578,8 @@ public abstract class BaseDatabaseType implements DatabaseType {
 	/**
 	 * Conversion to/from the Boolean Java field as a number because some databases like the true/false.
 	 */
-	protected static class BooleanNumberFieldConverter extends BaseFieldConverter {
+	/*protected static class BooleanNumberFieldConverter extends BaseFieldConverter
+	{
 		public SqlType getSqlType() {
 			return SqlType.BOOLEAN;
 		}
@@ -532,7 +587,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
 			boolean bool = (boolean) Boolean.parseBoolean(defaultStr);
 			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
 		}
-		@Override
+		
 		public Object javaToSqlArg(FieldType fieldType, Object obj) {
 			Boolean bool = (Boolean) obj;
 			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
@@ -540,7 +595,7 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
 			return results.getByte(columnPos);
 		}
-		@Override
+		
 		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
 			byte arg = (Byte) sqlArg;
 			return (arg == 1 ? (Boolean) true : (Boolean) false);
@@ -548,5 +603,5 @@ public abstract class BaseDatabaseType implements DatabaseType {
 		public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
 			return sqlArgToJava(fieldType, Byte.parseByte(stringValue), columnPos);
 		}
-	}
+	}*/
 }

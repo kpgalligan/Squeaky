@@ -1,9 +1,9 @@
 package com.j256.ormlite.field.types;
 
+import android.database.Cursor;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.misc.SqlExceptionUtil;
-import com.j256.ormlite.support.DatabaseResults;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -46,8 +46,8 @@ public class DateType extends BaseDateType {
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
-		return results.getTimestamp(columnPos);
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+		throw new SQLException("Android does not support timestamp.  Use JAVA_DATE_LONG or JAVA_DATE_STRING types");
 	}
 
 	@Override
