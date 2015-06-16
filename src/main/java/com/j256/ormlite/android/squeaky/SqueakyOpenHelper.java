@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.j256.ormlite.table.GeneratedTableMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 	private final Class[] managingClasses;
 
 	private final Map<Class, Dao> daoMap = new HashMap<Class, Dao>();
+	private final Map<Class, GeneratedTableMapper> generatedTableMapperMap = new HashMap<Class, GeneratedTableMapper>();
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class[] managingClasses)
 	{
@@ -34,10 +36,29 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 		Dao dao = daoMap.get(clazz);
 		if(dao == null)
 		{
-			dao = new ModelDao(clazz);
+			dao = new ModelDao(this, clazz, getGeneratedTableMapper(clazz));
 			daoMap.put(clazz, dao);
 		}
 
 		return dao;
+	}
+
+	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
+	{
+		GeneratedTableMapper generatedTableMapper = generatedTableMapperMap.get(clazz);
+		if(generatedTableMapper == null)
+		{
+			try
+			{
+				generatedTableMapper = (GeneratedTableMapper) Class.forName(clazz.getName() + "$$Configuration").newInstance();
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+			generatedTableMapperMap.put(clazz, generatedTableMapper);
+		}
+
+		return generatedTableMapper;
 	}
 }

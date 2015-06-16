@@ -51,7 +51,7 @@ public interface Dao<T, ID>
 
 	public int delete(Where<T, ID> preparedDelete) throws SQLException;
 
-	public CloseableIterator<T> iterator();
+	public CloseableIterator<T> iterator() throws SQLException;
 
 	public CloseableIterator<T> iterator(Where<T, ID> where) throws SQLException;
 

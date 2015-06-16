@@ -27,16 +27,11 @@ public class TableInfo<T, ID> {
 	private final boolean foreignAutoCreate;
 	private Map<String, FieldType> fieldNameMap;
 
-	public TableInfo(DatabaseTableConfig<T> tableConfig) throws SQLException
-	{
-		this(tableConfig, null);
-	}
-
-	public TableInfo(DatabaseTableConfig<T> tableConfig, GeneratedTableMapper<T, ID> generatedTableMapper)
+	public TableInfo(Class clazz, String name, FieldType[] fieldTypes)
 			throws SQLException {
-		this.dataClass = tableConfig.getDataClass();
-		this.tableName = tableConfig.getTableName();
-		this.fieldTypes = tableConfig.getFieldTypes();
+		this.dataClass = clazz;
+		this.tableName = name;
+		this.fieldTypes = fieldTypes;
 		// find the id field
 		FieldType findIdFieldType = null;
 		boolean foreignAutoCreate = false;

@@ -19,7 +19,7 @@ public interface GeneratedTableMapper<T, ID>
 	Object[] extractCreateVals(T data)throws SQLException;
 	String objectToString(T data)throws SQLException;
 	boolean objectsEqual(T d1, T d2)throws SQLException;
-	DatabaseTableConfig<T> getTableConfig();
+	TableInfo<T, ID> getTableConfig()throws SQLException;
 
 	//Foreign
 

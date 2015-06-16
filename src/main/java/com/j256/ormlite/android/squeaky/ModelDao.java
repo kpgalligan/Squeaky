@@ -16,28 +16,37 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ModelDao<T, ID> implements Dao<T, ID>
 {
-	private Class<T> entityClass;
-	private GeneratedTableMapper<T, ID> generatedTableMapper;
-	private Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
-	private String[] tableCols;
-	private SqueakyOpenHelper openHelper;
-	private FieldType idFieldType;
+	private final Class<T> entityClass;
+	private final GeneratedTableMapper<T, ID> generatedTableMapper;
+	private final Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
+	private final String[] tableCols;
+	private final SqueakyOpenHelper openHelper;
+	private final FieldType idFieldType;
 
-	public ModelDao(Class<T> entityClass)
+	protected ModelDao(SqueakyOpenHelper openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
 	{
+		this.openHelper = openHelper;
 		this.entityClass = entityClass;
 		try
 		{
-			generatedTableMapper = (GeneratedTableMapper<T, ID>)Class.forName(entityClass.getName() + "$$Configuration").newInstance();
+			this.generatedTableMapper = generatedTableMapper;
+
+			FieldType idField = null;
 			FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
 			for (FieldType fieldType : fieldTypes)
 			{
 				if(fieldType.isId() || fieldType.isGeneratedId())
 				{
-					idFieldType = fieldType;
+					idField = fieldType;
 					break;
 				}
 			}
+
+			if(idField == null)
+				throw new IllegalStateException("Must have an id field");
+
+			idFieldType = idField;
+
 			tableCols = buildSelect();
 		} catch (Exception e)
 		{
@@ -45,7 +54,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
-	private String[] buildSelect()
+	private String[] buildSelect() throws SQLException
 	{
 		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
 		String[] selectList = new String[fieldTypes.length];
@@ -154,7 +163,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			if(updating && fieldType.isId())
 				continue;
 
-			fillContentVal(values, fieldType, val);
+			if(val == null)
+				values.putNull(fieldType.getColumnName());
+			else
+				fillContentVal(values, fieldType, val);
 		}
 		return values;
 	}
@@ -285,7 +297,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		throw new UnsupportedOperationException("need where");
 	}
 
-	public CloseableIterator<T> iterator()
+	public CloseableIterator<T> iterator() throws SQLException
 	{
 		return new SelectIterator<T, ID>(
 				openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, null, null, null, null, null),
@@ -370,4 +382,6 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			next.onChange();
 		}
 	}
+
+
 }

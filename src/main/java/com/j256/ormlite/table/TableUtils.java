@@ -227,7 +227,8 @@ public class TableUtils {
 	}
 
 	private static <T, ID> void addDropIndexStatements(GeneratedTableMapper<T, ID> tableInfo,
-			List<String> statements) {
+			List<String> statements) throws SQLException
+	{
 		// run through and look for index annotations
 		Set<String> indexSet = new HashSet<String>();
 		for (FieldType fieldType : tableInfo.getTableConfig().getFieldTypes()) {
@@ -303,7 +304,8 @@ public class TableUtils {
 	}
 
 	private static <T, ID> void addCreateIndexStatements(GeneratedTableMapper<T, ID> tableInfo,
-			List<String> statements, boolean ifNotExists, boolean unique) {
+			List<String> statements, boolean ifNotExists, boolean unique) throws SQLException
+	{
 		// run through and look for index annotations
 		Map<String, List<String>> indexMap = new HashMap<String, List<String>>();
 		for (FieldType fieldType : tableInfo.getTableConfig().getFieldTypes()) {
@@ -359,7 +361,8 @@ public class TableUtils {
 	 * Generate and return the list of statements to drop a database table.
 	 */
 	private static <T, ID> void addDropTableStatements(GeneratedTableMapper<T, ID> tableInfo,
-			List<String> statements) {
+			List<String> statements) throws SQLException
+	{
 		List<String> statementsBefore = new ArrayList<String>();
 		List<String> statementsAfter = new ArrayList<String>();
 		for (FieldType fieldType : tableInfo.getTableConfig().getFieldTypes()) {
