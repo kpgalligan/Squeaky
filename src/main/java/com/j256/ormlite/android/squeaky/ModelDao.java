@@ -100,6 +100,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return makeCursorResults(query.toString(), args);
 	}
 
+	public Where<T, ID> createWhere() throws SQLException
+	{
+		return new Where<T, ID>(generatedTableMapper);
+	}
+
 	private List<T> makeCursorResults(String where, String[] args) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
@@ -131,7 +136,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> query(Where<T, ID> where)throws SQLException
 	{
-		throw new RuntimeException("Need simple query builder");
+		String statement = where.getStatement();
+		return query(statement);
 	}
 
 	public void create(T data) throws SQLException
