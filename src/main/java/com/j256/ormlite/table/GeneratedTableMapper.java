@@ -1,6 +1,7 @@
 package com.j256.ormlite.table;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 
 import java.sql.SQLException;
 
@@ -15,8 +16,8 @@ public interface GeneratedTableMapper<T, ID>
 	void assignId(T data, Object val);
 	ID extractId(T data);
 	Object extractVersion(T data);
-	Object[] extractVals(T data)throws SQLException;
-	Object[] extractCreateVals(T data)throws SQLException;
+	void bindVals(SQLiteStatement stmt, T data) throws SQLException;
+	void bindCreateVals(SQLiteStatement stmt, T data) throws SQLException;
 	String objectToString(T data)throws SQLException;
 	boolean objectsEqual(T d1, T d2)throws SQLException;
 	TableInfo<T, ID> getTableConfig()throws SQLException;

@@ -3,9 +3,11 @@ package com.j256.ormlite.android.squeaky;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.GeneratedTableMapper;
+import com.j256.ormlite.table.TableInfo;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -142,11 +144,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void create(T data) throws SQLException
 	{
-		SQLiteDatabase db = openHelper.getWritableDatabase();
+		SQLiteStatement sqLiteStatement = makeCreateStatement();
 
-		ContentValues values = fillContentValues(data, false);
+		generatedTableMapper.bindCreateVals(sqLiteStatement, data);
 
-		long newRowId = db.insertOrThrow(generatedTableMapper.getTableConfig().getTableName(), null, values);
+		long newRowId = sqLiteStatement.executeInsert();
 
 		if(idFieldType.isGeneratedId())
 		{
@@ -154,27 +156,42 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
-	private ContentValues fillContentValues(T data, boolean updating) throws SQLException
+	private SQLiteStatement createStatement;
+
+	//TODO: Just testing.  This is bad.
+	private SQLiteStatement makeCreateStatement() throws SQLException
 	{
-		ContentValues values = new ContentValues();
-		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
-		Object[] vals = generatedTableMapper.extractVals(data);
-		int count =0;
-		for (FieldType fieldType : fieldTypes)
+		if(createStatement == null)
 		{
-			Object val = vals[count++];
-			if(fieldType.isGeneratedId())
-				continue;
+			SQLiteDatabase db = openHelper.getWritableDatabase();
+			TableInfo<T, ID> tableConfig = generatedTableMapper.getTableConfig();
+			StringBuilder sb = new StringBuilder();
+			sb.append("insert into ");
+			sb.append(tableConfig.getTableName());
+			sb.append("(");
+			boolean first = true;
+			StringBuilder args= new StringBuilder();
+			for (FieldType fieldType : generatedTableMapper.getTableConfig().getFieldTypes())
+			{
+				if(!fieldType.isGeneratedId())
+				{
+					if(!first)
+					{
+						sb.append(",");
+						args.append(",");
+					}
+					sb.append(fieldType.getColumnName());
+					args.append("?");
+					first = false;
+				}
+			}
+			sb.append(")values(").append(args.toString()).append(")");
 
-			if(updating && fieldType.isId())
-				continue;
-
-			if(val == null)
-				values.putNull(fieldType.getColumnName());
-			else
-				fillContentVal(values, fieldType, val);
+			SQLiteStatement sqLiteStatement = db.compileStatement(sb.toString());
+			createStatement = sqLiteStatement;
 		}
-		return values;
+
+		return createStatement;
 	}
 
 	private void fillContentVal(ContentValues values, FieldType fieldType, Object val)
@@ -229,10 +246,31 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public void update(T data) throws SQLException
 	{
 		SQLiteDatabase db = openHelper.getWritableDatabase();
+		TableInfo<T, ID> tableConfig = generatedTableMapper.getTableConfig();
+		StringBuilder sb = new StringBuilder();
+		sb.append("update ").append(tableConfig.getTableName()).append(" set ");
+		boolean first = true;
 
-		ContentValues values = fillContentValues(data, true);
+		for (FieldType fieldType : generatedTableMapper.getTableConfig().getFieldTypes())
+		{
+			if(!fieldType.isGeneratedId() && !fieldType.isId())
+			{
+				if(!first)
+				{
+					sb.append(",");
+				}
+				sb.append(fieldType.getColumnName()).append(" = ?");
+				first = false;
+			}
+		}
 
-		db.update(generatedTableMapper.getTableConfig().getTableName(), values, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()});
+		sb.append(" where ").append(generatedTableMapper.getTableConfig().idField.getColumnName()).append(" = ?");
+
+		SQLiteStatement sqLiteStatement = db.compileStatement(sb.toString());
+
+		generatedTableMapper.bindVals(sqLiteStatement, data);
+
+		sqLiteStatement.executeUpdateDelete();
 	}
 
 	public int updateId(T data, ID newId) throws SQLException
