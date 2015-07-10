@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import com.j256.ormlite.Config;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.GeneratedTableMapper;
@@ -118,7 +119,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				do
 				{
 					T object = generatedTableMapper.createObject();
-					generatedTableMapper.fillRow(object, cursor);
+					generatedTableMapper.fillRow(object, cursor, this, Config.MAX_AUTO_REFRESH);
 					results.add(object);
 				} while (cursor.moveToNext());
 			}
@@ -286,6 +287,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void refresh(T data) throws SQLException
 	{
+		refresh(data, Config.MAX_AUTO_REFRESH);
+	}
+
+	public void refresh(T data, int recursiveAutorefreshCountdown) throws SQLException
+	{
 		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
 		try
 		{
@@ -293,7 +299,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			{
 				do
 				{
-					generatedTableMapper.fillRow(data, cursor);
+					generatedTableMapper.fillRow(data, cursor, this, recursiveAutorefreshCountdown);
 				} while (cursor.moveToNext());
 			}
 		}
@@ -345,7 +351,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		return new SelectIterator<T, ID>(
 				openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, null, null, null, null, null),
-				generatedTableMapper
+				ModelDao.this
 		);
 	}
 
@@ -427,5 +433,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
+	public GeneratedTableMapper<T, ID> getGeneratedTableMapper()
+	{
+		return generatedTableMapper;
+	}
 
+	public SqueakyOpenHelper getOpenHelper()
+	{
+		return openHelper;
+	}
 }

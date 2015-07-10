@@ -35,7 +35,6 @@ public class FieldType<T, ID> {
 	private final String fieldName;
 	private final DataType dataType;
 	private final Class fieldType;
-	private final int width;
 	private final boolean canBeNull;
 	private final String format;
 	private final boolean unique;
@@ -44,7 +43,6 @@ public class FieldType<T, ID> {
 	private final boolean uniqueIndex;
 	private final boolean throwIfNull;
 	private final boolean version;
-	private final boolean readOnly;
 	private String indexName;
 	private String uniqueIndexName;
 
@@ -69,7 +67,6 @@ public class FieldType<T, ID> {
 			boolean isForeign,
 			DataType dataType,
 			Class fieldType,
-			int width,
 			boolean canBeNull,
 			String format,
 			boolean unique,
@@ -80,11 +77,9 @@ public class FieldType<T, ID> {
 			String uniqueIndexName,
 			String configDefaultValue,
 			boolean throwIfNull,
-			boolean version,
-			boolean readOnly){
+			boolean version){
 		this.fieldName = fieldName;
 		this.tableName = tableName;
-		this.width = width;
 		this.canBeNull = canBeNull;
 		this.format = format;
 		this.unique = unique;
@@ -95,7 +90,6 @@ public class FieldType<T, ID> {
 		this.uniqueIndexName = uniqueIndexName;
 		this.throwIfNull = throwIfNull;
 		this.version = version;
-		this.readOnly = readOnly;
 		this.dataPersister = dataType.getDataPersister();
 		this.isForeign = isForeign;
 		this.dataType = dataType;
@@ -146,10 +140,6 @@ public class FieldType<T, ID> {
 		return defaultValue;
 	}
 
-	public int getWidth() {
-		return width;
-	}
-
 	public boolean isCanBeNull() {
 		return canBeNull;
 	}
@@ -159,18 +149,10 @@ public class FieldType<T, ID> {
 		return fieldType;
 	}
 
-	/**
-	 * Return whether the field is an id field. It is an id if {@link DatabaseField#id},
-	 * {@link DatabaseField#generatedId}, OR {@link DatabaseField#generatedIdSequence} are enabled.
-	 */
 	public boolean isId() {
 		return isId;
 	}
 
-	/**
-	 * Return whether the field is a generated-id field. This is true if {@link DatabaseField#generatedId} OR
-	 * {@link DatabaseField#generatedIdSequence} are enabled.
-	 */
 	public boolean isGeneratedId() {
 		return isGeneratedId;
 	}

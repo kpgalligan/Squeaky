@@ -68,45 +68,14 @@ public @interface DatabaseField {
 	String defaultValue() default DEFAULT_STRING;
 
 	/**
-	 * Width of array fields (often for strings). Default is 0 which means to take the data-type and database-specific
-	 * default. For strings that means 255 characters although some databases do not support this.
-	 */
-	int width() default 0;
-
-	/**
 	 * Whether the field can be assigned to null or have no value. Default is true.
 	 */
 	boolean canBeNull() default true;
 
-	/**
-	 * Whether the field is the id field or not. Default is false. Only one field can have this set in a class. If you
-	 * don't have it set then you won't be able to use the query, update, and delete by ID methods. Only one of this,
-	 * {@link #generatedId}, and {@link #generatedIdSequence} can be specified.
-	 */
 	boolean id() default false;
 
-	/**
-	 * Whether the field is an auto-generated id field. Default is false. With databases for which
-	 * {@link DatabaseType#isIdSequenceNeeded} is true then this will cause the name of the sequence to be
-	 * auto-generated. To specify the name of the sequence use {@link #generatedIdSequence}. Only one of this,
-	 * {@link #id}, and {@link #generatedIdSequence} can be specified.
-	 */
 	boolean generatedId() default false;
 
-	/**
-	 * The name of the sequence number to be used to generate this value. Default is none. This is only necessary for
-	 * database for which {@link DatabaseType#isIdSequenceNeeded} is true and you already have a defined sequence that
-	 * you want to use. If you use {@link #generatedId} instead then the code will auto-generate a sequence name. Only
-	 * one of this, {@link #id}, and {@link #generatedId} can be specified.
-	 */
-	String generatedIdSequence() default "";
-
-	/**
-	 * Field is a non-primitive object that corresponds to another class that is also stored in the database. It must
-	 * have an id field (either {@link #id}, {@link #generatedId}, or {@link #generatedIdSequence} which will be stored
-	 * in this table. When an object is returned from a query call, any foreign objects will just have the id field set
-	 * in it. To get all of the other fields you will have to do a refresh on the object using its own Dao.
-	 */
 	boolean foreign() default false;
 
 	/**
@@ -149,12 +118,6 @@ public @interface DatabaseField {
 	 * field is null, the value of the primitive will be set to 0.
 	 */
 	boolean throwIfNull() default false;
-
-	/**
-	 * Set this to be false (default true) to not store this field in the database. This is useful if you want to have
-	 * the annotation on all of your fields but turn off the writing of some of them to the database.
-	 */
-	boolean persisted() default true;
 
 	/**
 	 * Optional format information that can be used by various field types. For example, if the Date is to be persisted
@@ -294,15 +257,4 @@ public @interface DatabaseField {
 	 * </p>
 	 */
 	String foreignColumnName() default "";
-
-	/**
-	 * Set this to be true (default false) if this field is a read-only field. This field will be returned by queries
-	 * however it will be ignored during insert/create statements.
-	 */
-	boolean readOnly() default false;
-
-	/*
-	 * NOTE to developers: if you add fields here you have to add them to the DatabaseFieldConfig,
-	 * DatabaseFieldConfigLoader, DatabaseFieldConfigLoaderTest, and DatabaseTableConfigUtil.
-	 */
 }

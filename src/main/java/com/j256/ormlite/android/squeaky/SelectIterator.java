@@ -1,6 +1,7 @@
 package com.j256.ormlite.android.squeaky;
 
 import android.database.Cursor;
+import com.j256.ormlite.Config;
 import com.j256.ormlite.table.GeneratedTableMapper;
 
 import java.io.IOException;
@@ -12,12 +13,14 @@ import java.sql.SQLException;
 public class SelectIterator<T, ID> implements CloseableIterator<T>
 {
 	private final Cursor cursor;
+	private final ModelDao<T, ID> modelDao;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 
-	public SelectIterator(Cursor cursor, GeneratedTableMapper<T, ID> generatedTableMapper)
+	public SelectIterator(Cursor cursor, ModelDao<T, ID> modelDao)
 	{
 		this.cursor = cursor;
-		this.generatedTableMapper = generatedTableMapper;
+		this.modelDao = modelDao;
+		this.generatedTableMapper = modelDao.getGeneratedTableMapper();
 	}
 
 	public void closeQuietly()
@@ -96,7 +99,7 @@ public class SelectIterator<T, ID> implements CloseableIterator<T>
 	private T makeData() throws SQLException
 	{
 		T data = generatedTableMapper.createObject();
-		generatedTableMapper.fillRow(data, cursor);
+		generatedTableMapper.fillRow(data, cursor, modelDao, Config.MAX_AUTO_REFRESH);
 		return data;
 	}
 
