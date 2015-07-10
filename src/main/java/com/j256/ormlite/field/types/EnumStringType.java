@@ -78,9 +78,4 @@ public class EnumStringType extends BaseEnumType {
 		}*/
 		return enumStringMap;
 	}
-
-	@Override
-	public int getDefaultWidth() {
-		return DEFAULT_WIDTH;
-	}
 }

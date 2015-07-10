@@ -64,14 +64,4 @@ public class BigIntegerType extends BaseDataType {
 		BigInteger bigInteger = (BigInteger) obj;
 		return bigInteger.toString();
 	}
-
-	@Override
-	public int getDefaultWidth() {
-		return DEFAULT_WIDTH;
-	}
-
-	@Override
-	public boolean isAppropriateId() {
-		return false;
-	}
 }

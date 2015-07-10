@@ -41,18 +41,4 @@ public class LongObjectType extends BaseDataType {
 	public boolean isEscapedValue() {
 		return false;
 	}
-
-	@Override
-	public boolean isValidGeneratedType() {
-		return true;
-	}
-
-	@Override
-	public Object moveToNextValue(Object currentValue) {
-		if (currentValue == null) {
-			return (Long) 1L;
-		} else {
-			return ((Long) currentValue) + 1L;
-		}
-	}
 }

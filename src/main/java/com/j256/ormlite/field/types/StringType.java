@@ -42,9 +42,4 @@ public class StringType extends BaseDataType {
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
 		return results.getString(columnPos);
 	}
-
-	@Override
-	public int getDefaultWidth() {
-		return DEFAULT_WIDTH;
-	}
 }

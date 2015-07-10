@@ -84,17 +84,7 @@ public class SerializableType extends BaseDataType {
 	}
 
 	@Override
-	public boolean isValidForField(Field field) {
-		return Serializable.class.isAssignableFrom(field.getType());
-	}
-
-	@Override
 	public boolean isComparable() {
-		return false;
-	}
-
-	@Override
-	public boolean isAppropriateId() {
 		return false;
 	}
 

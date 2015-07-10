@@ -71,21 +71,4 @@ public abstract class BaseDateType extends BaseDataType {
 			return dateFormatStr;
 		}
 	}
-
-	@Override
-	public Object moveToNextValue(Object currentValue) {
-		long newVal = System.currentTimeMillis();
-		if (currentValue == null) {
-			return new Date(newVal);
-		} else if (newVal == ((Date) currentValue).getTime()) {
-			return new Date(newVal + 1L);
-		} else {
-			return new Date(newVal);
-		}
-	}
-
-	@Override
-	public boolean isValidForField(Field field) {
-		return (field.getType() == Date.class);
-	}
 }

@@ -157,7 +157,7 @@ public class TableUtils {
 	 * Generate and return the list of statements to create a database table and any associated features.
 	 */
 	private static <T, ID> void addCreateTableStatements(GeneratedTableMapper<T, ID> tableInfo,
-			List<String> statements, List<String> queriesAfter, boolean ifNotExists) throws SQLException {
+			List<String> statements, boolean ifNotExists) throws SQLException {
 		StringBuilder sb = new StringBuilder(256);
 		sb.append("CREATE TABLE ");
 		if (ifNotExists) {
@@ -178,15 +178,12 @@ public class TableUtils {
 			}
 
 				// we have to call back to the database type for the specific create syntax
-			databaseType.appendColumnArg(tableInfo.getTableConfig().getTableName(), sb, fieldType, additionalArgs, statementsBefore,
-					statementsAfter, queriesAfter);
+			databaseType.appendColumnArg(sb, fieldType, additionalArgs);
 		}
 		// add any sql that sets any primary key fields
-		databaseType.addPrimaryKeySql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs, statementsBefore, statementsAfter,
-				queriesAfter);
+		databaseType.addPrimaryKeySql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs);
 		// add any sql that sets any unique fields
-		databaseType.addUniqueComboSql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs, statementsBefore, statementsAfter,
-				queriesAfter);
+		databaseType.addUniqueComboSql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs);
 		for (String arg : additionalArgs) {
 			// we will have spat out one argument already so we don't have to do the first dance
 			sb.append(", ").append(arg);
@@ -276,8 +273,7 @@ public class TableUtils {
 			boolean ifNotExists) throws SQLException {
 		logger.info("creating table '{}'", tableInfo.getTableConfig().getTableName());
 		List<String> statements = new ArrayList<String>();
-		List<String> queriesAfter = new ArrayList<String>();
-		addCreateTableStatements(tableInfo, statements, queriesAfter, ifNotExists);
+		addCreateTableStatements(tableInfo, statements, ifNotExists);
 
 			int stmtC =
 					doStatements(connectionSource, "create", statements, false, false, false);
@@ -308,8 +304,7 @@ public class TableUtils {
 
 	private static <T, ID> List<String> addCreateTableStatements(GeneratedTableMapper<T, ID> tableInfo, boolean ifNotExists) throws SQLException {
 		List<String> statements = new ArrayList<String>();
-		List<String> queriesAfter = new ArrayList<String>();
-		addCreateTableStatements(tableInfo, statements, queriesAfter, ifNotExists);
+		addCreateTableStatements(tableInfo, statements, ifNotExists);
 		return statements;
 	}
 }

@@ -41,13 +41,4 @@ public class ShortObjectType extends BaseDataType {
 	public boolean isEscapedValue() {
 		return false;
 	}
-
-	@Override
-	public Object moveToNextValue(Object currentValue) {
-		if (currentValue == null) {
-			return (short) 1;
-		} else {
-			return (short) (((Short) currentValue) + 1);
-		}
-	}
 }

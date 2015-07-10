@@ -69,11 +69,6 @@ public class StringBytesType extends BaseDataType {
 	}
 
 	@Override
-	public boolean isAppropriateId() {
-		return false;
-	}
-
-	@Override
 	public boolean isArgumentHolderRequired() {
 		return true;
 	}

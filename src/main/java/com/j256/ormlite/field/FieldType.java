@@ -310,25 +310,9 @@ public class FieldType<T, ID> {
 
 	private void assignDataType(DataPersister dataPersister, String defaultStr) throws SQLException {
 
-		dataPersister = TableUtils.databaseType.getDataPersister(dataPersister, this);
+		dataPersister = TableUtils.databaseType.getDataPersister(dataPersister);
 		this.dataPersister = dataPersister;
-		this.fieldConverter = TableUtils.databaseType.getFieldConverter(dataPersister, this);
-
-		//TODO: Probably move to annotation processor
-		if (this.isGeneratedId && !dataPersister.isValidGeneratedType()) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Generated-id field '").append(fieldName);
-			sb.append("'");
-			sb.append(" can't be type ").append(dataPersister.getSqlType());
-			sb.append(".  Must be one of: ");
-			for (DataType dataType : DataType.values()) {
-				DataPersister persister = dataType.getDataPersister();
-				if (persister != null && persister.isValidGeneratedType()) {
-					sb.append(dataType).append(' ');
-				}
-			}
-			throw new IllegalArgumentException(sb.toString());
-		}
+		this.fieldConverter = TableUtils.databaseType.getFieldConverter(dataPersister);
 
 		this.dataTypeConfigObj = dataPersister.makeConfigObject(this);
 		if (defaultStr == null) {

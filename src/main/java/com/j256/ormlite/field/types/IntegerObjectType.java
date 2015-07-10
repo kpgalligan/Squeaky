@@ -41,18 +41,4 @@ public class IntegerObjectType extends BaseDataType {
 	public boolean isEscapedValue() {
 		return false;
 	}
-
-	@Override
-	public boolean isValidGeneratedType() {
-		return true;
-	}
-
-	@Override
-	public Object moveToNextValue(Object currentValue) {
-		if (currentValue == null) {
-			return (Integer) 1;
-		} else {
-			return ((Integer) currentValue) + 1;
-		}
-	}
 }

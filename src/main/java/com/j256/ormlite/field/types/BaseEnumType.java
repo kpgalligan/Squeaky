@@ -31,9 +31,4 @@ public abstract class BaseEnumType extends BaseDataType {
 			return unknownEnumVal;
 		}
 	}
-
-	@Override
-	public boolean isValidForField(Field field) {
-		return field.getType().isEnum();
-	}
 }

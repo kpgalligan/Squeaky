@@ -65,14 +65,4 @@ public class BigDecimalStringType extends BaseDataType {
 		BigDecimal bigInteger = (BigDecimal) obj;
 		return bigInteger.toString();
 	}
-
-	@Override
-	public int getDefaultWidth() {
-		return DEFAULT_WIDTH;
-	}
-
-	@Override
-	public boolean isAppropriateId() {
-		return false;
-	}
 }

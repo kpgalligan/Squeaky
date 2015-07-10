@@ -49,9 +49,4 @@ public class BooleanObjectType extends BaseDataType {
 	public boolean isEscapedValue() {
 		return false;
 	}
-
-	@Override
-	public boolean isAppropriateId() {
-		return false;
-	}
 }

@@ -43,21 +43,4 @@ public class TimeStampStringType extends DateStringType {
 		Timestamp timeStamp = (Timestamp) javaObject;
 		return super.javaToSqlArg(fieldType, new Date(timeStamp.getTime()));
 	}
-
-	@Override
-	public boolean isValidForField(Field field) {
-		return (field.getType() == Timestamp.class);
-	}
-
-	@Override
-	public Object moveToNextValue(Object currentValue) {
-		long newVal = System.currentTimeMillis();
-		if (currentValue == null) {
-			return new Timestamp(newVal);
-		} else if (newVal == ((Timestamp) currentValue).getTime()) {
-			return new Timestamp(newVal + 1L);
-		} else {
-			return new Timestamp(newVal);
-		}
-	}
 }

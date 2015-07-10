@@ -27,16 +27,6 @@ public class LongStringType extends StringType {
 	}
 
 	@Override
-	public boolean isAppropriateId() {
-		return false;
-	}
-
-	@Override
-	public int getDefaultWidth() {
-		return 0;
-	}
-
-	@Override
 	public Class<?> getPrimaryClass() {
 		return String.class;
 	}

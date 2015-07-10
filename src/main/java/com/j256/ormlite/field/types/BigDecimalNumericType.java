@@ -50,11 +50,6 @@ public class BigDecimalNumericType extends BaseDataType {
 	}
 
 	@Override
-	public boolean isAppropriateId() {
-		return false;
-	}
-
-	@Override
 	public boolean isEscapedValue() {
 		return false;
 	}

@@ -40,21 +40,4 @@ public class TimeStampType extends DateType {
 		// noop pass-thru
 		return javaObject;
 	}
-
-	@Override
-	public boolean isValidForField(Field field) {
-		return (field.getType() == java.sql.Timestamp.class);
-	}
-
-	@Override
-	public Object moveToNextValue(Object currentValue) {
-		long newVal = System.currentTimeMillis();
-		if (currentValue == null) {
-			return new java.sql.Timestamp(newVal);
-		} else if (newVal == ((java.sql.Timestamp) currentValue).getTime()) {
-			return new java.sql.Timestamp(newVal + 1L);
-		} else {
-			return new java.sql.Timestamp(newVal);
-		}
-	}
 }

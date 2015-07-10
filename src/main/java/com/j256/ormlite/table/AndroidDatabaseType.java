@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class AndroidDatabaseType
 {
-	public DataPersister getDataPersister(DataPersister defaultPersister, FieldType fieldType) {
+	public DataPersister getDataPersister(DataPersister defaultPersister) {
 		if (defaultPersister == null) {
 			return null;
 		}
@@ -35,7 +35,7 @@ public class AndroidDatabaseType
 
 	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
 
-	public FieldConverter getFieldConverter(DataPersister dataPersister, FieldType fieldType) {
+	public FieldConverter getFieldConverter(DataPersister dataPersister) {
 		// we are only overriding certain types
 		switch (dataPersister.getSqlType()) {
 			case BOOLEAN :
@@ -53,7 +53,7 @@ public class AndroidDatabaseType
 			return SqlType.BOOLEAN;
 		}
 		public Object parseDefaultString(FieldType fieldType, String defaultStr) {
-			boolean bool = (boolean) Boolean.parseBoolean(defaultStr);
+			boolean bool = Boolean.parseBoolean(defaultStr);
 			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
 		}
 		@Override
@@ -67,14 +67,14 @@ public class AndroidDatabaseType
 		@Override
 		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
 			byte arg = (Byte) sqlArg;
-			return (arg == 1 ? (Boolean) true : (Boolean) false);
+			return arg == 1;
 		}
 		public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
 			return sqlArgToJava(fieldType, Byte.parseByte(stringValue), columnPos);
 		}
 	}
 
-	protected void appendLongType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendLongType(StringBuilder sb, FieldType fieldType) {
 		/*
 		 * This is unfortunate. SQLIte requires that a generated-id have the string "INTEGER PRIMARY KEY AUTOINCREMENT"
 		 * even though the maximum generated value is 64-bit. See configureGeneratedId below.
@@ -86,9 +86,7 @@ public class AndroidDatabaseType
 		}
 	}
 
-	protected void configureGeneratedId(String tableName, StringBuilder sb, FieldType fieldType,
-										List<String> statementsBefore, List<String> statementsAfter, List<String> additionalArgs,
-										List<String> queriesAfter) {
+	protected void configureGeneratedId(StringBuilder sb, FieldType fieldType) {
 		/*
 		 * Even though the documentation talks about INTEGER, it is 64-bit with a maximum value of 9223372036854775807.
 		 * See http://www.sqlite.org/faq.html#q1 and http://www.sqlite.org/autoinc.html
@@ -101,73 +99,68 @@ public class AndroidDatabaseType
 		// no additional call to configureId here
 	}
 
-	public void appendColumnArg(String tableName, StringBuilder sb, FieldType fieldType, List<String> additionalArgs,
-								List<String> statementsBefore, List<String> statementsAfter, List<String> queriesAfter) throws SQLException {
+	public void appendColumnArg(StringBuilder sb, FieldType fieldType, List<String> additionalArgs) throws SQLException {
 		appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ');
 		DataPersister dataPersister = fieldType.getDataPersister();
 		// first try the per-field width
-		int fieldWidth = fieldType.getWidth();
-		if (fieldWidth == 0) {
-			// next try the per-data-type width
-			fieldWidth = dataPersister.getDefaultWidth();
-		}
+
 		switch (dataPersister.getSqlType()) {
 
 			case STRING :
-				appendStringType(sb, fieldType, fieldWidth);
+				appendStringType(sb);
 				break;
 
 			case LONG_STRING :
-				appendLongStringType(sb, fieldType, fieldWidth);
+				appendLongStringType(sb);
 				break;
 
 			case BOOLEAN :
-				appendBooleanType(sb, fieldType, fieldWidth);
+				appendBooleanType(sb);
 				break;
 
 			case DATE :
-				appendDateType(sb, fieldType, fieldWidth);
+				appendDateType(sb);
 				break;
 
 			case CHAR :
-				appendCharType(sb, fieldType, fieldWidth);
+				appendCharType(sb);
 				break;
 
 			case BYTE :
-				appendByteType(sb, fieldType, fieldWidth);
+				appendByteType(sb);
 				break;
 
 			case BYTE_ARRAY :
-				appendByteArrayType(sb, fieldType, fieldWidth);
+				appendByteArrayType(sb);
 				break;
 
 			case SHORT :
-				appendShortType(sb, fieldType, fieldWidth);
+				appendShortType(sb);
 				break;
 
 			case INTEGER :
-				appendIntegerType(sb, fieldType, fieldWidth);
+				appendIntegerType(sb);
 				break;
 
 			case LONG :
-				appendLongType(sb, fieldType, fieldWidth);
+				appendLongType(sb, fieldType);
 				break;
 
 			case FLOAT :
-				appendFloatType(sb, fieldType, fieldWidth);
+				appendFloatType(sb);
 				break;
 
 			case DOUBLE :
-				appendDoubleType(sb, fieldType, fieldWidth);
+				appendDoubleType(sb);
 				break;
 
 			case SERIALIZABLE :
-				appendSerializableType(sb, fieldType, fieldWidth);
+				appendSerializableType(sb);
 				break;
 
 			case BIG_DECIMAL :
-				appendBigDecimalNumericType(sb, fieldType, fieldWidth);
+				appendBigDecimalNumericType(sb);
 				break;
 
 			case UNKNOWN :
@@ -182,8 +175,7 @@ public class AndroidDatabaseType
 		 * isId. isGeneratedId is also isId.
 		 */
 		if (fieldType.isGeneratedId()) {
-			configureGeneratedId(tableName, sb, fieldType, statementsBefore, statementsAfter, additionalArgs,
-					queriesAfter);
+			configureGeneratedId(sb, fieldType);
 		}
 		// if we have a generated-id then neither the not-null nor the default make sense and cause syntax errors
 		if (!fieldType.isGeneratedId()) {
@@ -197,7 +189,7 @@ public class AndroidDatabaseType
 				sb.append("NOT NULL ");
 			}
 			if (fieldType.isUnique()) {
-				addSingleUnique(sb, fieldType, additionalArgs, statementsAfter);
+				addSingleUnique(fieldType, additionalArgs);
 			}
 		}
 	}
@@ -205,91 +197,91 @@ public class AndroidDatabaseType
 	/**
 	 * Output the SQL type for a Java String.
 	 */
-	protected void appendStringType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendStringType(StringBuilder sb) {
 		sb.append("VARCHAR");
 	}
 
 	/**
 	 * Output the SQL type for a Java Long String.
 	 */
-	protected void appendLongStringType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendLongStringType(StringBuilder sb) {
 		sb.append("TEXT");
 	}
 
 	/**
 	 * Output the SQL type for a Java Date.
 	 */
-	protected void appendDateType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendDateType(StringBuilder sb) {
 		sb.append("TIMESTAMP");
 	}
 
 	/**
 	 * Output the SQL type for a Java boolean.
 	 */
-	protected void appendBooleanType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendBooleanType(StringBuilder sb) {
 		sb.append("BOOLEAN");
 	}
 
 	/**
 	 * Output the SQL type for a Java char.
 	 */
-	protected void appendCharType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendCharType(StringBuilder sb) {
 		sb.append("CHAR");
 	}
 
 	/**
 	 * Output the SQL type for a Java byte.
 	 */
-	protected void appendByteType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendByteType(StringBuilder sb) {
 		sb.append("TINYINT");
 	}
 
 	/**
 	 * Output the SQL type for a Java short.
 	 */
-	protected void appendShortType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendShortType(StringBuilder sb) {
 		sb.append("SMALLINT");
 	}
 
 	/**
 	 * Output the SQL type for a Java integer.
 	 */
-	private void appendIntegerType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	private void appendIntegerType(StringBuilder sb) {
 		sb.append("INTEGER");
 	}
 
 	/**
 	 * Output the SQL type for a Java float.
 	 */
-	private void appendFloatType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	private void appendFloatType(StringBuilder sb) {
 		sb.append("FLOAT");
 	}
 
 	/**
 	 * Output the SQL type for a Java double.
 	 */
-	private void appendDoubleType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	private void appendDoubleType(StringBuilder sb) {
 		sb.append("DOUBLE PRECISION");
 	}
 
 	/**
 	 * Output the SQL type for either a serialized Java object or a byte[].
 	 */
-	protected void appendByteArrayType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendByteArrayType(StringBuilder sb) {
 		sb.append("BLOB");
 	}
 
 	/**
 	 * Output the SQL type for a serialized Java object.
 	 */
-	protected void appendSerializableType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendSerializableType(StringBuilder sb) {
 		sb.append("BLOB");
 	}
 
 	/**
 	 * Output the SQL type for a BigDecimal object.
 	 */
-	protected void appendBigDecimalNumericType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
+	protected void appendBigDecimalNumericType(StringBuilder sb) {
 		sb.append("NUMERIC");
 	}
 
@@ -304,8 +296,7 @@ public class AndroidDatabaseType
 		}
 	}
 
-	public void addPrimaryKeySql(FieldType[] fieldTypes, List<String> additionalArgs, List<String> statementsBefore,
-								 List<String> statementsAfter, List<String> queriesAfter) {
+	public void addPrimaryKeySql(FieldType[] fieldTypes, List<String> additionalArgs) {
 		StringBuilder sb = null;
 		for (FieldType fieldType : fieldTypes) {
 			if (fieldType.isGeneratedId()) {
@@ -326,8 +317,7 @@ public class AndroidDatabaseType
 		}
 	}
 
-	public void addUniqueComboSql(FieldType[] fieldTypes, List<String> additionalArgs, List<String> statementsBefore,
-								  List<String> statementsAfter, List<String> queriesAfter) {
+	public void addUniqueComboSql(FieldType[] fieldTypes, List<String> additionalArgs) {
 		StringBuilder sb = null;
 		for (FieldType fieldType : fieldTypes) {
 			if (fieldType.isUniqueCombo()) {
@@ -357,8 +347,7 @@ public class AndroidDatabaseType
 	/**
 	 * Add SQL to handle a unique=true field. THis is not for uniqueCombo=true.
 	 */
-	private void addSingleUnique(StringBuilder sb, FieldType fieldType, List<String> additionalArgs,
-								 List<String> statementsAfter) {
+	private void addSingleUnique(FieldType fieldType, List<String> additionalArgs) {
 		StringBuilder alterSb = new StringBuilder();
 		alterSb.append(" UNIQUE (");
 		appendEscapedEntityName(alterSb, fieldType.getColumnName());

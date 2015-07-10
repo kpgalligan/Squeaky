@@ -62,20 +62,6 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 	public abstract Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos)
 			throws SQLException;
 
-	public boolean isValidForField(Field field) {
-		if (classes.length == 0) {
-			// we can't figure out the types so we just say it is valid
-			return true;
-		}
-		for (Class<?> clazz : classes) {
-			if (clazz.isAssignableFrom(field.getType())) {
-				return true;
-			}
-		}
-		// if classes are specified and one of them should match
-		return false;
-	}
-
 	public Class<?> getPrimaryClass() {
 		if (classes.length == 0) {
 			return null;
@@ -96,8 +82,12 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 		return sqlType;
 	}
 
-	public boolean isValidGeneratedType() {
-		return false;
+	public Class<?>[] getAssociatedClasses() {
+		return classes;
+	}
+
+	public String[] getAssociatedClassNames() {
+		return null;
 	}
 
 	public boolean isEscapedDefaultValue() {
@@ -117,30 +107,8 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 		return true;
 	}
 
-	public boolean isAppropriateId() {
-		return true;
-	}
-
 	public boolean isArgumentHolderRequired() {
 		return false;
-	}
-
-	public Object generateId() {
-		throw new IllegalStateException("Should not have tried to generate this type");
-	}
-
-	public int getDefaultWidth() {
-		return 0;
-	}
-
-	/**
-	 * Move the current-value to the next value. Used for the version field.
-	 * 
-	 * @throws SQLException
-	 *             For sub-classes.
-	 */
-	public Object moveToNextValue(Object currentValue) throws SQLException {
-		return null;
 	}
 
 	public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) throws SQLException {

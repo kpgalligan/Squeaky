@@ -63,9 +63,4 @@ public class SqlDateType extends DateType {
 	public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
 		return sqlArgToJava(fieldType, Timestamp.valueOf(stringValue), columnPos);
 	}
-
-	@Override
-	public boolean isValidForField(Field field) {
-		return (field.getType() == java.sql.Date.class);
-	}
 }

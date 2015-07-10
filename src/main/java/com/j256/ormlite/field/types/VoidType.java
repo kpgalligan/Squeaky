@@ -25,9 +25,4 @@ public class VoidType extends BaseDataType {
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) {
 		return null;
 	}
-
-	@Override
-	public boolean isValidForField(Field field) {
-		return false;
-	}
 }
