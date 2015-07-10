@@ -35,6 +35,8 @@ public interface FieldConverter {
 	 */
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
+	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos)throws SQLException;
+
 	/**
 	 * Return the object converted from the SQL arg to java. This takes the database representation and converts it into
 	 * a Java object. For example, if the type is a date-long then this will take a long which is stored in the database

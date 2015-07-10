@@ -69,6 +69,11 @@ public class AndroidDatabaseType
 			byte arg = (Byte) sqlArg;
 			return arg == 1;
 		}
+		public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+		{
+			return sqlArgToJava(fieldType, resultToSqlArg(fieldType, results, columnPos), columnPos);
+		}
+
 		public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
 			return sqlArgToJava(fieldType, Byte.parseByte(stringValue), columnPos);
 		}

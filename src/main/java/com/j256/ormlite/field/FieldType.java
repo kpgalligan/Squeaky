@@ -34,6 +34,7 @@ public class FieldType<T, ID> {
 	private final boolean isForeign;
 	private final String fieldName;
 	private final DataType dataType;
+	private final Class fieldType;
 	private final int width;
 	private final boolean canBeNull;
 	private final String format;
@@ -67,6 +68,7 @@ public class FieldType<T, ID> {
 			boolean isGeneratedId,
 			boolean isForeign,
 			DataType dataType,
+			Class fieldType,
 			int width,
 			boolean canBeNull,
 			String format,
@@ -97,6 +99,7 @@ public class FieldType<T, ID> {
 		this.dataPersister = dataType.getDataPersister();
 		this.isForeign = isForeign;
 		this.dataType = dataType;
+		this.fieldType = fieldType;
 		this.columnName = columnName;
 		this.isId = isId;
 		this.isGeneratedId = isGeneratedId;
@@ -149,6 +152,11 @@ public class FieldType<T, ID> {
 
 	public boolean isCanBeNull() {
 		return canBeNull;
+	}
+
+	public Class getFieldType()
+	{
+		return fieldType;
 	}
 
 	/**

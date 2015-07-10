@@ -62,6 +62,11 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 	public abstract Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos)
 			throws SQLException;
 
+	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+	{
+		return sqlArgToJava(fieldType, resultToSqlArg(fieldType, results, columnPos), columnPos);
+	}
+
 	public Class<?> getPrimaryClass() {
 		if (classes.length == 0) {
 			return null;

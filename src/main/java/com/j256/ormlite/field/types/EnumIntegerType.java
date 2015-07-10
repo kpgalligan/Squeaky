@@ -73,14 +73,13 @@ public class EnumIntegerType extends BaseEnumType {
 	@Override
 	public Object makeConfigObject(FieldType fieldType) throws SQLException {
 		Map<Integer, Enum<?>> enumIntMap = new HashMap<Integer, Enum<?>>();
-		//TODO: Damn, enums
-		/*Enum<?>[] constants = (Enum<?>[]) fieldType.getType().getEnumConstants();
+		Enum<?>[] constants = (Enum<?>[]) fieldType.getFieldType().getEnumConstants();
 		if (constants == null) {
 			throw new SQLException("Field " + fieldType + " improperly configured as type " + this);
 		}
 		for (Enum<?> enumVal : constants) {
 			enumIntMap.put(enumVal.ordinal(), enumVal);
-		}*/
+		}
 		return enumIntMap;
 	}
 

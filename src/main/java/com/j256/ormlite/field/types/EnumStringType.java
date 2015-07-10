@@ -15,8 +15,6 @@ import java.util.Map;
  */
 public class EnumStringType extends BaseEnumType {
 
-	public static int DEFAULT_WIDTH = 100;
-
 	private static final EnumStringType singleTon = new EnumStringType();
 
 	public static EnumStringType getSingleton() {
@@ -68,14 +66,13 @@ public class EnumStringType extends BaseEnumType {
 	@Override
 	public Object makeConfigObject(FieldType fieldType) throws SQLException {
 		Map<String, Enum<?>> enumStringMap = new HashMap<String, Enum<?>>();
-		//TODO: Damn enums
-		/*Enum<?>[] constants = (Enum<?>[]) fieldType.getType().getEnumConstants();
+		Enum<?>[] constants = (Enum<?>[]) fieldType.getFieldType().getEnumConstants();
 		if (constants == null) {
 			throw new SQLException("Field " + fieldType + " improperly configured as type " + this);
 		}
 		for (Enum<?> enumVal : constants) {
 			enumStringMap.put(enumVal.name(), enumVal);
-		}*/
+		}
 		return enumStringMap;
 	}
 }
