@@ -59,7 +59,7 @@ public class DateLongType extends BaseDateType {
 	@Override
 	public Object javaToSqlArg(FieldType fieldType, Object obj) {
 		Date date = (Date) obj;
-		return (Long) date.getTime();
+		return date.getTime();
 	}
 
 	@Override

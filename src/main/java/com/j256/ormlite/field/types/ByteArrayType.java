@@ -38,7 +38,7 @@ public class ByteArrayType extends BaseDataType {
 
 	@Override
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		return (byte[]) results.getBlob(columnPos);
+		return results.getBlob(columnPos);
 	}
 
 	@Override
@@ -49,17 +49,6 @@ public class ByteArrayType extends BaseDataType {
 	@Override
 	public boolean isArgumentHolderRequired() {
 		return true;
-	}
-
-	@Override
-	public boolean dataIsEqual(Object fieldObj1, Object fieldObj2) {
-		if (fieldObj1 == null) {
-			return (fieldObj2 == null);
-		} else if (fieldObj2 == null) {
-			return false;
-		} else {
-			return Arrays.equals((byte[]) fieldObj1, (byte[]) fieldObj2);
-		}
 	}
 
 	@Override

@@ -34,7 +34,7 @@ public class DoubleObjectType extends BaseDataType {
 
 	@Override
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		return (Double) results.getDouble(columnPos);
+		return results.getDouble(columnPos);
 	}
 
 	@Override

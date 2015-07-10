@@ -27,7 +27,6 @@ public class DateTimeType extends BaseDataType {
 	private static Class<?> dateTimeClass = null;
 	private static Method getMillisMethod = null;
 	private static Constructor<?> millisConstructor = null;
-	private static final String[] associatedClassNames = new String[] { "org.joda.time.DateTime" };
 
 	private DateTimeType() {
 		super(SqlType.LONG);
@@ -39,11 +38,6 @@ public class DateTimeType extends BaseDataType {
 
 	public static DateTimeType getSingleton() {
 		return singleTon;
-	}
-
-	@Override
-	public String[] getAssociatedClassNames() {
-		return associatedClassNames;
 	}
 
 	@Override
@@ -89,11 +83,6 @@ public class DateTimeType extends BaseDataType {
 			// ignore the exception
 			return null;
 		}
-	}
-
-	@Override
-	public boolean isValidForVersion() {
-		return true;
 	}
 
 	@Override

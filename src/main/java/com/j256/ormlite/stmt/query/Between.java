@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class Between extends BaseComparison
 {
-
 	private Object low;
 	private Object high;
 

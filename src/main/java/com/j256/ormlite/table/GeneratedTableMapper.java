@@ -12,10 +12,8 @@ public interface GeneratedTableMapper<T, ID>
 {
 	T createObject();
 	void fillRow(T data, Cursor results) throws SQLException;
-	void assignVersion(T data, Object val);
 	void assignId(T data, Object val);
 	ID extractId(T data);
-	Object extractVersion(T data);
 	void bindVals(SQLiteStatement stmt, T data) throws SQLException;
 	void bindCreateVals(SQLiteStatement stmt, T data) throws SQLException;
 	String objectToString(T data)throws SQLException;

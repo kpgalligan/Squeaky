@@ -29,7 +29,7 @@ public class FloatObjectType extends BaseDataType {
 
 	@Override
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		return (Float) results.getFloat(columnPos);
+		return results.getFloat(columnPos);
 	}
 
 	@Override

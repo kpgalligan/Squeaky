@@ -34,17 +34,12 @@ public class ShortObjectType extends BaseDataType {
 
 	@Override
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		return (Short) results.getShort(columnPos);
+		return results.getShort(columnPos);
 	}
 
 	@Override
 	public boolean isEscapedValue() {
 		return false;
-	}
-
-	@Override
-	public boolean isValidForVersion() {
-		return true;
 	}
 
 	@Override

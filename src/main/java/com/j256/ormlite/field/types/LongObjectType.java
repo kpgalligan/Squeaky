@@ -34,12 +34,7 @@ public class LongObjectType extends BaseDataType {
 
 	@Override
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		return (Long) results.getLong(columnPos);
-	}
-
-	@Override
-	public Object convertIdNumber(Number number) {
-		return (Long) number.longValue();
+		return results.getLong(columnPos);
 	}
 
 	@Override
@@ -49,11 +44,6 @@ public class LongObjectType extends BaseDataType {
 
 	@Override
 	public boolean isValidGeneratedType() {
-		return true;
-	}
-
-	@Override
-	public boolean isValidForVersion() {
 		return true;
 	}
 

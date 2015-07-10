@@ -20,15 +20,6 @@ public abstract class BaseFieldConverter implements FieldConverter {
 		return javaObject;
 	}
 
-	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		Object value = resultToSqlArg(fieldType, results, columnPos);
-		if (value == null) {
-			return null;
-		} else {
-			return sqlArgToJava(fieldType, value, columnPos);
-		}
-	}
-
 	/**
 	 * @throws SQLException
 	 *             If there are problems with the conversion.
@@ -36,9 +27,5 @@ public abstract class BaseFieldConverter implements FieldConverter {
 	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException {
 		// noop pass-thru
 		return sqlArg;
-	}
-
-	public boolean isStreamType() {
-		return false;
 	}
 }

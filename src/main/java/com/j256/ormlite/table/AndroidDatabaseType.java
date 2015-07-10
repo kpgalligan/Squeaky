@@ -16,14 +16,6 @@ import java.util.List;
  */
 public class AndroidDatabaseType
 {
-	protected static String DEFAULT_SEQUENCE_SUFFIX = "_id_seq";
-	protected Driver driver;
-
-//	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
-
-	
-
-	
 	public DataPersister getDataPersister(DataPersister defaultPersister, FieldType fieldType) {
 		if (defaultPersister == null) {
 			return null;
@@ -42,6 +34,7 @@ public class AndroidDatabaseType
 	}
 
 	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
+
 	public FieldConverter getFieldConverter(DataPersister dataPersister, FieldType fieldType) {
 		// we are only overriding certain types
 		switch (dataPersister.getSqlType()) {
@@ -81,7 +74,6 @@ public class AndroidDatabaseType
 		}
 	}
 
-	
 	protected void appendLongType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
 		/*
 		 * This is unfortunate. SQLIte requires that a generated-id have the string "INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -94,7 +86,6 @@ public class AndroidDatabaseType
 		}
 	}
 
-	
 	protected void configureGeneratedId(String tableName, StringBuilder sb, FieldType fieldType,
 										List<String> statementsBefore, List<String> statementsAfter, List<String> additionalArgs,
 										List<String> queriesAfter) {
@@ -108,49 +99,6 @@ public class AndroidDatabaseType
 		}
 		sb.append("PRIMARY KEY AUTOINCREMENT ");
 		// no additional call to configureId here
-	}
-
-	
-	protected boolean generatedIdSqlAtEnd() {
-		return false;
-	}
-
-	
-	public boolean isVarcharFieldWidthSupported() {
-		return false;
-	}
-
-	
-	public boolean isCreateTableReturnsZero() {
-		// 'CREATE TABLE' statements seem to return 1 for some reason
-		return false;
-	}
-
-	
-	public boolean isCreateIfNotExistsSupported() {
-		return true;
-	}
-
-	
-	/*public FieldConverter getFieldConverter(DataPersister dataPersister, FieldType fieldType) {
-		// we are only overriding certain types
-		switch (dataPersister.getSqlType()) {
-			case BOOLEAN :
-				return booleanConverter;
-			case BIG_DECIMAL :
-				return BigDecimalStringType.getSingleton();
-			default :
-				return super.getFieldConverter(dataPersister, fieldType);
-		}
-	}*/
-
-	
-	public void appendInsertNoColumns(StringBuilder sb) {
-		sb.append("DEFAULT VALUES");
-	}
-
-	public void setDriver(Driver driver) {
-		this.driver = driver;
 	}
 
 	public void appendColumnArg(String tableName, StringBuilder sb, FieldType fieldType, List<String> additionalArgs,
@@ -222,10 +170,6 @@ public class AndroidDatabaseType
 				appendBigDecimalNumericType(sb, fieldType, fieldWidth);
 				break;
 
-			case UUID :
-				appendUuidNativeType(sb, fieldType, fieldWidth);
-				break;
-
 			case UNKNOWN :
 			default :
 				// shouldn't be able to get here unless we have a missing case
@@ -237,13 +181,9 @@ public class AndroidDatabaseType
 		 * NOTE: the configure id methods must be in this order since isGeneratedIdSequence is also isGeneratedId and
 		 * isId. isGeneratedId is also isId.
 		 */
-		/*if (fieldType.isGeneratedIdSequence() && !fieldType.isSelfGeneratedId()) {
-			configureGeneratedIdSequence(sb, fieldType, statementsBefore, additionalArgs, queriesAfter);
-		} else */if (fieldType.isGeneratedId() && !fieldType.isSelfGeneratedId()) {
+		if (fieldType.isGeneratedId()) {
 			configureGeneratedId(tableName, sb, fieldType, statementsBefore, statementsAfter, additionalArgs,
 					queriesAfter);
-		} else if (fieldType.isId()) {
-			configureId(sb, fieldType, statementsBefore, additionalArgs, queriesAfter);
 		}
 		// if we have a generated-id then neither the not-null nor the default make sense and cause syntax errors
 		if (!fieldType.isGeneratedId()) {
@@ -253,9 +193,7 @@ public class AndroidDatabaseType
 				appendDefaultValue(sb, fieldType, defaultValue);
 				sb.append(' ');
 			}
-			if (fieldType.isCanBeNull()) {
-				appendCanBeNull(sb, fieldType);
-			} else {
+			if (!fieldType.isCanBeNull()) {
 				sb.append("NOT NULL ");
 			}
 			if (fieldType.isUnique()) {
@@ -268,19 +206,7 @@ public class AndroidDatabaseType
 	 * Output the SQL type for a Java String.
 	 */
 	protected void appendStringType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
-		if (isVarcharFieldWidthSupported()) {
-			sb.append("VARCHAR(").append(fieldWidth).append(")");
-		} else {
-			sb.append("VARCHAR");
-		}
-	}
-
-	/**
-	 * Output the SQL type for a Java UUID. This is used to support specific sub-class database types which support the
-	 * UUID type.
-	 */
-	protected void appendUuidNativeType(StringBuilder sb, FieldType fieldType, int fieldWidth) {
-		throw new UnsupportedOperationException("UUID is not supported by this database type");
+		sb.append("VARCHAR");
 	}
 
 	/**
@@ -378,47 +304,11 @@ public class AndroidDatabaseType
 		}
 	}
 
-	/**
-	 * Output the SQL necessary to configure a generated-id column. This may add to the before statements list or
-	 * additional arguments later.
-	 *
-	 * NOTE: Only one of configureGeneratedIdSequence, configureGeneratedId, or configureId will be called.
-	 */
-	protected void configureGeneratedIdSequence(StringBuilder sb, FieldType fieldType, List<String> statementsBefore,
-												List<String> additionalArgs, List<String> queriesAfter) throws SQLException {
-		throw new SQLException("GeneratedIdSequence is not supported by database  for field "
-				+ fieldType);
-	}
-
-	/**
-	 * Output the SQL necessary to configure a generated-id column. This may add to the before statements list or
-	 * additional arguments later.
-	 *
-	 * NOTE: Only one of configureGeneratedIdSequence, configureGeneratedId, or configureId will be called.
-	 */
-	/*protected void configureGeneratedId(String tableName, StringBuilder sb, FieldType fieldType,
-										List<String> statementsBefore, List<String> statementsAfter, List<String> additionalArgs,
-										List<String> queriesAfter) {
-		throw new IllegalStateException("GeneratedId is not supported by database  for field "
-				+ fieldType);
-	}*/
-
-	/**
-	 * Output the SQL necessary to configure an id column. This may add to the before statements list or additional
-	 * arguments later.
-	 *
-	 * NOTE: Only one of configureGeneratedIdSequence, configureGeneratedId, or configureId will be called.
-	 */
-	protected void configureId(StringBuilder sb, FieldType fieldType, List<String> statementsBefore,
-							   List<String> additionalArgs, List<String> queriesAfter) {
-		// default is noop since we do it at the end in appendPrimaryKeys()
-	}
-
 	public void addPrimaryKeySql(FieldType[] fieldTypes, List<String> additionalArgs, List<String> statementsBefore,
 								 List<String> statementsAfter, List<String> queriesAfter) {
 		StringBuilder sb = null;
 		for (FieldType fieldType : fieldTypes) {
-			if (fieldType.isGeneratedId() && !generatedIdSqlAtEnd() && !fieldType.isSelfGeneratedId()) {
+			if (fieldType.isGeneratedId()) {
 				// don't add anything
 			} else if (fieldType.isId()) {
 				if (sb == null) {
@@ -456,111 +346,12 @@ public class AndroidDatabaseType
 		}
 	}
 
-	public void dropColumnArg(FieldType fieldType, List<String> statementsBefore, List<String> statementsAfter) {
-		// by default this is a noop
-	}
-
 	public void appendEscapedWord(StringBuilder sb, String word) {
 		sb.append('\'').append(word).append('\'');
 	}
 
 	public void appendEscapedEntityName(StringBuilder sb, String name) {
 		sb.append('`').append(name).append('`');
-	}
-
-	public String generateIdSequenceName(String tableName, FieldType idFieldType) {
-		String name = tableName + DEFAULT_SEQUENCE_SUFFIX;
-		if (isEntityNamesMustBeUpCase()) {
-			return name.toUpperCase();
-		} else {
-			return name;
-		}
-	}
-
-	public String getCommentLinePrefix() {
-		return "-- ";
-	}
-
-	public boolean isIdSequenceNeeded() {
-		return false;
-	}
-
-	public boolean isLimitSqlSupported() {
-		return true;
-	}
-
-	public boolean isOffsetSqlSupported() {
-		return true;
-	}
-
-	public boolean isOffsetLimitArgument() {
-		return false;
-	}
-
-	public boolean isLimitAfterSelect() {
-		return false;
-	}
-
-	public void appendLimitValue(StringBuilder sb, long limit, Long offset) {
-		sb.append("LIMIT ").append(limit).append(' ');
-	}
-
-	public void appendOffsetValue(StringBuilder sb, long offset) {
-		sb.append("OFFSET ").append(offset).append(' ');
-	}
-
-	public void appendSelectNextValFromSequence(StringBuilder sb, String sequenceName) {
-		// noop by default.
-	}
-
-	public void appendCreateTableSuffix(StringBuilder sb) {
-		// noop by default.
-	}
-
-
-	public boolean isCreateTableReturnsNegative() {
-		return false;
-	}
-
-	public boolean isEntityNamesMustBeUpCase() {
-		return false;
-	}
-
-	public boolean isNestedSavePointsSupported() {
-		return true;
-	}
-
-	public String getPingStatement() {
-		return "SELECT 1";
-	}
-
-	public boolean isBatchUseTransaction() {
-		return false;
-	}
-
-	public boolean isTruncateSupported() {
-		return false;
-	}
-
-	public boolean isCreateIndexIfNotExistsSupported() {
-		return isCreateIfNotExistsSupported();
-	}
-
-	public boolean isSelectSequenceBeforeInsert() {
-		return false;
-	}
-
-	public boolean isAllowGeneratedIdInsertSupported() {
-		return true;
-	}
-
-	/**
-	 * If the field can be nullable, do we need to add some sort of NULL SQL for the create table. By default it is a
-	 * noop. This is necessary because MySQL has a auto default value for the TIMESTAMP type that required a default
-	 * value otherwise it would stick in the current date automagically.
-	 */
-	private void appendCanBeNull(StringBuilder sb, FieldType fieldType) {
-		// default is a noop
 	}
 
 	/**
@@ -574,34 +365,4 @@ public class AndroidDatabaseType
 		alterSb.append(")");
 		additionalArgs.add(alterSb.toString());
 	}
-
-	/**
-	 * Conversion to/from the Boolean Java field as a number because some databases like the true/false.
-	 */
-	/*protected static class BooleanNumberFieldConverter extends BaseFieldConverter
-	{
-		public SqlType getSqlType() {
-			return SqlType.BOOLEAN;
-		}
-		public Object parseDefaultString(FieldType fieldType, String defaultStr) {
-			boolean bool = (boolean) Boolean.parseBoolean(defaultStr);
-			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
-		}
-		
-		public Object javaToSqlArg(FieldType fieldType, Object obj) {
-			Boolean bool = (Boolean) obj;
-			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
-		}
-		public Object resultToSqlArg(FieldType fieldType, DatabaseResults results, int columnPos) throws SQLException {
-			return results.getByte(columnPos);
-		}
-		
-		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
-			byte arg = (Byte) sqlArg;
-			return (arg == 1 ? (Boolean) true : (Boolean) false);
-		}
-		public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
-			return sqlArgToJava(fieldType, Byte.parseByte(stringValue), columnPos);
-		}
-	}*/
 }

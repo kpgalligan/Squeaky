@@ -17,7 +17,6 @@ import java.util.*;
 public class TableUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(TableUtils.class);
-	private static final FieldType[] noFieldTypes = new FieldType[0];
 
 	public static final AndroidDatabaseType databaseType = new AndroidDatabaseType();
 
@@ -26,27 +25,6 @@ public class TableUtils {
 	 */
 	private TableUtils() {
 	}
-
-	/**
-	 * Issue the database statements to create the table associated with a class.
-	 * 
-	 * @param connectionSource
-	 *            Associated connection source.
-	 * @param dataClass
-	 *            The class for which a table will be created.
-	 * @return The number of statements executed to do so.
-	 */
-	/*public static <T> int createTable(ConnectionSource connectionSource, Class<T> dataClass) throws SQLException {
-		return createTable(connectionSource, dataClass, false);
-	}*/
-
-	/**
-	 * Create a table if it does not already exist. This is not supported by all databases.
-	 */
-	/*public static <T> int createTableIfNotExists(ConnectionSource connectionSource, Class<T> dataClass)
-			throws SQLException {
-		return createTable(connectionSource, dataClass, true);
-	}*/
 
 	/**
 	 * Issue the database statements to create the table associated with a table configuration.
@@ -77,27 +55,6 @@ public class TableUtils {
 	 * 
 	 * @param connectionSource
 	 *            Our connect source which is used to get the database type, not to apply the creates.
-	 * @param dataClass
-	 *            The class for which a table will be created.
-	 * @return The collection of table create statements.
-	 */
-	/*public static <T, ID> List<String> getCreateTableStatements(ConnectionSource connectionSource, Class<T> dataClass)
-			throws SQLException {
-		Dao<T, ID> dao = DaoManager.createDao(connectionSource, dataClass);
-		if (dao instanceof BaseDaoImpl<?, ?>) {
-			return addCreateTableStatements(connectionSource, ((BaseDaoImpl<?, ?>) dao).getTableInfo(), false);
-		} else {
-			TableInfo<T, ID> tableInfo = new TableInfo<T, ID>(connectionSource, null, dataClass);
-			return addCreateTableStatements(connectionSource, tableInfo, false);
-		}
-	}*/
-
-	/**
-	 * Return an ordered collection of SQL statements that need to be run to create a table. To do the work of creating,
-	 * you should call {@link #createTable}.
-	 * 
-	 * @param connectionSource
-	 *            Our connect source which is used to get the database type, not to apply the creates.
 	 * @param tableConfig
 	 *            Hand or spring wired table configuration. If null then the class must have {@link DatabaseField}
 	 *            annotations.
@@ -108,33 +65,6 @@ public class TableUtils {
 
 			return addCreateTableStatements(tableConfig, false);
 	}
-
-	/**
-	 * Issue the database statements to drop the table associated with a class.
-	 * 
-	 * <p>
-	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
-	 * </p>
-	 * 
-	 * @param connectionSource
-	 *            Associated connection source.
-	 * @param dataClass
-	 *            The class for which a table will be dropped.
-	 * @param ignoreErrors
-	 *            If set to true then try each statement regardless of {@link SQLException} thrown previously.
-	 * @return The number of statements executed to do so.
-	 */
-	/*public static <T, ID> int dropTable(ConnectionSource connectionSource, Class<T> dataClass, boolean ignoreErrors)
-			throws SQLException {
-		DatabaseType databaseType = connectionSource.getDatabaseType();
-		Dao<T, ID> dao = DaoManager.createDao(connectionSource, dataClass);
-		if (dao instanceof BaseDaoImpl<?, ?>) {
-			return doDropTable(databaseType, connectionSource, ((BaseDaoImpl<?, ?>) dao).getTableInfo(), ignoreErrors);
-		} else {
-			TableInfo<T, ID> tableInfo = new TableInfo<T, ID>(connectionSource, null, dataClass);
-			return doDropTable(databaseType, connectionSource, tableInfo, ignoreErrors);
-		}
-	}*/
 
 	/**
 	 * Issue the database statements to drop the table associated with a table configuration.
@@ -165,37 +95,10 @@ public class TableUtils {
 	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
 	 * </p>
 	 */
-	/*public static <T> int clearTable(ConnectionSource connectionSource, Class<T> dataClass) throws SQLException {
-		String tableName = DatabaseTableConfig.extractTableName(dataClass);
-		if (connectionSource.getDatabaseType().isEntityNamesMustBeUpCase()) {
-			tableName = tableName.toUpperCase();
-		}
-		return clearTable(connectionSource, tableName);
-	}*/
-
-	/**
-	 * Clear all data out of the table. For certain database types and with large sized tables, which may take a long
-	 * time. In some configurations, it may be faster to drop and re-create the table.
-	 * 
-	 * <p>
-	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
-	 * </p>
-	 */
 	public static <T, ID> void clearTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig)
 			throws SQLException {
 		clearTable(connectionSource, tableConfig.getTableConfig().getTableName());
 	}
-
-	/*private static <T, ID> int createTable(ConnectionSource connectionSource, Class<T> dataClass, boolean ifNotExists)
-			throws SQLException {
-		Dao<T, ID> dao = DaoManager.createDao(connectionSource, dataClass);
-		if (dao instanceof BaseDaoImpl<?, ?>) {
-			return doCreateTable(connectionSource, ((BaseDaoImpl<?, ?>) dao).getTableInfo(), ifNotExists);
-		} else {
-			TableInfo<T, ID> tableInfo = new TableInfo<T, ID>(connectionSource, null, dataClass);
-			return doCreateTable(connectionSource, tableInfo, ifNotExists);
-		}
-	}*/
 
 	private static <T, ID> int createTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig, boolean ifNotExists) throws SQLException {
 		return doCreateTable(connectionSource, tableConfig, ifNotExists);
@@ -203,11 +106,9 @@ public class TableUtils {
 
 	private static void clearTable(SQLiteDatabase connectionSource, String tableName) throws SQLException {
 		StringBuilder sb = new StringBuilder(48);
-		if (databaseType.isTruncateSupported()) {
-			sb.append("TRUNCATE TABLE ");
-		} else {
-			sb.append("DELETE FROM ");
-		}
+
+		sb.append("DELETE FROM ");
+
 		databaseType.appendEscapedEntityName(sb, tableName);
 		String statement = sb.toString();
 		logger.info("clearing table '{}' with '{}", tableName, statement);
@@ -222,7 +123,7 @@ public class TableUtils {
 		addDropTableStatements(tableInfo, statements);
 
 		return doStatements(connectionSource, "drop", statements, ignoreErrors,
-				databaseType.isCreateTableReturnsNegative(), false);
+				false, false);
 
 	}
 
@@ -259,7 +160,7 @@ public class TableUtils {
 			List<String> statements, List<String> queriesAfter, boolean ifNotExists) throws SQLException {
 		StringBuilder sb = new StringBuilder(256);
 		sb.append("CREATE TABLE ");
-		if (ifNotExists && databaseType.isCreateIfNotExistsSupported()) {
+		if (ifNotExists) {
 			sb.append("IF NOT EXISTS ");
 		}
 		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
@@ -270,11 +171,7 @@ public class TableUtils {
 		// our statement will be set here later
 		boolean first = true;
 		for (FieldType fieldType : tableInfo.getTableConfig().getFieldTypes()) {
-			// skip foreign collections
-			//TODO: foreign
-			/*if (fieldType.isForeignCollection()) {
-				continue;
-			} else */if (first) {
+			if (first) {
 				first = false;
 			} else {
 				sb.append(", ");
@@ -295,7 +192,7 @@ public class TableUtils {
 			sb.append(", ").append(arg);
 		}
 		sb.append(") ");
-		databaseType.appendCreateTableSuffix(sb);
+
 		statements.addAll(statementsBefore);
 		statements.add(sb.toString());
 		statements.addAll(statementsAfter);
@@ -335,7 +232,7 @@ public class TableUtils {
 				sb.append("UNIQUE ");
 			}
 			sb.append("INDEX ");
-			if (ifNotExists && databaseType.isCreateIndexIfNotExistsSupported()) {
+			if (ifNotExists) {
 				sb.append("IF NOT EXISTS ");
 			}
 			databaseType.appendEscapedEntityName(sb, indexEntry.getKey());
@@ -365,9 +262,7 @@ public class TableUtils {
 	{
 		List<String> statementsBefore = new ArrayList<String>();
 		List<String> statementsAfter = new ArrayList<String>();
-		for (FieldType fieldType : tableInfo.getTableConfig().getFieldTypes()) {
-			databaseType.dropColumnArg(fieldType, statementsBefore, statementsAfter);
-		}
+
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("DROP TABLE ");
 		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
@@ -385,9 +280,7 @@ public class TableUtils {
 		addCreateTableStatements(tableInfo, statements, queriesAfter, ifNotExists);
 
 			int stmtC =
-					doStatements(connectionSource, "create", statements, false, databaseType.isCreateTableReturnsNegative(),
-							databaseType.isCreateTableReturnsZero());
-			stmtC += doCreateTestQueries(connectionSource, queriesAfter);
+					doStatements(connectionSource, "create", statements, false, false, false);
 			return stmtC;
 
 	}
@@ -410,36 +303,6 @@ public class TableUtils {
 
 			stmtC++;
 		}
-		return stmtC;
-	}
-
-	private static int doCreateTestQueries(SQLiteDatabase connection, List<String> queriesAfter) throws SQLException {
-		int stmtC = 0;
-		// now execute any test queries which test the newly created table
-		//TODO: maybe
-		/*for (String query : queriesAfter) {
-			CompiledStatement compiledStmt = null;
-			try {
-				compiledStmt =
-						connection.compileStatement(query, StatementType.SELECT, noFieldTypes,
-								DatabaseConnection.DEFAULT_RESULT_FLAGS);
-				// we don't care about an object cache here
-				DatabaseResults results = compiledStmt.runQuery(null);
-				int rowC = 0;
-				// count the results
-				for (boolean isThereMore = results.first(); isThereMore; isThereMore = results.next()) {
-					rowC++;
-				}
-				logger.info("executing create table after-query got {} results: {}", rowC, query);
-			} catch (SQLException e) {
-				// we do this to make sure that the statement is in the exception
-				throw SqlExceptionUtil.create("executing create table after-query failed: " + query, e);
-			} finally {
-				// result set is closed by the statement being closed
-				IOUtils.closeThrowSqlException(compiledStmt, "compiled statement");
-			}
-			stmtC++;
-		}*/
 		return stmtC;
 	}
 

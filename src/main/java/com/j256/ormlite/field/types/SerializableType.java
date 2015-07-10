@@ -89,12 +89,6 @@ public class SerializableType extends BaseDataType {
 	}
 
 	@Override
-	public boolean isStreamType() {
-		// can't do a getObject call beforehand so we have to check for nulls
-		return true;
-	}
-
-	@Override
 	public boolean isComparable() {
 		return false;
 	}

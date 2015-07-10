@@ -23,17 +23,4 @@ public class IOUtils {
 			}
 		}
 	}
-
-	/**
-	 * Close it and ignore any exceptions.
-	 */
-	public static void closeThrowSqlException(Closeable closeable, String label) throws SQLException {
-		if (closeable != null) {
-			try {
-				closeable.close();
-			} catch (IOException e) {
-				throw SqlExceptionUtil.create("could not close " + label, e);
-			}
-		}
-	}
 }

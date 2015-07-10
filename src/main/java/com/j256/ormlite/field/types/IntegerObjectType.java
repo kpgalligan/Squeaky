@@ -34,12 +34,7 @@ public class IntegerObjectType extends BaseDataType {
 
 	@Override
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		return (Integer) results.getInt(columnPos);
-	}
-
-	@Override
-	public Object convertIdNumber(Number number) {
-		return (Integer) number.intValue();
+		return results.getInt(columnPos);
 	}
 
 	@Override
@@ -49,11 +44,6 @@ public class IntegerObjectType extends BaseDataType {
 
 	@Override
 	public boolean isValidGeneratedType() {
-		return true;
-	}
-
-	@Override
-	public boolean isValidForVersion() {
 		return true;
 	}
 

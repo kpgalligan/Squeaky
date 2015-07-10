@@ -96,19 +96,6 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 		return sqlType;
 	}
 
-	public Class<?>[] getAssociatedClasses() {
-		return classes;
-	}
-
-	public String[] getAssociatedClassNames() {
-		return null;
-	}
-
-	public Object convertIdNumber(Number number) {
-		// by default the type cannot convert an id number
-		return null;
-	}
-
 	public boolean isValidGeneratedType() {
 		return false;
 	}
@@ -138,30 +125,12 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 		return false;
 	}
 
-	public boolean isSelfGeneratedId() {
-		return false;
-	}
-
 	public Object generateId() {
 		throw new IllegalStateException("Should not have tried to generate this type");
 	}
 
 	public int getDefaultWidth() {
 		return 0;
-	}
-
-	public boolean dataIsEqual(Object fieldObj1, Object fieldObj2) {
-		if (fieldObj1 == null) {
-			return (fieldObj2 == null);
-		} else if (fieldObj2 == null) {
-			return false;
-		} else {
-			return fieldObj1.equals(fieldObj2);
-		}
-	}
-
-	public boolean isValidForVersion() {
-		return false;
 	}
 
 	/**

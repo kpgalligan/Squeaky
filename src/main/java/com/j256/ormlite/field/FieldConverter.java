@@ -36,12 +36,6 @@ public interface FieldConverter {
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
 	/**
-	 * This is usually just a call that takes the result from {@link #resultToSqlArg(FieldType, DatabaseResults, int)}
-	 * and passes it through {@link #sqlArgToJava(FieldType, Object, int)}.
-	 */
-	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
-
-	/**
 	 * Return the object converted from the SQL arg to java. This takes the database representation and converts it into
 	 * a Java object. For example, if the type is a date-long then this will take a long which is stored in the database
 	 * and return a Date.
@@ -58,12 +52,6 @@ public interface FieldConverter {
 	 * Return the SQL type that is stored in the database for this argument.
 	 */
 	public SqlType getSqlType();
-
-	/**
-	 * Return whether or not this is a SQL "stream" object. Cannot get certain stream objects from the SQL results more
-	 * than once. If true, the converter has to protect itself against null values.
-	 */
-	public boolean isStreamType();
 
 	/**
 	 * Convert a string result value to the related Java field.

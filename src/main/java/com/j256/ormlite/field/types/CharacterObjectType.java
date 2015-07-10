@@ -33,7 +33,7 @@ public class CharacterObjectType extends BaseDataType {
 			throw new SQLException("Problems with field " + fieldType + ", default string to long for Character: '"
 					+ defaultStr + "'");
 		}
-		return (Character) defaultStr.charAt(0);
+		return defaultStr.charAt(0);
 	}
 
 	@Override

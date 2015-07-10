@@ -36,7 +36,7 @@ public abstract class BaseDateType extends BaseDataType {
 		if (configObj == null) {
 			return defaultDateFormatConfig;
 		} else {
-			return (DateStringFormatConfig) configObj;
+			return configObj;
 		}
 	}
 
@@ -70,11 +70,6 @@ public abstract class BaseDateType extends BaseDataType {
 		public String toString() {
 			return dateFormatStr;
 		}
-	}
-
-	@Override
-	public boolean isValidForVersion() {
-		return true;
 	}
 
 	@Override
