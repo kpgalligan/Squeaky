@@ -42,7 +42,6 @@ public class FieldType<T, ID> {
 	private final boolean index;
 	private final boolean uniqueIndex;
 	private final boolean throwIfNull;
-	private final boolean version;
 	private String indexName;
 	private String uniqueIndexName;
 
@@ -76,8 +75,7 @@ public class FieldType<T, ID> {
 			String indexName,
 			String uniqueIndexName,
 			String configDefaultValue,
-			boolean throwIfNull,
-			boolean version){
+			boolean throwIfNull){
 		this.fieldName = fieldName;
 		this.tableName = tableName;
 		this.canBeNull = canBeNull;
@@ -89,7 +87,6 @@ public class FieldType<T, ID> {
 		this.indexName = indexName;
 		this.uniqueIndexName = uniqueIndexName;
 		this.throwIfNull = throwIfNull;
-		this.version = version;
 		this.dataPersister = dataType.getDataPersister();
 		this.isForeign = isForeign;
 		this.dataType = dataType;

@@ -290,7 +290,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		refresh(data, Config.MAX_AUTO_REFRESH);
 	}
 
-	public void refresh(T data, int recursiveAutorefreshCountdown) throws SQLException
+	public void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException
 	{
 		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
 		try

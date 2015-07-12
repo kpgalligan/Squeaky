@@ -42,7 +42,7 @@ public interface Dao<T, ID>
 //	int update(PreparedUpdate<T> preparedUpdate) throws SQLException;
 
 	void refresh(T data) throws SQLException;
-	void refresh(T data, int recursiveAutorefreshCountdown) throws SQLException;
+	void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException;
 
 	int delete(T data) throws SQLException;
 
