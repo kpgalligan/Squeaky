@@ -3,6 +3,7 @@ package com.j256.ormlite.field;
 import com.j256.ormlite.table.TableInfo;
 import com.j256.ormlite.table.TableUtils;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 
 /**
@@ -309,6 +310,20 @@ public class FieldType<T, ID> {
 					+ defaultStr + "'");
 		} else {
 			this.defaultValue = this.fieldConverter.parseDefaultString(this, defaultStr);
+		}
+	}
+
+	/**
+	 * Return An instantiated {@link FieldType} or null if the field does not have a {@link DatabaseField} annotation.
+	 */
+	public static FieldType createFieldType(ConnectionSource connectionSource, String tableName, Field field,
+											Class<?> parentClass) throws SQLException {
+		DatabaseType databaseType = connectionSource.getDatabaseType();
+		DatabaseFieldConfig fieldConfig = DatabaseFieldConfig.fromField(databaseType, tableName, field);
+		if (fieldConfig == null) {
+			return null;
+		} else {
+			return new FieldType(connectionSource, tableName, field, fieldConfig, parentClass);
 		}
 	}
 
