@@ -43,6 +43,17 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 		return dao;
 	}
 
+	@Override
+	public synchronized void close()
+	{
+		for (Dao dao : daoMap.values())
+		{
+			((ModelDao)dao).cleanUp();
+		}
+		daoMap.clear();
+		super.close();
+	}
+
 	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
 	{
 		GeneratedTableMapper generatedTableMapper = generatedTableMapperMap.get(clazz);

@@ -2,6 +2,7 @@ package com.j256.ormlite.android.squeaky;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import com.j256.ormlite.Config;
@@ -25,6 +26,9 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	private final String[] tableCols;
 	private final SqueakyOpenHelper openHelper;
 	private final FieldType idFieldType;
+
+	private SQLiteStatement createStatement;
+	private SQLiteStatement updateStatement;
 
 	protected ModelDao(SqueakyOpenHelper openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
 	{
@@ -55,6 +59,14 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void cleanUp()
+	{
+		if(createStatement != null)
+			createStatement.close();
+		if(updateStatement != null)
+			updateStatement.close();
 	}
 
 	private String[] buildSelect() throws SQLException
@@ -157,10 +169,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
-	private SQLiteStatement createStatement;
-
-	//TODO: Just testing.  This is bad.
-	private SQLiteStatement makeCreateStatement() throws SQLException
+	private synchronized SQLiteStatement makeCreateStatement() throws SQLException
 	{
 		if(createStatement == null)
 		{
@@ -246,32 +255,42 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void update(T data) throws SQLException
 	{
-		SQLiteDatabase db = openHelper.getWritableDatabase();
-		TableInfo<T, ID> tableConfig = generatedTableMapper.getTableConfig();
-		StringBuilder sb = new StringBuilder();
-		sb.append("update ").append(tableConfig.getTableName()).append(" set ");
-		boolean first = true;
-
-		for (FieldType fieldType : generatedTableMapper.getTableConfig().getFieldTypes())
-		{
-			if(!fieldType.isGeneratedId() && !fieldType.isId())
-			{
-				if(!first)
-				{
-					sb.append(",");
-				}
-				sb.append(fieldType.getColumnName()).append(" = ?");
-				first = false;
-			}
-		}
-
-		sb.append(" where ").append(generatedTableMapper.getTableConfig().idField.getColumnName()).append(" = ?");
-
-		SQLiteStatement sqLiteStatement = db.compileStatement(sb.toString());
+		SQLiteStatement sqLiteStatement = makeUpdateStatement();
 
 		generatedTableMapper.bindVals(sqLiteStatement, data);
 
 		sqLiteStatement.executeUpdateDelete();
+	}
+
+	private synchronized SQLiteStatement makeUpdateStatement() throws SQLException
+	{
+		if(updateStatement == null)
+		{
+			SQLiteDatabase db = openHelper.getWritableDatabase();
+			TableInfo<T, ID> tableConfig = generatedTableMapper.getTableConfig();
+			StringBuilder sb = new StringBuilder();
+			sb.append("update ").append(tableConfig.getTableName()).append(" set ");
+			boolean first = true;
+
+			for (FieldType fieldType : generatedTableMapper.getTableConfig().getFieldTypes())
+			{
+				if(!fieldType.isGeneratedId() && !fieldType.isId())
+				{
+					if(!first)
+					{
+						sb.append(",");
+					}
+					sb.append(fieldType.getColumnName()).append(" = ?");
+					first = false;
+				}
+			}
+
+			sb.append(" where ").append(generatedTableMapper.getTableConfig().idField.getColumnName()).append(" = ?");
+
+			updateStatement = db.compileStatement(sb.toString());
+		}
+
+		return updateStatement;
 	}
 
 	public int updateId(T data, ID newId) throws SQLException
@@ -344,7 +363,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int delete(Where<T, ID> where) throws SQLException
 	{
-		throw new UnsupportedOperationException("need where");
+		return openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), null);
 	}
 
 	public CloseableIterator<T> iterator() throws SQLException
@@ -357,12 +376,15 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public CloseableIterator<T> iterator(Where<T, ID> where) throws SQLException
 	{
-		throw new RuntimeException("need where");
+		return new SelectIterator<T, ID>(
+				openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where.getStatement(), null, null, null, null),
+				ModelDao.this
+		);
 	}
 
 	public long queryRawValue(String query, String... arguments) throws SQLException
 	{
-		throw new UnsupportedOperationException("queryRawValue");
+		return DatabaseUtils.longForQuery(openHelper.getWritableDatabase(), query, arguments);
 	}
 
 	/*private void assignStatementArguments(CompiledStatement compiledStatement, String[] arguments) throws SQLException {
@@ -399,12 +421,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf() throws SQLException
 	{
-		return queryRawValue("select count(*) from "+ generatedTableMapper.getTableConfig().getTableName());
+		return DatabaseUtils.queryNumEntries(openHelper.getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
 	}
 
 	public long countOf(Where<T, ID> where) throws SQLException
 	{
-		throw new UnsupportedOperationException("Just where");
+		return DatabaseUtils.longForQuery(openHelper.getWritableDatabase(), "select count(*) from "+ generatedTableMapper.getTableConfig().getTableName() +" where "+ where.getStatement(), null);
 	}
 
 	//TODO could be faster
