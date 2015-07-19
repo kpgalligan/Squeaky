@@ -37,9 +37,14 @@ public class TableUtils {
 	 *            annotations.
 	 * @return The number of statements executed to do so.
 	 */
-	public static <T, ID> int createTable(SQLiteDatabase connectionSource, Class clazz)
+	public static <T, ID> int createTables(SQLiteDatabase connectionSource, Class... clazz)
 			throws SQLException {
-		return createTable(connectionSource, clazz, false);
+		int count = 0;
+		for (Class aClass : clazz)
+		{
+			count += createTable(connectionSource, aClass, false);
+		}
+		return count;
 	}
 
 	private static  GeneratedTableMapper loadTableMapper(Class dataclass)
@@ -50,9 +55,14 @@ public class TableUtils {
 	/**
 	 * Create a table if it does not already exist. This is not supported by all databases.
 	 */
-	public static <T, ID> int createTableIfNotExists(SQLiteDatabase connectionSource, Class clazz)
+	public static <T, ID> int createTablesIfNotExists(SQLiteDatabase connectionSource, Class... clazz)
 			throws SQLException {
-		return createTable(connectionSource, clazz, true);
+		int count = 0;
+		for (Class aClass : clazz)
+		{
+			count += createTable(connectionSource, aClass, true);
+		}
+		return count;
 	}
 
 	/**
@@ -88,9 +98,14 @@ public class TableUtils {
 	 *            If set to true then try each statement regardless of {@link SQLException} thrown previously.
 	 * @return The number of statements executed to do so.
 	 */
-	public static <T, ID> int dropTable(SQLiteDatabase connectionSource, Class clazz, boolean ignoreErrors) throws SQLException
+	public static <T, ID> int dropTables(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
 	{
-		return doDropTable(connectionSource, loadTableMapper(clazz), ignoreErrors);
+		int count = 0;
+		for (Class aClass : clazz)
+		{
+			count += doDropTable(connectionSource, loadTableMapper(aClass), ignoreErrors);
+		}
+		return count;
 	}
 
 	/**

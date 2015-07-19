@@ -46,7 +46,7 @@ public class RoboTests
 		{
 			try
 			{
-				TableUtils.createTable(sqLiteDatabase, BasicEntity.class);
+				TableUtils.createTables(sqLiteDatabase, BasicEntity.class);
 			}
 			catch (SQLException e)
 			{
@@ -59,7 +59,7 @@ public class RoboTests
 		{
 			try
 			{
-				TableUtils.dropTable(sqLiteDatabase, BasicEntity.class, true);
+				TableUtils.dropTables(sqLiteDatabase, true, BasicEntity.class);
 				onCreate(sqLiteDatabase);
 			}
 			catch (SQLException e)
