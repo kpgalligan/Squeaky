@@ -1,6 +1,7 @@
 package com.j256.ormlite.table;
 
 import android.database.sqlite.SQLiteDatabase;
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
@@ -36,17 +37,22 @@ public class TableUtils {
 	 *            annotations.
 	 * @return The number of statements executed to do so.
 	 */
-	public static <T, ID> int createTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig)
+	public static <T, ID> int createTable(SQLiteDatabase connectionSource, Class clazz)
 			throws SQLException {
-		return createTable(connectionSource, tableConfig, false);
+		return createTable(connectionSource, clazz, false);
+	}
+
+	private static  GeneratedTableMapper loadTableMapper(Class dataclass)
+	{
+		return SqueakyOpenHelper.loadGeneratedTableMapper(dataclass);
 	}
 
 	/**
 	 * Create a table if it does not already exist. This is not supported by all databases.
 	 */
-	public static <T, ID> int createTableIfNotExists(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig)
+	public static <T, ID> int createTableIfNotExists(SQLiteDatabase connectionSource, Class clazz)
 			throws SQLException {
-		return createTable(connectionSource, tableConfig, true);
+		return createTable(connectionSource, clazz, true);
 	}
 
 	/**
@@ -61,9 +67,9 @@ public class TableUtils {
 	 * @return The collection of table create statements.
 	 */
 	public static <T, ID> List<String> getCreateTableStatements(SQLiteDatabase connectionSource,
-			GeneratedTableMapper<T, ID> tableConfig) throws SQLException {
+			Class clazz) throws SQLException {
 
-			return addCreateTableStatements(tableConfig, false);
+			return addCreateTableStatements(loadTableMapper(clazz), false);
 	}
 
 	/**
@@ -82,9 +88,9 @@ public class TableUtils {
 	 *            If set to true then try each statement regardless of {@link SQLException} thrown previously.
 	 * @return The number of statements executed to do so.
 	 */
-	public static <T, ID> int dropTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig, boolean ignoreErrors) throws SQLException
+	public static <T, ID> int dropTable(SQLiteDatabase connectionSource, Class clazz, boolean ignoreErrors) throws SQLException
 	{
-		return doDropTable(connectionSource, tableConfig, ignoreErrors);
+		return doDropTable(connectionSource, loadTableMapper(clazz), ignoreErrors);
 	}
 
 	/**
@@ -95,13 +101,14 @@ public class TableUtils {
 	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
 	 * </p>
 	 */
-	public static <T, ID> void clearTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig)
+	public static <T, ID> void clearTable(SQLiteDatabase connectionSource, Class clazz)
 			throws SQLException {
-		clearTable(connectionSource, tableConfig.getTableConfig().getTableName());
+		clearTable(connectionSource, loadTableMapper(clazz).getTableConfig().getTableName());
 	}
 
-	private static <T, ID> int createTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableConfig, boolean ifNotExists) throws SQLException {
-		return doCreateTable(connectionSource, tableConfig, ifNotExists);
+	private static <T, ID> int createTable(SQLiteDatabase connectionSource, Class clazz, boolean ifNotExists) throws SQLException {
+
+		return doCreateTable(connectionSource, loadTableMapper(clazz), ifNotExists);
 	}
 
 	private static void clearTable(SQLiteDatabase connectionSource, String tableName) throws SQLException {

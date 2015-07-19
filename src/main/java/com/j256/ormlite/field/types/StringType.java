@@ -13,8 +13,6 @@ import java.sql.SQLException;
  */
 public class StringType extends BaseDataType {
 
-	public static int DEFAULT_WIDTH = 255;
-
 	private static final StringType singleTon = new StringType();
 
 	public static StringType getSingleton() {

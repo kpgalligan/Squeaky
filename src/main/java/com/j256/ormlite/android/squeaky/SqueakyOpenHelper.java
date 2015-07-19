@@ -59,17 +59,23 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 		GeneratedTableMapper generatedTableMapper = generatedTableMapperMap.get(clazz);
 		if(generatedTableMapper == null)
 		{
-			try
-			{
-				generatedTableMapper = (GeneratedTableMapper) Class.forName(clazz.getName() + "$$Configuration").newInstance();
-			}
-			catch (Exception e)
-			{
-				throw new RuntimeException(e);
-			}
+			generatedTableMapper = loadGeneratedTableMapper(clazz);
 			generatedTableMapperMap.put(clazz, generatedTableMapper);
 		}
 
 		return generatedTableMapper;
 	}
+
+	public static GeneratedTableMapper loadGeneratedTableMapper(Class clazz)
+	{
+		try
+		{
+			return (GeneratedTableMapper) Class.forName(clazz.getName() + "$$Configuration").newInstance();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
 }
