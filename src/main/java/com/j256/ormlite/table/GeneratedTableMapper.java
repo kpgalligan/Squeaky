@@ -11,7 +11,7 @@ import java.sql.SQLException;
  */
 public interface GeneratedTableMapper<T, ID>
 {
-	T createObject();
+	T createObject(Cursor results)throws SQLException;
 	void fillRow(T data, Cursor results, ModelDao<T, ID> modelDao, Integer recursiveAutorefreshCountdown) throws SQLException;
 	void assignId(T data, Object val);
 	ID extractId(T data);

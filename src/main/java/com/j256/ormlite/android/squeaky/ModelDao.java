@@ -130,7 +130,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			{
 				do
 				{
-					T object = generatedTableMapper.createObject();
+					T object = generatedTableMapper.createObject(cursor);
 					generatedTableMapper.fillRow(object, cursor, this, Config.MAX_AUTO_REFRESH);
 					results.add(object);
 				} while (cursor.moveToNext());

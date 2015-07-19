@@ -98,7 +98,7 @@ public class SelectIterator<T, ID> implements CloseableIterator<T>
 
 	private T makeData() throws SQLException
 	{
-		T data = generatedTableMapper.createObject();
+		T data = generatedTableMapper.createObject(cursor);
 		generatedTableMapper.fillRow(data, cursor, modelDao, Config.MAX_AUTO_REFRESH);
 		return data;
 	}
