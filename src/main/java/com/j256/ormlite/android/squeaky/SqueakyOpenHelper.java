@@ -78,4 +78,8 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 		}
 	}
 
+	public Class[] getManagingClasses()
+	{
+		return managingClasses;
+	}
 }
