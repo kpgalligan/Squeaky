@@ -1,34 +1,62 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.Field;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import android.database.Cursor;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
-import com.j256.ormlite.BaseCoreTest;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataPersister;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.stmt.StatementBuilder.StatementType;
-import com.j256.ormlite.support.CompiledStatement;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.support.DatabaseResults;
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
+import com.j256.ormlite.table.TableUtils;
+import org.robolectric.RuntimeEnvironment;
 
-public abstract class BaseTypeTest extends BaseCoreTest {
+import java.sql.SQLException;
 
-	protected static final String TABLE_NAME = "foo";
+public abstract class BaseTypeTest  {
+
+	public SimpleHelper createHelper(Class... c)
+	{
+		return new SimpleHelper(RuntimeEnvironment.application, getClass().getSimpleName() + ".db", c);
+	}
+
+	public static class SimpleHelper extends SqueakyOpenHelper
+	{
+
+		public SimpleHelper(Context context, String name, Class... managingClasses)
+		{
+			super(context, name, null, 1, managingClasses);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase sqLiteDatabase)
+		{
+			try
+			{
+				TableUtils.createTables(sqLiteDatabase, getManagingClasses());
+			}
+			catch (SQLException e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion)
+		{
+			Class[] managingClasses = getManagingClasses();
+			Class[] reversed = new Class[managingClasses.length];
+
+			for(int i=0; i<managingClasses.length; i++)
+			{
+				reversed[(managingClasses.length - i) - 1] = managingClasses[i];
+			}
+			try
+			{
+				TableUtils.dropTables(sqLiteDatabase, true, reversed);
+			}
+			catch (SQLException e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	/*protected static final String TABLE_NAME = "foo";
 	protected static final FieldType[] noFieldTypes = new FieldType[0];
 
 	protected <T, ID> void testType(Dao<T, ID> dao, T foo, Class<T> clazz, Object javaVal, Object defaultSqlVal,
@@ -122,6 +150,6 @@ public abstract class BaseTypeTest extends BaseCoreTest {
 			}
 
 		}
-	}
+	}*/
 
 }

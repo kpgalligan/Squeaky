@@ -1,40 +1,45 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.j256.ormlite.android.squeaky.Dao;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.SqlType;
+import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Collection;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.stmt.StatementBuilder.StatementType;
-import com.j256.ormlite.stmt.UpdateBuilder;
-import com.j256.ormlite.support.CompiledStatement;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.support.DatabaseResults;
-import com.j256.ormlite.table.DatabaseTable;
-
+@RunWith(RobolectricTestRunner.class)
 public class SerializableTypeTest extends BaseTypeTest {
 
 	private static final String SERIALIZABLE_COLUMN = "serializable";
 	private static final String BYTE_COLUMN = "byteField";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testSerializable() throws Exception {
 		Class<LocalSerializable> clazz = LocalSerializable.class;
-		Dao<LocalSerializable, Object> dao = createDao(clazz, true);
+		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
 		Integer val = 1331333131;
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		ObjectOutputStream objOutStream = new ObjectOutputStream(outStream);
@@ -43,25 +48,23 @@ public class SerializableTypeTest extends BaseTypeTest {
 		String valStr = val.toString();
 		LocalSerializable foo = new LocalSerializable();
 		foo.serializable = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, sqlArg, sqlArg, valStr, DataType.SERIALIZABLE, SERIALIZABLE_COLUMN, false,
-				false, true, false, true, true, false, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testSerializableNull() throws Exception {
 		Class<LocalSerializable> clazz = LocalSerializable.class;
-		Dao<LocalSerializable, Object> dao = createDao(clazz, true);
+		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
 		LocalSerializable foo = new LocalSerializable();
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, null, null, null, null, DataType.SERIALIZABLE, SERIALIZABLE_COLUMN, false, false,
-				true, false, true, true, false, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
-	@Test
+	/*@Test
 	public void testSerializableNoValue() throws Exception {
 		Class<LocalSerializable> clazz = LocalSerializable.class;
-		Dao<LocalSerializable, Object> dao = createDao(clazz, true);
+		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
 		LocalSerializable foo = new LocalSerializable();
 		foo.serializable = null;
 		assertEquals(1, dao.create(foo));
@@ -84,9 +87,9 @@ public class SerializableTypeTest extends BaseTypeTest {
 			}
 			connectionSource.releaseConnection(conn);
 		}
-	}
+	}*/
 
-	@Test(expected = SQLException.class)
+	/*@Test(expected = SQLException.class)
 	public void testSerializableInvalidResult() throws Exception {
 		Class<LocalByteArray> clazz = LocalByteArray.class;
 		Dao<LocalByteArray, Object> dao = createDao(clazz, true);
@@ -111,14 +114,14 @@ public class SerializableTypeTest extends BaseTypeTest {
 			}
 			connectionSource.releaseConnection(conn);
 		}
-	}
+	}*/
 
 	@Test(expected = SQLException.class)
 	public void testSerializableParseDefault() throws Exception {
 		DataType.SERIALIZABLE.getDataPersister().parseDefaultString(null, null);
 	}
 
-	@Test
+	/*@Test
 	public void testUpdateBuilderSerializable() throws Exception {
 		Dao<SerializedUpdate, Integer> dao = createDao(SerializedUpdate.class, true);
 		SerializedUpdate foo = new SerializedUpdate();
@@ -152,61 +155,27 @@ public class SerializableTypeTest extends BaseTypeTest {
 		assertNotNull(result);
 		assertNotNull(result.serialized);
 		assertEquals(serialized3.foo, result.serialized.foo);
-	}
+	}*/
 
 	@Test
 	public void testCoverage() {
 		new SerializableType(SqlType.SERIALIZABLE, new Class[0]);
 	}
 
-	@Test
+	/*@Test
 	public void testSerializedNotSerializable() throws Exception {
 		createDao(SerializedCollection.class, false);
-	}
+	}*/
 
 	/* ------------------------------------------------------------------------------------ */
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable
 	protected static class LocalSerializable {
 		@DatabaseField(columnName = SERIALIZABLE_COLUMN, dataType = DataType.SERIALIZABLE)
-		Integer serializable;;
+		Integer serializable;
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalByteArray {
-		@DatabaseField(columnName = BYTE_COLUMN, dataType = DataType.BYTE_ARRAY)
-		byte[] byteField;
-	}
-
-	protected static class SerializedUpdate {
-		public final static String SERIALIZED_FIELD_NAME = "serialized";
-		@DatabaseField(generatedId = true)
-		public int id;
-		@DatabaseField(dataType = DataType.SERIALIZABLE, columnName = SERIALIZED_FIELD_NAME)
-		public SerializedField serialized;
-		public SerializedUpdate() {
-		}
-	}
-
-	protected static class SerializedField implements Serializable {
-		private static final long serialVersionUID = 4531762180289888888L;
-		String foo;
-		public SerializedField(String foo) {
-			this.foo = foo;
-		}
-	}
-
-	protected static class SerializedCollection {
-		public final static String SERIALIZED_FIELD_NAME = "serialized";
-		@DatabaseField(generatedId = true)
-		public int id;
-		@DatabaseField(columnName = SERIALIZED_FIELD_NAME, persisterClass = LocalSerializableType.class)
-		public Collection<String> serialized;
-		public SerializedCollection() {
-		}
-	}
-
-	protected static class LocalSerializableType extends SerializableType {
+	/*protected static class LocalSerializableType extends SerializableType {
 
 		private static LocalSerializableType singleton;
 
@@ -225,5 +194,12 @@ public class SerializableTypeTest extends BaseTypeTest {
 		public boolean isValidForField(Field field) {
 			return Collection.class.isAssignableFrom(field.getType());
 		}
+	}*/
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalSerializable.class
+		);
 	}
 }

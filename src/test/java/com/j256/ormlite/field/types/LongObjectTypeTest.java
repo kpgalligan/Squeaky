@@ -1,51 +1,54 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class LongObjectTypeTest extends BaseTypeTest {
 
 	private static final String LONG_COLUMN = "longField";
+	public static final String TABLE_NAME = "com_j256_ormlite_field_types_LongObjectTypeTest_table";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testLongObj() throws Exception {
 		Class<LocalLongObj> clazz = LocalLongObj.class;
-		Dao<LocalLongObj, Object> dao = createDao(clazz, true);
+		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
 		Long val = 13312321312312L;
 		String valStr = val.toString();
 		LocalLongObj foo = new LocalLongObj();
 		foo.longField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.LONG_OBJ, LONG_COLUMN, true, true, false, false,
-				false, false, true, true);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testLongObjNull() throws Exception {
 		Class<LocalLongObj> clazz = LocalLongObj.class;
-		Dao<LocalLongObj, Object> dao = createDao(clazz, true);
+		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
 		LocalLongObj foo = new LocalLongObj();
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, null, null, null, null, DataType.LONG_OBJ, LONG_COLUMN, true, true, false, false,
-				false, false, true, true);
-	}
-
-	@Test
-	public void testVersion() throws Exception {
-		Dao<LongVersion, Integer> dao = createDao(LongVersion.class, true);
-		LongVersion foo = new LongVersion();
-		assertNull(foo.version);
-		assertEquals(1, dao.create(foo));
-		assertEquals(Long.valueOf(1), foo.version);
-		assertEquals(1, dao.update(foo));
-		assertEquals(Long.valueOf(2), foo.version);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
@@ -54,10 +57,10 @@ public class LongObjectTypeTest extends BaseTypeTest {
 		Long longField;
 	}
 
-	protected static class LongVersion {
-		@DatabaseField(generatedId = true)
-		int id;
-		@DatabaseField(version = true)
-		Long version;
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalLongObj.class
+		);
 	}
 }

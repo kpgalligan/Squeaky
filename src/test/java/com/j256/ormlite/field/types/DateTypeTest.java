@@ -1,27 +1,41 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
+import com.j256.ormlite.android.squeaky.Dao;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.FieldType;
-import com.j256.ormlite.table.DatabaseTable;
-
+@RunWith(RobolectricTestRunner.class)
 public class DateTypeTest extends BaseTypeTest {
 
 	private static final String DATE_COLUMN = "date";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testDate() throws Exception {
 		Class<LocalDate> clazz = LocalDate.class;
-		Dao<LocalDate, Object> dao = createDao(clazz, true);
+		Dao<LocalDate, Object> dao = helper.getDao(clazz);
 		// we have to round to 0 millis
 		long millis = System.currentTimeMillis();
 		millis -= millis % 1000;
@@ -31,44 +45,30 @@ public class DateTypeTest extends BaseTypeTest {
 		String valStr = dateFormat.format(val);
 		LocalDate foo = new LocalDate();
 		foo.date = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.DATE, DATE_COLUMN, false, true, true, false, true,
-				false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testDateNull() throws Exception {
 		Class<LocalDate> clazz = LocalDate.class;
-		Dao<LocalDate, Object> dao = createDao(clazz, true);
+		Dao<LocalDate, Object> dao = helper.getDao(clazz);
 		LocalDate foo = new LocalDate();
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, null, null, null, null, DataType.DATE, DATE_COLUMN, false, true, true, false, true,
-				false, true, false);
-	}
-
-	@Test(expected = SQLException.class)
-	public void testDateParseInvalid() throws Exception {
-		FieldType fieldType =
-				FieldType.createFieldType(connectionSource, TABLE_NAME, LocalDate.class.getDeclaredField(DATE_COLUMN),
-						LocalDate.class);
-		DataType.DATE.getDataPersister().parseDefaultString(fieldType, "not valid date string");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testInvalidDateField() throws Exception {
-		FieldType.createFieldType(connectionSource, TABLE_NAME, InvalidDate.class.getDeclaredField("notDate"),
-				LocalDate.class);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@DatabaseTable
-	protected static class InvalidDate {
-		@DatabaseField(dataType = DataType.DATE)
-		String notDate;
-	}
-
-	@DatabaseTable(tableName = TABLE_NAME)
 	protected static class LocalDate {
 		@DatabaseField(columnName = DATE_COLUMN)
 		java.util.Date date;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalDate.class
+		);
 	}
 }

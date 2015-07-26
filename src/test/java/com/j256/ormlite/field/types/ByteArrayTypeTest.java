@@ -1,43 +1,58 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.sql.SQLException;
-import java.util.Arrays;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import java.sql.SQLException;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class ByteArrayTypeTest extends BaseTypeTest {
 
 	private static final String BYTE_COLUMN = "byteField";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testByteArray() throws Exception {
 		Class<LocalByteArray> clazz = LocalByteArray.class;
-		Dao<LocalByteArray, Object> dao = createDao(clazz, true);
+		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
 		byte[] val = new byte[] { 123, 4, 124, 1, 0, 72 };
 		String valStr = Arrays.toString(val);
 		LocalByteArray foo = new LocalByteArray();
 		foo.byteField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.BYTE_ARRAY, BYTE_COLUMN, false, false, true, false,
-				true, false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testByteArrayNull() throws Exception {
 		Class<LocalByteArray> clazz = LocalByteArray.class;
-		Dao<LocalByteArray, Object> dao = createDao(clazz, true);
+		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
 		LocalByteArray foo = new LocalByteArray();
-		assertEquals(1, dao.create(new LocalByteArray()));
-		testType(dao, foo, clazz, null, null, null, null, DataType.BYTE_ARRAY, BYTE_COLUMN, false, false, true, false,
-				true, false, true, false);
+		dao.create(new LocalByteArray());
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test(expected = SQLException.class)
@@ -50,9 +65,16 @@ public class ByteArrayTypeTest extends BaseTypeTest {
 		new ByteArrayType(SqlType.BYTE_ARRAY, new Class[0]);
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable
 	protected static class LocalByteArray {
 		@DatabaseField(columnName = BYTE_COLUMN, dataType = DataType.BYTE_ARRAY)
 		byte[] byteField;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalByteArray.class
+		);
 	}
 }

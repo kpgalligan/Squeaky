@@ -1,41 +1,59 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class DoubleTypeTest extends BaseTypeTest {
 
 	private static final String DOUBLE_COLUMN = "doubleField";
+	public static final String LOCAL_DOUBLE = "LocalDouble";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testDouble() throws Exception {
 		Class<LocalDouble> clazz = LocalDouble.class;
-		Dao<LocalDouble, Object> dao = createDao(clazz, true);
+		Dao<LocalDouble, Object> dao = helper.getDao(clazz);
 		double val = 13313323131.221;
 		String valStr = Double.toString(val);
 		LocalDouble foo = new LocalDouble();
 		foo.doubleField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.DOUBLE, DOUBLE_COLUMN, false, true, false, true,
-				false, false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testDoublePrimitiveNull() throws Exception {
-		Dao<LocalDoubleObj, Object> objDao = createDao(LocalDoubleObj.class, true);
+		Dao<LocalDoubleObj, Object> objDao = helper.getDao(LocalDoubleObj.class);
 		LocalDoubleObj foo = new LocalDoubleObj();
 		foo.doubleField = null;
-		assertEquals(1, objDao.create(foo));
-		Dao<LocalDouble, Object> dao = createDao(LocalDouble.class, false);
+		objDao.create(foo);
+
+		Dao<LocalDouble, Object> dao = helper.getDao(LocalDouble.class);
 		List<LocalDouble> all = dao.queryForAll();
 		assertEquals(1, all.size());
 		assertEquals(0.0F, all.get(0).doubleField, 0.0F);
@@ -46,15 +64,22 @@ public class DoubleTypeTest extends BaseTypeTest {
 		new DoubleType(SqlType.DOUBLE, new Class[0]);
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable(tableName = LOCAL_DOUBLE)
 	protected static class LocalDouble {
 		@DatabaseField(columnName = DOUBLE_COLUMN)
 		double doubleField;;
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable(tableName = LOCAL_DOUBLE)
 	protected static class LocalDoubleObj {
 		@DatabaseField(columnName = DOUBLE_COLUMN)
 		Double doubleField;;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalDouble.class
+		);
 	}
 }

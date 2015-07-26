@@ -1,10 +1,9 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertNull;
-
+import com.j256.ormlite.field.DataType;
 import org.junit.Test;
 
-import com.j256.ormlite.field.DataType;
+import static org.junit.Assert.assertNull;
 
 public class UnknownTypeTest extends BaseTypeTest {
 

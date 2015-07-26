@@ -1,32 +1,39 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class BooleanIntegerTypeTest extends BaseTypeTest {
 
 	private static final String BOOLEAN_COLUMN = "bool";
 
 	@Test
 	public void testBooleanInteger() throws Exception {
+		SimpleHelper helper = createHelper(LocalBooleanInteger.class);
+
 		Class<LocalBooleanInteger> clazz = LocalBooleanInteger.class;
-		Dao<LocalBooleanInteger, Object> dao = createDao(clazz, true);
+		Dao<LocalBooleanInteger, Object> dao = helper.getDao(clazz);
 		boolean val = true;
 		String valStr = Boolean.toString(val);
 		LocalBooleanInteger foo = new LocalBooleanInteger();
 		foo.bool = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, 1, 1, valStr, DataType.BOOLEAN_INTEGER, BOOLEAN_COLUMN, false, false, false,
-				true, false, false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+
+		helper.close();
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable
 	protected static class LocalBooleanInteger {
 		@DatabaseField(columnName = BOOLEAN_COLUMN, dataType = DataType.BOOLEAN_INTEGER)
 		boolean bool;

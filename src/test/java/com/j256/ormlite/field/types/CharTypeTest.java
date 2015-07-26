@@ -1,38 +1,45 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class CharTypeTest extends BaseTypeTest {
 
 	private static final String CHAR_COLUMN = "charField";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testChar() throws Exception {
 		Class<LocalChar> clazz = LocalChar.class;
-		Dao<LocalChar, Object> dao = createDao(clazz, true);
+		Dao<LocalChar, Object> dao = helper.getDao(clazz);
 		char val = 'w';
 		String valStr = Character.toString(val);
 		LocalChar foo = new LocalChar();
 		foo.charField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.CHAR, CHAR_COLUMN, false, true, true, true, false,
-				false, true, false);
-	}
-
-	@Test
-	public void testPostgresChar() throws Exception {
-		Dao<PostgresCharNull, Integer> dao = createDao(PostgresCharNull.class, true);
-		PostgresCharNull nullChar = new PostgresCharNull();
-		nullChar.charField = '\0';
-		assertEquals(1, dao.create(nullChar));
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
@@ -40,19 +47,16 @@ public class CharTypeTest extends BaseTypeTest {
 		new CharType(SqlType.CHAR, new Class[0]);
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable
 	protected static class LocalChar {
 		@DatabaseField(columnName = CHAR_COLUMN)
 		char charField;
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class PostgresCharNull {
-		@DatabaseField(generatedId = true)
-		int id;
-		@DatabaseField(columnName = CHAR_COLUMN)
-		char charField;
-		PostgresCharNull() {
-		}
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalChar.class
+		);
 	}
 }

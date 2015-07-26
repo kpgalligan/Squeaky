@@ -1,53 +1,68 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class StringBytesTypeTest extends BaseTypeTest {
 
 	private static final String STRING_COLUMN = "string";
+	private static final String TABLE_NAME = "com_j256_ormlite_field_types_StringBytesTypeTest_LocalStringBytes";
+	private SimpleHelper helper;
 
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
+	
 	@Test
 	public void testStringBytes() throws Exception {
 		Class<LocalStringBytes> clazz = LocalStringBytes.class;
-		Dao<LocalStringBytes, Object> dao = createDao(clazz, true);
+		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
 		String val = "string with \u0185";
 		LocalStringBytes foo = new LocalStringBytes();
 		foo.string = val;
-		assertEquals(1, dao.create(foo));
+		dao.create(foo);
 		byte[] valBytes = val.getBytes("Unicode");
-		testType(dao, foo, clazz, val, valBytes, valBytes, val, DataType.STRING_BYTES, STRING_COLUMN, false, false,
-				true, false, true, false, true, false);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testStringBytesFormat() throws Exception {
 		Class<LocalStringBytesUtf8> clazz = LocalStringBytesUtf8.class;
-		Dao<LocalStringBytesUtf8, Object> dao = createDao(clazz, true);
+		Dao<LocalStringBytesUtf8, Object> dao = helper.getDao(clazz);
 		String val = "string with \u0185";
 		LocalStringBytesUtf8 foo = new LocalStringBytesUtf8();
 		foo.string = val;
-		assertEquals(1, dao.create(foo));
+		dao.create(foo);
 		byte[] valBytes = val.getBytes("UTF-8");
-		testType(dao, foo, clazz, val, valBytes, valBytes, val, DataType.STRING_BYTES, STRING_COLUMN, false, false,
-				true, false, true, false, true, false);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testStringBytesNull() throws Exception {
 		Class<LocalStringBytes> clazz = LocalStringBytes.class;
-		Dao<LocalStringBytes, Object> dao = createDao(clazz, true);
+		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
 		LocalStringBytes foo = new LocalStringBytes();
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, null, null, null, null, DataType.STRING_BYTES, STRING_COLUMN, false, false, true,
-				false, true, false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
@@ -65,5 +80,12 @@ public class StringBytesTypeTest extends BaseTypeTest {
 	protected static class LocalStringBytesUtf8 {
 		@DatabaseField(columnName = STRING_COLUMN, dataType = DataType.STRING_BYTES, format = "UTF-8")
 		String string;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalStringBytes.class
+		);
 	}
 }

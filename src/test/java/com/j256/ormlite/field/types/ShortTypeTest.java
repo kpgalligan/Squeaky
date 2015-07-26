@@ -1,41 +1,58 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class ShortTypeTest extends BaseTypeTest {
 
 	private static final String SHORT_COLUMN = "shortField";
+	private static final String TABLE_NAME = "com_j256_ormlite_field_types_ShortTypeTest_LocalShort";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testShort() throws Exception {
 		Class<LocalShort> clazz = LocalShort.class;
-		Dao<LocalShort, Object> dao = createDao(clazz, true);
+		Dao<LocalShort, Object> dao = helper.getDao(clazz);
 		short val = 12312;
 		String valStr = Short.toString(val);
 		LocalShort foo = new LocalShort();
 		foo.shortField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.SHORT, SHORT_COLUMN, false, true, false, true, false,
-				false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testShortPrimitiveNull() throws Exception {
-		Dao<LocalShortObj, Object> objDao = createDao(LocalShortObj.class, true);
+		Dao<LocalShortObj, Object> objDao = helper.getDao(LocalShortObj.class);
 		LocalShortObj foo = new LocalShortObj();
 		foo.shortField = null;
-		assertEquals(1, objDao.create(foo));
-		Dao<LocalShort, Object> dao = createDao(LocalShort.class, false);
+		objDao.create(foo);
+		Dao<LocalShort, Object> dao = helper.getDao(LocalShort.class);
 		List<LocalShort> all = dao.queryForAll();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).shortField);
@@ -56,5 +73,12 @@ public class ShortTypeTest extends BaseTypeTest {
 	protected static class LocalShortObj {
 		@DatabaseField(columnName = SHORT_COLUMN)
 		Short shortField;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalShort.class
+		);
 	}
 }

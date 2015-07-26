@@ -43,6 +43,7 @@ public class FieldType<T, ID> {
 	private final boolean index;
 	private final boolean uniqueIndex;
 	private final boolean throwIfNull;
+	private final Enum<?> unknownEnumVal;
 	private String indexName;
 	private String uniqueIndexName;
 
@@ -57,6 +58,7 @@ public class FieldType<T, ID> {
 	 * We don't want to create these if we don't have to.
 	 */
 	private static final ThreadLocal<LevelCounters> threadLevelCounters = new ThreadLocal<LevelCounters>();
+
 
 	public FieldType(
 			String tableName,
@@ -76,7 +78,8 @@ public class FieldType<T, ID> {
 			String indexName,
 			String uniqueIndexName,
 			String configDefaultValue,
-			boolean throwIfNull){
+			boolean throwIfNull,
+			Enum<?> unknownEnumVal){
 		this.fieldName = fieldName;
 		this.tableName = tableName;
 		this.canBeNull = canBeNull;
@@ -95,6 +98,7 @@ public class FieldType<T, ID> {
 		this.columnName = columnName;
 		this.isId = isId;
 		this.isGeneratedId = isGeneratedId;
+		this.unknownEnumVal = unknownEnumVal;
 
 		//TODO: Move this to annotation processor code
 		if ((this.isId || this.isGeneratedId )&& this.isForeign) {
@@ -179,7 +183,7 @@ public class FieldType<T, ID> {
 
 	//Figure out enums
 	public Enum<?> getUnknownEnumVal() {
-		return null;
+		return unknownEnumVal;
 	}
 
 	/**
@@ -310,20 +314,6 @@ public class FieldType<T, ID> {
 					+ defaultStr + "'");
 		} else {
 			this.defaultValue = this.fieldConverter.parseDefaultString(this, defaultStr);
-		}
-	}
-
-	/**
-	 * Return An instantiated {@link FieldType} or null if the field does not have a {@link DatabaseField} annotation.
-	 */
-	public static FieldType createFieldType(ConnectionSource connectionSource, String tableName, Field field,
-											Class<?> parentClass) throws SQLException {
-		DatabaseType databaseType = connectionSource.getDatabaseType();
-		DatabaseFieldConfig fieldConfig = DatabaseFieldConfig.fromField(databaseType, tableName, field);
-		if (fieldConfig == null) {
-			return null;
-		} else {
-			return new FieldType(connectionSource, tableName, field, fieldConfig, parentClass);
 		}
 	}
 

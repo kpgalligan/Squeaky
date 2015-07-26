@@ -1,41 +1,60 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class ByteTypeTest extends BaseTypeTest {
 
 	private static final String BYTE_COLUMN = "byteField";
+	public static final String LOCAL_BYTE = "LocalByte";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testByte() throws Exception {
 		Class<LocalByte> clazz = LocalByte.class;
-		Dao<LocalByte, Object> dao = createDao(clazz, true);
+		Dao<LocalByte, Object> dao = helper.getDao(clazz);
 		byte val = 123;
 		String valStr = Byte.toString(val);
 		LocalByte foo = new LocalByte();
 		foo.byteField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.BYTE, BYTE_COLUMN, false, true, false, true, false,
-				false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testBytePrimitiveNull() throws Exception {
-		Dao<LocalByteObj, Object> objDao = createDao(LocalByteObj.class, true);
+		Dao<LocalByteObj, Object> objDao = helper.getDao(LocalByteObj.class);
 		LocalByteObj foo = new LocalByteObj();
 		foo.byteField = null;
-		assertEquals(1, objDao.create(foo));
-		Dao<LocalByte, Object> dao = createDao(LocalByte.class, false);
+		objDao.create(foo);
+
+		Dao<LocalByte, Object> dao = helper.getDao(LocalByte.class);
 		List<LocalByte> all = dao.queryForAll();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).byteField);
@@ -46,15 +65,22 @@ public class ByteTypeTest extends BaseTypeTest {
 		new ByteType(SqlType.BYTE, new Class[0]);
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable(tableName = LOCAL_BYTE)
 	protected static class LocalByte {
 		@DatabaseField(columnName = BYTE_COLUMN)
 		byte byteField;
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable(tableName = LOCAL_BYTE)
 	protected static class LocalByteObj {
 		@DatabaseField(columnName = BYTE_COLUMN)
 		Byte byteField;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalByte.class
+		);
 	}
 }

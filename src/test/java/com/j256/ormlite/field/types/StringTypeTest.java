@@ -1,34 +1,57 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class StringTypeTest extends BaseTypeTest {
 
 	private static final String STRING_COLUMN = "string";
+	private static final String TABLE_NAME = "com_j256_ormlite_field_types_StringTypeTest_LocalString";
+	private SimpleHelper helper;
 
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
+	
 	@Test
 	public void testString() throws Exception {
 		Class<LocalString> clazz = LocalString.class;
-		Dao<LocalString, Object> dao = createDao(clazz, true);
+		Dao<LocalString, Object> dao = helper.getDao(clazz);
 		String val = "str";
 		String valStr = val;
 		LocalString foo = new LocalString();
 		foo.string = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.STRING, STRING_COLUMN, false, true, true, false,
-				false, false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
 	protected static class LocalString {
 		@DatabaseField(columnName = STRING_COLUMN)
 		String string;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalString.class
+		);
 	}
 }

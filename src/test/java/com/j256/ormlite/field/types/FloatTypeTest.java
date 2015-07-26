@@ -1,41 +1,58 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class FloatTypeTest extends BaseTypeTest {
 
 	private static final String FLOAT_COLUMN = "floatField";
+	private SimpleHelper helper;
+	public static final String TABLE_NAME = "com_j256_ormlite_field_types_FloatTypeTest_table";
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testFloat() throws Exception {
 		Class<LocalFloat> clazz = LocalFloat.class;
-		Dao<LocalFloat, Object> dao = createDao(clazz, true);
+		Dao<LocalFloat, Object> dao = helper.getDao(clazz);
 		float val = 1331.221F;
 		String valStr = Float.toString(val);
 		LocalFloat foo = new LocalFloat();
 		foo.floatField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.FLOAT, FLOAT_COLUMN, false, true, false, true, false,
-				false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testFloatPrimitiveNull() throws Exception {
-		Dao<LocalFloatObj, Object> objDao = createDao(LocalFloatObj.class, true);
+		Dao<LocalFloatObj, Object> objDao = helper.getDao(LocalFloatObj.class);
 		LocalFloatObj foo = new LocalFloatObj();
 		foo.floatField = null;
-		assertEquals(1, objDao.create(foo));
-		Dao<LocalFloat, Object> dao = createDao(LocalFloat.class, false);
+		objDao.create(foo);
+		Dao<LocalFloat, Object> dao = helper.getDao(LocalFloat.class);
 		List<LocalFloat> all = dao.queryForAll();
 		assertEquals(1, all.size());
 		assertEquals(0.0F, all.get(0).floatField, 0.0F);
@@ -56,5 +73,12 @@ public class FloatTypeTest extends BaseTypeTest {
 	protected static class LocalFloatObj {
 		@DatabaseField(columnName = FLOAT_COLUMN)
 		Float floatField;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalFloat.class
+		);
 	}
 }

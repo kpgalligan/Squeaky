@@ -157,24 +157,13 @@ public enum DataType {
 	 * Persists the {@link BigDecimal} Java class as a String.
 	 */
 	BIG_DECIMAL(BigDecimalStringType.getSingleton()),
-	/**
-	 * Persists the {@link BigDecimal} Java class as a SQL NUMERIC.
-	 */
-	BIG_DECIMAL_NUMERIC(BigDecimalNumericType.getSingleton()),
+
 	/**
 	 * Persists the org.joda.time.DateTime type with reflection since we don't want to add the dependency. Because this
 	 * class uses reflection, you have to specify this using {@link DatabaseField#dataType()}. It won't be detected
 	 * automatically.
 	 */
 	DATE_TIME(DateTimeType.getSingleton()),
-	/**
-	 * Persists the {@link java.sql.Date} Java class.
-	 * 
-	 * <p>
-	 * NOTE: If you want to use the {@link java.util.Date} class then use {@link #DATE} which is recommended instead.
-	 * </p>
-	 */
-	SQL_DATE(SqlDateType.getSingleton()),
 	/**
 	 * Persists the {@link java.sql.Timestamp} Java class. The {@link #DATE} type is recommended instead.
 	 */

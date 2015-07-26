@@ -1,52 +1,63 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.j256.ormlite.android.squeaky.Dao;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.SqlType;
+import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.SqlType;
-import com.j256.ormlite.stmt.StatementBuilder.StatementType;
-import com.j256.ormlite.support.CompiledStatement;
-import com.j256.ormlite.support.DatabaseConnection;
-import com.j256.ormlite.support.DatabaseResults;
-import com.j256.ormlite.table.DatabaseTable;
-
+@RunWith(RobolectricTestRunner.class)
 public class EnumStringTypeTest extends BaseTypeTest {
 
 	private static final String ENUM_COLUMN = "ourEnum";
+	private static final String TABLE_NAME = "com_j256_ormlite_field_types_EnumStringTypeTest_LocalEnumString";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testEnumString() throws Exception {
 		Class<LocalEnumString> clazz = LocalEnumString.class;
-		Dao<LocalEnumString, Object> dao = createDao(clazz, true);
+		Dao<LocalEnumString, Object> dao = helper.getDao(clazz);
 		OurEnum val = OurEnum.SECOND;
 		String valStr = val.toString();
 		String sqlVal = valStr;
 		LocalEnumString foo = new LocalEnumString();
 		foo.ourEnum = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, sqlVal, sqlVal, valStr, DataType.ENUM_STRING, ENUM_COLUMN, false, true, true,
-				false, false, false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testEnumStringNull() throws Exception {
 		Class<LocalEnumString> clazz = LocalEnumString.class;
-		Dao<LocalEnumString, Object> dao = createDao(clazz, true);
+		Dao<LocalEnumString, Object> dao = helper.getDao(clazz);
 		LocalEnumString foo = new LocalEnumString();
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, null, null, null, null, DataType.ENUM_STRING, ENUM_COLUMN, false, true, true, false,
-				false, false, true, false);
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
-	@Test
+	/*@Test
 	public void testEnumStringResultsNoFieldType() throws Exception {
 		Dao<LocalEnumString, Object> dao = createDao(LocalEnumString.class, true);
 		OurEnum val = OurEnum.SECOND;
@@ -70,43 +81,29 @@ public class EnumStringTypeTest extends BaseTypeTest {
 			}
 			connectionSource.releaseConnection(conn);
 		}
-	}
+	}*/
 
 	@Test(expected = SQLException.class)
 	public void testUnknownEnumValue() throws Exception {
-		Dao<LocalEnumString, Object> dao = createDao(LocalEnumString.class, true);
+		Dao<LocalEnumString, Object> dao = helper.getDao(LocalEnumString.class);
 		LocalEnumString localEnumString = new LocalEnumString();
 		localEnumString.ourEnum = OurEnum.FIRST;
-		assertEquals(1, dao.create(localEnumString));
-		assertEquals(1, dao.updateRaw("UPDATE Foo set ourEnum = 'THIRD'"));
+		dao.create(localEnumString);
+		helper.getWritableDatabase().execSQL("UPDATE " + TABLE_NAME + " set ourEnum = 'THIRD'");
+
 		dao.queryForAll();
 	}
 
 	@Test
 	public void testUnknownValueAnnotation() throws Exception {
-		Dao<LocalUnknownEnum, Object> dao = createDao(LocalUnknownEnum.class, true);
+		Dao<LocalUnknownEnum, Object> dao = helper.getDao(LocalUnknownEnum.class);
 		LocalUnknownEnum localUnknownEnum = new LocalUnknownEnum();
 		localUnknownEnum.ourEnum = OurEnum.SECOND;
-		assertEquals(1, dao.create(localUnknownEnum));
-		assertEquals(1, dao.updateRaw("UPDATE Foo set ourEnum = 'THIRD'"));
+		dao.create(localUnknownEnum);
+		helper.getWritableDatabase().execSQL("UPDATE " + TABLE_NAME + " set ourEnum = 'THIRD'");
 		List<LocalUnknownEnum> unknowns = dao.queryForAll();
 		assertEquals(1, unknowns.size());
 		assertEquals(OurEnum.FIRST, unknowns.get(0).ourEnum);
-	}
-
-	@Test
-	public void testDefaultValue() throws Exception {
-		Dao<EnumDefault, Object> dao = createDao(EnumDefault.class, true);
-		EnumDefault enumDefault = new EnumDefault();
-		assertEquals(1, dao.create(enumDefault));
-		List<EnumDefault> unknowns = dao.queryForAll();
-		assertEquals(1, unknowns.size());
-		assertEquals(OurEnum.SECOND, unknowns.get(0).ourEnum);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testNotEnum() throws Exception {
-		createDao(NotEnum.class, true);
 	}
 
 	@Test
@@ -128,19 +125,15 @@ public class EnumStringTypeTest extends BaseTypeTest {
 		OurEnum ourEnum;
 	}
 
-	protected static class EnumDefault {
-		@DatabaseField(defaultValue = "SECOND")
-		OurEnum ourEnum;
-	}
-
-	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class NotEnum {
-		@DatabaseField(dataType = DataType.ENUM_STRING)
-		String notEnum;
-	}
-
-	private enum OurEnum {
+	enum OurEnum {
 		FIRST,
 		SECOND, ;
+	}
+
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalEnumString.class
+		);
 	}
 }

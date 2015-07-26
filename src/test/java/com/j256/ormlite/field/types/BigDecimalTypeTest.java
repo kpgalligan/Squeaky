@@ -1,47 +1,59 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import com.j256.ormlite.android.squeaky.Dao;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
+@RunWith(RobolectricTestRunner.class)
 public class BigDecimalTypeTest extends BaseTypeTest {
 
 	private final static String BIGDECIMAL_COLUMN = "bigDecimal";
 	private final static String DEFAULT_VALUE = "1.3452904234234732472343454353453453453453453453453453453";
+	public static final String LOCAL_BIG_DECIMAL = "LocalBigDecimal";
+
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testBigDecimal() throws Exception {
 		Class<LocalBigDecimal> clazz = LocalBigDecimal.class;
-		Dao<LocalBigDecimal, Object> dao = createDao(clazz, true);
+		Dao<LocalBigDecimal, Object> dao = helper.getDao(LocalBigDecimal.class);
 		BigDecimal val = new BigDecimal("1.345345435345345345345345345345345345345345346356524234234");
 		String valStr = val.toString();
 		LocalBigDecimal foo = new LocalBigDecimal();
 		foo.bigDecimal = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, valStr, valStr, valStr, DataType.BIG_DECIMAL, BIGDECIMAL_COLUMN, false, false,
-				true, false, false, false, true, false);
-	}
+		dao.create(foo);
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 
-	@Test(expected = SQLException.class)
-	public void testBigDecimalBadDefault() throws Exception {
-		createDao(BigDecimalBadDefault.class, true);
 	}
 
 	@Test
 	public void testBigDecimalNull() throws Exception {
-		Dao<LocalBigDecimal, Object> dao = createDao(LocalBigDecimal.class, true);
+		Dao<LocalBigDecimal, Object> dao = helper.getDao(LocalBigDecimal.class);
 		LocalBigDecimal foo = new LocalBigDecimal();
-		assertEquals(1, dao.create(foo));
+		dao.create(foo);
 
 		List<LocalBigDecimal> results = dao.queryForAll();
 		assertEquals(1, results.size());
@@ -50,49 +62,32 @@ public class BigDecimalTypeTest extends BaseTypeTest {
 
 	@Test(expected = SQLException.class)
 	public void testBigDecimalInvalidDbValue() throws Exception {
-		Dao<LocalBigDecimal, Object> dao = createDao(LocalBigDecimal.class, true);
-		Dao<NotBigDecimal, Object> notDao = createDao(NotBigDecimal.class, false);
+		Dao<LocalBigDecimal, Object> dao = helper.getDao(LocalBigDecimal.class);
+		Dao<NotBigDecimal, Object> notDao = helper.getDao(NotBigDecimal.class);
 
 		NotBigDecimal notFoo = new NotBigDecimal();
 		notFoo.bigDecimal = "not valid form";
-		assertEquals(1, notDao.create(notFoo));
+		notDao.create(notFoo);
 
 		dao.queryForAll();
 	}
 
-	@Test
-	public void testDefaultValue() throws Exception {
-		Dao<BigDecimalDefaultValue, Object> dao = createDao(BigDecimalDefaultValue.class, true);
-		BigDecimalDefaultValue foo = new BigDecimalDefaultValue();
-		dao.create(foo);
-
-		assertNull(foo.bigDecimal);
-		dao.refresh(foo);
-		assertEquals(new BigDecimal(DEFAULT_VALUE), foo.bigDecimal);
-	}
-
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable(tableName = LOCAL_BIG_DECIMAL)
 	protected static class LocalBigDecimal {
 		@DatabaseField(columnName = BIGDECIMAL_COLUMN)
 		BigDecimal bigDecimal;
 	}
 
-	protected static class BigDecimalBadDefault {
-		@DatabaseField(defaultValue = "not valid form")
-		BigDecimal bigDecimal;
-	}
-
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable(tableName = LOCAL_BIG_DECIMAL)
 	protected static class NotBigDecimal {
 		@DatabaseField(columnName = BIGDECIMAL_COLUMN)
 		String bigDecimal;
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class BigDecimalDefaultValue {
-		@DatabaseField(generatedId = true)
-		int id;
-		@DatabaseField(columnName = BIGDECIMAL_COLUMN, defaultValue = DEFAULT_VALUE)
-		BigDecimal bigDecimal;
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalBigDecimal.class
+		);
 	}
 }

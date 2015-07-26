@@ -1,57 +1,67 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.sql.SQLException;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class CharObjectTypeTest extends BaseTypeTest {
 
 	private static final String CHAR_COLUMN = "charField";
+	private SimpleHelper helper;
+
+	@Before
+	public void before()
+	{
+		helper = getHelper();
+	}
+
+	@Before
+	public void after()
+	{
+		helper.close();
+	}
 
 	@Test
 	public void testCharObj() throws Exception {
 		Class<LocalCharObj> clazz = LocalCharObj.class;
-		Dao<LocalCharObj, Object> dao = createDao(clazz, true);
+		Dao<LocalCharObj, Object> dao = helper.getDao(clazz);
 		Character val = 'w';
 		String valStr = val.toString();
 		LocalCharObj foo = new LocalCharObj();
 		foo.charField = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.CHAR_OBJ, CHAR_COLUMN, false, true, true, false,
-				false, false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
 	@Test
 	public void testCharObjNull() throws Exception {
 		Class<LocalCharObj> clazz = LocalCharObj.class;
-		Dao<LocalCharObj, Object> dao = createDao(clazz, true);
+		Dao<LocalCharObj, Object> dao = helper.getDao(clazz);
 		LocalCharObj foo = new LocalCharObj();
-		assertEquals(1, dao.create(new LocalCharObj()));
-		testType(dao, foo, clazz, null, null, null, null, DataType.CHAR_OBJ, CHAR_COLUMN, false, true, true, false,
-				false, false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
 	}
 
-	@Test(expected = SQLException.class)
-	public void testInvalidDefault() throws Exception {
-		createDao(InvalidDefault.class, true);
-	}
-
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable
 	protected static class LocalCharObj {
 		@DatabaseField(columnName = CHAR_COLUMN)
 		Character charField;
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class InvalidDefault {
-		@DatabaseField(columnName = CHAR_COLUMN, defaultValue = "not one char")
-		Character charField;
+	private SimpleHelper getHelper()
+	{
+		return createHelper(
+				LocalCharObj.class
+		);
 	}
 }

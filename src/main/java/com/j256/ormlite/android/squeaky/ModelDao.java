@@ -49,9 +49,6 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				}
 			}
 
-			if(idField == null)
-				throw new IllegalStateException("Must have an id field");
-
 			idFieldType = idField;
 
 			tableCols = buildSelect();
@@ -163,7 +160,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		long newRowId = sqLiteStatement.executeInsert();
 
-		if(idFieldType.isGeneratedId())
+		if(idFieldType != null && idFieldType.isGeneratedId())
 		{
 			generatedTableMapper.assignId(data, newRowId);
 		}

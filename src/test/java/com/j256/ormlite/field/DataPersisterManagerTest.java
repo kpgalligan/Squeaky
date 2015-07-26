@@ -1,19 +1,6 @@
 package com.j256.ormlite.field;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Field;
-import java.sql.SQLException;
-
-import com.j256.ormlite.android.squeaky.Dao;
-import org.junit.Test;
-
-import com.j256.ormlite.BaseCoreTest;
-import com.j256.ormlite.field.types.BaseDataType;
-
-public class DataPersisterManagerTest extends BaseCoreTest {
+public class DataPersisterManagerTest /*extends BaseCoreTest */{
 
 	/*@Test(expected = IllegalArgumentException.class)
 	public void testCustomTypeNoPersister() throws Exception {

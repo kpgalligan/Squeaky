@@ -1,42 +1,52 @@
 package com.j256.ormlite.field.types;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.android.squeaky.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricTestRunner.class)
 public class BooleanObjectTypeTest extends BaseTypeTest {
 
 	private static final String BOOLEAN_COLUMN = "bool";
 
 	@Test
 	public void testBooleanObj() throws Exception {
+
+		SimpleHelper helper = createHelper(LocalBooleanObj.class);
 		Class<LocalBooleanObj> clazz = LocalBooleanObj.class;
-		Dao<LocalBooleanObj, Object> dao = createDao(clazz, true);
+		Dao<LocalBooleanObj, Object> dao = helper.getDao(clazz);
 		Boolean val = true;
 		String valStr = val.toString();
 		LocalBooleanObj foo = new LocalBooleanObj();
 		foo.bool = val;
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, val, val, val, valStr, DataType.BOOLEAN_OBJ, BOOLEAN_COLUMN, false, false, false,
-				false, false, false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+
+		helper.close();
 	}
 
 	@Test
 	public void testBooleanObjNull() throws Exception {
+		SimpleHelper helper = createHelper(LocalBooleanObj.class);
+
 		Class<LocalBooleanObj> clazz = LocalBooleanObj.class;
-		Dao<LocalBooleanObj, Object> dao = createDao(clazz, true);
+		Dao<LocalBooleanObj, Object> dao = helper.getDao(clazz);
 		LocalBooleanObj foo = new LocalBooleanObj();
-		assertEquals(1, dao.create(foo));
-		testType(dao, foo, clazz, null, null, null, null, DataType.BOOLEAN_OBJ, BOOLEAN_COLUMN, false, false, false,
-				false, false, false, true, false);
+		dao.create(foo);
+
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+
+		helper.close();
 	}
 
-	@DatabaseTable(tableName = TABLE_NAME)
+	@DatabaseTable
 	protected static class LocalBooleanObj {
 		@DatabaseField(columnName = BOOLEAN_COLUMN)
 		Boolean bool;
