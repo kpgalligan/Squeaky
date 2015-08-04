@@ -456,12 +456,20 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
+          <artifactId>dagger</artifactId>
+          <groupId>com.squareup.dagger</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>guava</artifactId>
           <groupId>com.google.guava</groupId>
         </exclusion>
         <exclusion>
           <artifactId>commons-lang3</artifactId>
           <groupId>org.apache.commons</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>dagger-compiler</artifactId>
+          <groupId>com.squareup.dagger</groupId>
         </exclusion>
         <exclusion>
           <artifactId>ormliteer-android</artifactId>

@@ -90,6 +90,8 @@ public interface Dao<T, ID>
 	 */
 	ID extractId(T data) throws SQLException;
 
+	void fillForeignCollection(T data, String fieldName)throws SQLException;
+
 	/**
 	 * Returns the class of the DAO. This is used by internal query operators.
 	 */

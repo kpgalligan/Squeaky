@@ -1,6 +1,7 @@
 package com.j256.ormlite.table;
 
 import com.j256.ormlite.field.FieldType;
+import com.j256.ormlite.field.ForeignCollectionInfo;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -22,20 +23,22 @@ public class TableInfo<T, ID> {
 	public final Class<T> dataClass;
 	private final String tableName;
 	private final FieldType[] fieldTypes;
-	private final FieldType[] foreignCollections;
+	private final ForeignCollectionInfo[] foreignCollections;
 	public final FieldType idField;
 	private final boolean foreignAutoCreate;
 	private Map<String, FieldType> fieldNameMap;
 
-	public TableInfo(Class clazz, String name, FieldType[] fieldTypes)
+	public TableInfo(Class clazz, String name, FieldType[] fieldTypes, ForeignCollectionInfo[] foreignCollections)
 			throws SQLException {
 		this.dataClass = clazz;
 		this.tableName = name;
 		this.fieldTypes = fieldTypes;
+		this.foreignCollections = foreignCollections;
+
 		// find the id field
 		FieldType findIdFieldType = null;
 		boolean foreignAutoCreate = false;
-		int foreignCollectionCount = 0;
+
 		for (FieldType fieldType : fieldTypes) {
 			if (fieldType.isId() || fieldType.isGeneratedId() ) {
 				if (findIdFieldType != null) {
@@ -48,27 +51,11 @@ public class TableInfo<T, ID> {
 			/*if (fieldType.isForeignAutoCreate()) {
 				foreignAutoCreate = true;
 			}
-			if (fieldType.isForeignCollection()) {
-				foreignCollectionCount++;
-			}*/
+			*/
 		}
 		// can be null if there is no id field
 		this.idField = findIdFieldType;
 		this.foreignAutoCreate = foreignAutoCreate;
-		if (foreignCollectionCount == 0) {
-			this.foreignCollections = NO_FOREIGN_COLLECTIONS;
-		} else {
-			this.foreignCollections = new FieldType[foreignCollectionCount];
-			foreignCollectionCount = 0;
-			for (FieldType fieldType : fieldTypes) {
-				//TODO: foreign
-				/*if (fieldType.isForeignCollection()) {
-					this.foreignCollections[foreignCollectionCount] = fieldType;
-					foreignCollectionCount++;
-				}*/
-			}
-		}
-
 	}
 
 	/**

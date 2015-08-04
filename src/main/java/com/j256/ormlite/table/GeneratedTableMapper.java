@@ -20,6 +20,7 @@ public interface GeneratedTableMapper<T, ID>
 	String objectToString(T data)throws SQLException;
 	boolean objectsEqual(T d1, T d2)throws SQLException;
 	TableInfo<T, ID> getTableConfig()throws SQLException;
+	void fillForeignCollection(T data, ModelDao<T, ID> modelDao, String fieldName)throws SQLException;
 
 	//Foreign
 

@@ -406,6 +406,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return generatedTableMapper.extractId(data);
 	}
 
+	public void fillForeignCollection(T data, String fieldName)throws SQLException
+	{
+		generatedTableMapper.fillForeignCollection(data, this, fieldName);
+	}
+
 	public Class<T> getDataClass()
 	{
 		return entityClass;

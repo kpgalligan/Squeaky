@@ -15,5 +15,5 @@ public @interface ForeignCollectionField
 
 	boolean orderAscending() default true;
 
-	String foreignFieldName() default "";
+	String foreignFieldName();
 }
