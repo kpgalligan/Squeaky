@@ -47,6 +47,16 @@ public class TableUtils {
 		return count;
 	}
 
+	public static <T, ID> int createViews(SQLiteDatabase connectionSource, Class... clazz)
+			throws SQLException {
+		int count = 0;
+		for (Class aClass : clazz)
+		{
+			count += createView(connectionSource, aClass, false);
+		}
+		return count;
+	}
+
 	private static  GeneratedTableMapper loadTableMapper(Class dataclass)
 	{
 		return SqueakyOpenHelper.loadGeneratedTableMapper(dataclass);
@@ -61,6 +71,16 @@ public class TableUtils {
 		for (Class aClass : clazz)
 		{
 			count += createTable(connectionSource, aClass, true);
+		}
+		return count;
+	}
+
+	public static <T, ID> int createViewsIfNotExists(SQLiteDatabase connectionSource, Class... clazz)
+			throws SQLException {
+		int count = 0;
+		for (Class aClass : clazz)
+		{
+			count += createView(connectionSource, aClass, true);
 		}
 		return count;
 	}
@@ -108,6 +128,16 @@ public class TableUtils {
 		return count;
 	}
 
+	public static <T, ID> int dropViews(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
+	{
+		int count = 0;
+		for (Class aClass : clazz)
+		{
+			count += doDropView(connectionSource, loadTableMapper(aClass), ignoreErrors);
+		}
+		return count;
+	}
+
 	/**
 	 * Clear all data out of the table. For certain database types and with large sized tables, which may take a long
 	 * time. In some configurations, it may be faster to drop and re-create the table.
@@ -124,6 +154,11 @@ public class TableUtils {
 	private static <T, ID> int createTable(SQLiteDatabase connectionSource, Class clazz, boolean ifNotExists) throws SQLException {
 
 		return doCreateTable(connectionSource, loadTableMapper(clazz), ifNotExists);
+	}
+
+	private static <T, ID> int createView(SQLiteDatabase connectionSource, Class clazz, boolean ifNotExists) throws SQLException {
+
+		return doCreateView(connectionSource, loadTableMapper(clazz), ifNotExists);
 	}
 
 	private static void clearTable(SQLiteDatabase connectionSource, String tableName) throws SQLException {
@@ -143,6 +178,18 @@ public class TableUtils {
 		List<String> statements = new ArrayList<String>();
 		addDropIndexStatements(tableInfo, statements);
 		addDropTableStatements(tableInfo, statements);
+
+		return doStatements(connectionSource, "drop", statements, ignoreErrors,
+				false, false);
+
+	}
+
+	private static <T, ID> int doDropView(SQLiteDatabase connectionSource,
+										   GeneratedTableMapper<T, ID> tableInfo, boolean ignoreErrors) throws SQLException {
+		logger.info("dropping table '{}'", tableInfo.getTableConfig().getTableName());
+		List<String> statements = new ArrayList<String>();
+
+		addDropViewStatements(tableInfo, statements);
 
 		return doStatements(connectionSource, "drop", statements, ignoreErrors,
 				false, false);
@@ -219,6 +266,23 @@ public class TableUtils {
 		addCreateIndexStatements(tableInfo, statements, ifNotExists, true);
 	}
 
+	/**
+	 * Generate and return the list of statements to create a database table and any associated features.
+	 */
+	private static <T, ID> void addCreateViewStatements(GeneratedTableMapper<T, ID> tableInfo,
+														 List<String> statements, boolean ifNotExists) throws SQLException {
+		StringBuilder sb = new StringBuilder(256);
+		sb.append("CREATE VIEW ");
+		if (ifNotExists) {
+			sb.append("IF NOT EXISTS ");
+		}
+		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+		sb.append(" AS ");
+		sb.append(tableInfo.getTableConfig().getViewQuery());
+
+		statements.add(sb.toString());
+	}
+
 	private static <T, ID> void addCreateIndexStatements(GeneratedTableMapper<T, ID> tableInfo,
 			List<String> statements, boolean ifNotExists, boolean unique) throws SQLException
 	{
@@ -291,11 +355,34 @@ public class TableUtils {
 		statements.addAll(statementsAfter);
 	}
 
+	private static <T, ID> void addDropViewStatements(GeneratedTableMapper<T, ID> tableInfo,
+													   List<String> statements) throws SQLException
+	{
+		StringBuilder sb = new StringBuilder(64);
+		sb.append("DROP VIEW ");
+		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+		sb.append(' ');
+
+		statements.add(sb.toString());
+	}
+
 	private static <T, ID> int doCreateTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableInfo,
 			boolean ifNotExists) throws SQLException {
 		logger.info("creating table '{}'", tableInfo.getTableConfig().getTableName());
 		List<String> statements = new ArrayList<String>();
 		addCreateTableStatements(tableInfo, statements, ifNotExists);
+
+			int stmtC =
+					doStatements(connectionSource, "create", statements, false, false, false);
+			return stmtC;
+
+	}
+
+	private static <T, ID> int doCreateView(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableInfo,
+			boolean ifNotExists) throws SQLException {
+		logger.info("creating table '{}'", tableInfo.getTableConfig().getTableName());
+		List<String> statements = new ArrayList<String>();
+		addCreateViewStatements(tableInfo, statements, ifNotExists);
 
 			int stmtC =
 					doStatements(connectionSource, "create", statements, false, false, false);
@@ -327,6 +414,12 @@ public class TableUtils {
 	private static <T, ID> List<String> addCreateTableStatements(GeneratedTableMapper<T, ID> tableInfo, boolean ifNotExists) throws SQLException {
 		List<String> statements = new ArrayList<String>();
 		addCreateTableStatements(tableInfo, statements, ifNotExists);
+		return statements;
+	}
+
+	private static <T, ID> List<String> addCreateViewStatements(GeneratedTableMapper<T, ID> tableInfo, boolean ifNotExists) throws SQLException {
+		List<String> statements = new ArrayList<String>();
+		addCreateViewStatements(tableInfo, statements, ifNotExists);
 		return statements;
 	}
 }

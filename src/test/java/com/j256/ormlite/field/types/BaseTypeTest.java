@@ -15,12 +15,24 @@ public abstract class BaseTypeTest  {
 		return new SimpleHelper(RuntimeEnvironment.application, getClass().getSimpleName() + ".db", c);
 	}
 
+	public SimpleHelper createViewHelper(Class viewClass, Class... c)
+	{
+		return new SimpleHelper(RuntimeEnvironment.application, viewClass, getClass().getSimpleName() + ".db", c);
+	}
+
 	public static class SimpleHelper extends SqueakyOpenHelper
 	{
+		private Class viewClass;
 
 		public SimpleHelper(Context context, String name, Class... managingClasses)
 		{
 			super(context, name, null, 1, managingClasses);
+		}
+
+		public SimpleHelper(Context context, Class viewClass, String name, Class... managingClasses)
+		{
+			super(context, name, null, 1, managingClasses);
+			this.viewClass = viewClass;
 		}
 
 		@Override
@@ -29,6 +41,10 @@ public abstract class BaseTypeTest  {
 			try
 			{
 				TableUtils.createTables(sqLiteDatabase, getManagingClasses());
+				if(viewClass != null)
+				{
+					TableUtils.createViews(sqLiteDatabase, viewClass);
+				}
 			}
 			catch (SQLException e)
 			{
@@ -48,6 +64,10 @@ public abstract class BaseTypeTest  {
 			}
 			try
 			{
+				if(viewClass != null)
+				{
+					TableUtils.dropViews(sqLiteDatabase, true, viewClass);
+				}
 				TableUtils.dropTables(sqLiteDatabase, true, reversed);
 			}
 			catch (SQLException e)

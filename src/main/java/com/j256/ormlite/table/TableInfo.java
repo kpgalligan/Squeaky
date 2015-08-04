@@ -22,16 +22,18 @@ public class TableInfo<T, ID> {
 
 	public final Class<T> dataClass;
 	private final String tableName;
+	private final String viewQuery;
 	private final FieldType[] fieldTypes;
 	private final ForeignCollectionInfo[] foreignCollections;
 	public final FieldType idField;
 	private final boolean foreignAutoCreate;
 	private Map<String, FieldType> fieldNameMap;
 
-	public TableInfo(Class clazz, String name, FieldType[] fieldTypes, ForeignCollectionInfo[] foreignCollections)
+	public TableInfo(Class clazz, String name, String viewQuery, FieldType[] fieldTypes, ForeignCollectionInfo[] foreignCollections)
 			throws SQLException {
 		this.dataClass = clazz;
 		this.tableName = name;
+		this.viewQuery = viewQuery;
 		this.fieldTypes = fieldTypes;
 		this.foreignCollections = foreignCollections;
 
@@ -63,6 +65,11 @@ public class TableInfo<T, ID> {
 	 */
 	public String getTableName() {
 		return tableName;
+	}
+
+	public String getViewQuery()
+	{
+		return viewQuery;
 	}
 
 	/**
