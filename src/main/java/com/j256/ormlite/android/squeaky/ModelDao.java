@@ -114,7 +114,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public Where<T, ID> createWhere() throws SQLException
 	{
-		return new Where<T, ID>(generatedTableMapper);
+		return new Where<T, ID>(openHelper, generatedTableMapper);
 	}
 
 	private List<T> makeCursorResults(String where, String[] args) throws SQLException

@@ -1,5 +1,6 @@
 package com.j256.ormlite.stmt.query;
 
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.Where;
@@ -19,14 +20,14 @@ public class In extends BaseComparison
 	private Iterable<?> objects;
 	private final boolean in;
 
-	public In(String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
-		super(columnName, fieldType, null, true);
+	public In(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
+		super(openHelper, columnName, fieldType, null, true);
 		this.objects = objects;
 		this.in = in;
 	}
 
-	public In(String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
-		super(columnName, fieldType, null, true);
+	public In(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
+		super(openHelper, columnName, fieldType, null, true);
 		// grrrr, Object[] should be Iterable
 		this.objects = Arrays.asList(objects);
 		this.in = in;

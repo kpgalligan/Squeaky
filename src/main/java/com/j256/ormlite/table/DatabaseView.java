@@ -34,5 +34,5 @@ public @interface DatabaseView
 	 */
 	String viewName() default "";
 
-	String viewQuery();
+	String viewQuery() default "";
 }

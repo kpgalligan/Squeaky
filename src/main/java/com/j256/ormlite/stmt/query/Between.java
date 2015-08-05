@@ -1,5 +1,6 @@
 package com.j256.ormlite.stmt.query;
 
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.Where;
@@ -17,8 +18,8 @@ public class Between extends BaseComparison
 	private Object low;
 	private Object high;
 
-	public Between(String columnName, FieldType fieldType, Object low, Object high) throws SQLException {
-		super(columnName, fieldType, null, true);
+	public Between(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object low, Object high) throws SQLException {
+		super(openHelper, columnName, fieldType, null, true);
 		this.low = low;
 		this.high = high;
 	}

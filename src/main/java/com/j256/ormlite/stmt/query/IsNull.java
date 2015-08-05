@@ -1,5 +1,6 @@
 package com.j256.ormlite.stmt.query;
 
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.Where;
@@ -15,8 +16,8 @@ import java.util.List;
 public class IsNull extends BaseComparison
 {
 
-	public IsNull(String columnName, FieldType fieldType) throws SQLException {
-		super(columnName, fieldType, null, false);
+	public IsNull(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType) throws SQLException {
+		super(openHelper, columnName, fieldType, null, false);
 	}
 
 	@Override

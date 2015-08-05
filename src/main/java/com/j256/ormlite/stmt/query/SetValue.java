@@ -1,5 +1,6 @@
 package com.j256.ormlite.stmt.query;
 
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.NullArgHolder;
@@ -15,8 +16,8 @@ public class SetValue extends BaseComparison
 	 */
 	private static final ArgumentHolder nullValue = new NullArgHolder();
 
-	public SetValue(String columnName, FieldType fieldType, Object value) throws SQLException {
-		super(columnName, fieldType, (value == null ? nullValue : value), false);
+	public SetValue(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object value) throws SQLException {
+		super(openHelper, columnName, fieldType, (value == null ? nullValue : value), false);
 	}
 
 	@Override

@@ -1,10 +1,13 @@
 package com.j256.ormlite.stmt.query;
 
+import com.j256.ormlite.android.squeaky.ModelDao;
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.ArgumentHolder;
 import com.j256.ormlite.stmt.ColumnArg;
 import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.table.AndroidDatabaseType;
+import com.j256.ormlite.table.GeneratedTableMapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,14 +24,16 @@ abstract class BaseComparison implements Comparison {
 	protected final FieldType fieldType;
 	private final Object value;
 	public static final AndroidDatabaseType databaseType = new AndroidDatabaseType();
+	private final SqueakyOpenHelper openHelper;
 
-	protected BaseComparison(String columnName, FieldType fieldType, Object value, boolean isComparison)
+	protected BaseComparison(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
 			throws SQLException {
 		if (isComparison && fieldType != null && !fieldType.isComparable()) {
-			throw new SQLException("Field '" + columnName + "' is of data type " + fieldType.getDataPersister()
+			throw new SQLException("Field '" + fieldType.getColumnName() + "' is of data type " + fieldType.getDataPersister()
 					+ " which can not be compared");
 		}
-		this.columnName = columnName;
+		this.openHelper = openHelper;
+		this.columnName = fieldType.getColumnName();
 		this.fieldType = fieldType;
 		this.value = value;
 	}
@@ -86,17 +91,14 @@ abstract class BaseComparison implements Comparison {
 			argHolder.setValue(argOrValue);
 			argList.add(argHolder);
 		}
-		//TODO: Figure out foreign args
-		/*else if (fieldType.isForeign() && fieldType.getType().isAssignableFrom(argOrValue.getClass())) {
-			*//*
-			 * If we have a foreign field and our argument is an instance of the foreign object (i.e. not its id), then
-			 * we need to extract the id. We allow super-classes of the field but not sub-classes.
-			 *//*
-			FieldType idFieldType = fieldType.getForeignIdField();
-			appendArgOrValue(idFieldType, sb, argList, idFieldType.extractJavaFieldValue(argOrValue));
+		else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass())) {
+			GeneratedTableMapper generatedTableMapper = ((ModelDao) openHelper.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
+			Object idVal = generatedTableMapper.extractId(argOrValue);
+			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
+			appendArgOrValue(idFieldType, sb, argList, idVal);
 			// no need for the space since it was done in the recursion
 			appendSpace = false;
-		}*/ else if (fieldType.isEscapedValue()) {
+		} else if (fieldType.isEscapedValue()) {
 			databaseType.appendEscapedWord(sb, fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
 		} else if (fieldType.isForeign()) {
 			/*

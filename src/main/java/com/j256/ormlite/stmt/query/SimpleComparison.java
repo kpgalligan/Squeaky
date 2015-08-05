@@ -1,5 +1,6 @@
 package com.j256.ormlite.stmt.query;
 
+import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 
 import java.sql.SQLException;
@@ -22,8 +23,8 @@ public class SimpleComparison extends BaseComparison
 
 	private final String operation;
 
-	public SimpleComparison(String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
-		super(columnName, fieldType, value, true);
+	public SimpleComparison(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
+		super(openHelper, columnName, fieldType, value, true);
 		this.operation = operation;
 	}
 
