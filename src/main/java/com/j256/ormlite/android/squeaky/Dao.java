@@ -28,6 +28,7 @@ public interface Dao<T, ID>
 	Where<T, ID> createWhere() throws SQLException;
 
 	List<T> query(Where<T, ID> where) throws SQLException;
+	List<T> query(Where<T, ID> where, String orderBy) throws SQLException;
 
 	void create(T data) throws SQLException;
 

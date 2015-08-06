@@ -57,9 +57,12 @@ public class ForeignFieldTest extends BaseTypeTest
 			children.add(child);
 		}
 
+		List<String> statements = new ArrayList<>();
+
 		{
 			Where<Child, Integer> where = childDao.createWhere();
 			Where<Child, Integer> subwhere = where.eq("parent", parent);
+			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
 			assertEquals(childList.size(), 20);
 		}
@@ -67,6 +70,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		{
 			Where<Child, Integer> where = childDao.createWhere();
 			Where<Child, Integer> subwhere = where.eq("parent_id", parent.id);
+			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
 			assertEquals(childList.size(), 20);
 		}
@@ -74,6 +78,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		{
 			Where<Child, Integer> where = childDao.createWhere();
 			Where<Child, Integer> subwhere = where.eq("parent_id", parent);
+			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
 			assertEquals(childList.size(), 20);
 		}
@@ -81,8 +86,22 @@ public class ForeignFieldTest extends BaseTypeTest
 		{
 			Where<Child, Integer> where = childDao.createWhere();
 			Where<Child, Integer> subwhere = where.eq("parent", parent.id);
+			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
 			assertEquals(childList.size(), 20);
+		}
+
+		String check = null;
+		for (String statement : statements)
+		{
+			if(check == null)
+			{
+				check = statement == null ? "whoops" : statement;
+			}
+			else
+			{
+				assertEquals(check, statement);
+			}
 		}
 	}
 

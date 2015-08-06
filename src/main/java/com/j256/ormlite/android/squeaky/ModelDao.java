@@ -86,12 +86,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> queryForAll() throws SQLException
 	{
-		return makeCursorResults(null, null);
+		return makeCursorResults(null, null, null);
 	}
 
 	public List<T> queryForEq(String fieldName, Object value) throws SQLException
 	{
-		return makeCursorResults(fieldName + " = ?", new String[]{value.toString()});
+		return makeCursorResults(fieldName + " = ?", new String[]{value.toString()}, null);
 	}
 
 	public List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException
@@ -109,18 +109,18 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			args[count++] = val == null ? null : val.toString();
 		}
 
-		return makeCursorResults(query.toString(), args);
+		return makeCursorResults(query.toString(), args, null);
 	}
 
 	public Where<T, ID> createWhere() throws SQLException
 	{
-		return new Where<T, ID>(openHelper, generatedTableMapper);
+		return new Where<T, ID>(this);
 	}
 
-	private List<T> makeCursorResults(String where, String[] args) throws SQLException
+	private List<T> makeCursorResults(String where, String[] args, String orderBy) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
-		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where, args, null, null, null);
+		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where, args, null, null, orderBy);
 		try
 		{
 			if (cursor.moveToFirst())
@@ -141,15 +141,25 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return results;
 	}
 
-	public List<T> query(String where) throws SQLException
+	public List<T> query(String where, String orderBy) throws SQLException
 	{
-		return makeCursorResults(where, null);
+		return makeCursorResults(where, null, orderBy);
+	}
+
+	public List<T> query(String where)throws SQLException
+	{
+		return query(where, null);
+	}
+
+	public List<T> query(Where<T, ID> where, String orderBy)throws SQLException
+	{
+		String statement = where.getStatement();
+		return query(statement, orderBy);
 	}
 
 	public List<T> query(Where<T, ID> where)throws SQLException
 	{
-		String statement = where.getStatement();
-		return query(statement);
+		return query(where, null);
 	}
 
 	public void create(T data) throws SQLException

@@ -2,12 +2,14 @@ package com.j256.ormlite.stmt;
 
 import android.text.TextUtils;
 import com.j256.ormlite.android.squeaky.Dao;
+import com.j256.ormlite.android.squeaky.ModelDao;
 import com.j256.ormlite.android.squeaky.SqueakyOpenHelper;
 import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.query.*;
 import com.j256.ormlite.table.AndroidDatabaseType;
 import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -84,6 +86,7 @@ public class Where<T, ID> {
 
 	private final static int CLAUSE_STACK_START_SIZE = 4;
 
+	private final ModelDao<T, ID> modelDao;
 	private final SqueakyOpenHelper openHelper;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final FieldType idFieldType;
@@ -94,11 +97,11 @@ public class Where<T, ID> {
 	private int clauseStackLevel;
 	private NeedsFutureClause needsFuture = null;
 
-	public Where(SqueakyOpenHelper openHelper, GeneratedTableMapper<T, ID> generatedTableMapper) throws SQLException
+	public Where(ModelDao<T, ID> modelDao) throws SQLException
 	{
-		// limit the constructor scope
-		this.openHelper = openHelper;
-		this.generatedTableMapper = generatedTableMapper;
+		this.modelDao = modelDao;
+		this.openHelper = modelDao.getOpenHelper();
+		this.generatedTableMapper = modelDao.getGeneratedTableMapper();
 		this.idFieldType = generatedTableMapper.getTableConfig().idField;
 		if (idFieldType == null) {
 			this.idColumnName = null;
@@ -445,6 +448,16 @@ public class Where<T, ID> {
 		StringBuilder sb = new StringBuilder();
 		appendSql(null, sb, new ArrayList<ArgumentHolder>());
 		return sb.toString();
+	}
+
+	public List<T> query() throws SQLException
+	{
+		return modelDao.query(getStatement());
+	}
+
+	public List<T> query(String orderBy)throws SQLException
+	{
+		return modelDao.query(getStatement(), orderBy);
 	}
 
 	/**
