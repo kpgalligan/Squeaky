@@ -459,12 +459,12 @@
 			<version>3.0</version>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>com.github.touchlab</groupId>
-			<artifactId>SqueakyProcessor</artifactId>
-			<version>0.2.0.2</version>
+		<dependency>
+			<groupId>com.koenv</groupId>
+			<artifactId>ormlite-processor</artifactId>
+			<version>0.2.0.5</version>
 			<scope>provided</scope>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>

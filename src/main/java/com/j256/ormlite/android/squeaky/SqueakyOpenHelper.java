@@ -16,7 +16,7 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 {
 	private final Class[] managingClasses;
 
-	private final Map<Class, Dao> daoMap = new HashMap<Class, Dao>();
+	private final Map<Class, ModelDao> daoMap = new HashMap<Class, ModelDao>();
 	private final Map<Class, GeneratedTableMapper> generatedTableMapperMap = new HashMap<Class, GeneratedTableMapper>();
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class... managingClasses)
@@ -33,7 +33,7 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 
 	public synchronized Dao getDao(Class clazz)
 	{
-		Dao dao = daoMap.get(clazz);
+		ModelDao dao = daoMap.get(clazz);
 		if(dao == null)
 		{
 			dao = new ModelDao(this, clazz, getGeneratedTableMapper(clazz));

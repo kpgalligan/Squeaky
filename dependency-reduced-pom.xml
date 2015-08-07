@@ -10,7 +10,7 @@
   <groupId>com.j256.ormlite</groupId>
   <artifactId>ormliteer-android</artifactId>
   <name>ORMLite Android</name>
-  <version>0.2.0.2</version>
+  <version>0.2.0.5</version>
   <description>Lightweight Object Relational Model (ORM) Android classes</description>
   <url>http://ormlite.sourceforge.net/</url>
   <developers>
@@ -452,12 +452,16 @@
     <dependency>
       <groupId>com.koenv</groupId>
       <artifactId>ormlite-processor</artifactId>
-      <version>0.3.13</version>
+      <version>0.2.0.5</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
           <artifactId>dagger</artifactId>
           <groupId>com.squareup.dagger</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>ormliteer-android</artifactId>
+          <groupId>com.j256.ormlite</groupId>
         </exclusion>
         <exclusion>
           <artifactId>guava</artifactId>
@@ -470,10 +474,6 @@
         <exclusion>
           <artifactId>dagger-compiler</artifactId>
           <groupId>com.squareup.dagger</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>ormliteer-android</artifactId>
-          <groupId>com.j256.ormlite</groupId>
         </exclusion>
       </exclusions>
     </dependency>
