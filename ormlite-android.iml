@@ -51,7 +51,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.maven:maven-ant-tasks:2.1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.ant:ant:1.8.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.ant:ant-launcher:1.8.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.touchlab:SqueakyProcessor:0.2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.easymock:easymock:2.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.testing.compile:compile-testing:0.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.truth:truth:0.24" level="project" />
