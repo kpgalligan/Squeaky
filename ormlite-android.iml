@@ -51,17 +51,11 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.maven:maven-ant-tasks:2.1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.ant:ant:1.8.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.ant:ant-launcher:1.8.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.koenv:ormlite-processor:0.3.13" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.squareup.dagger:dagger:1.2.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.inject:javax.inject:1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:18.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.squareup.dagger:dagger-compiler:1.2.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.squareup:javawriter:2.5.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.j256.ormlite:ormliteer-android:4.49-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.touchlab:SqueakyProcessor:0.2.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.easymock:easymock:2.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.testing.compile:compile-testing:0.6" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.truth:truth:0.24" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.google.guava:guava:16.0.1" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: com.sun:tools:1.6.0_65">
         <CLASSES>

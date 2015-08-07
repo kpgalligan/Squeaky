@@ -10,7 +10,7 @@
   <groupId>com.j256.ormlite</groupId>
   <artifactId>ormliteer-android</artifactId>
   <name>ORMLite Android</name>
-  <version>4.49-SNAPSHOT</version>
+  <version>0.2.0.2</version>
   <description>Lightweight Object Relational Model (ORM) Android classes</description>
   <url>http://ormlite.sourceforge.net/</url>
   <developers>

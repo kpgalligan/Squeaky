@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.j256.ormlite</groupId>
 	<artifactId>ormliteer-android</artifactId>
-	<version>0.2.0.2</version>
+	<version>0.2.0.3</version>
 	<packaging>jar</packaging>
 	<name>ORMLite Android</name>
 	<url>http://ormlite.sourceforge.net/</url>
@@ -460,9 +460,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.koenv</groupId>
-			<artifactId>ormlite-processor</artifactId>
-			<version>0.3.13</version>
+			<groupId>com.github.touchlab</groupId>
+			<artifactId>SqueakyProcessor</artifactId>
+			<version>0.2.0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
