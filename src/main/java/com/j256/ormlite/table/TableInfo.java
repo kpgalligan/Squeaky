@@ -11,23 +11,16 @@ import java.util.Map;
  * 
  * @param <T>
  *            The class that the code will be operating on.
- * @param <ID>
- *            The class of the ID column associated with the class. The T class does not require an ID field. The class
- *            needs an ID parameter however so you can use Void or Object to satisfy the compiler.
  * @author graywatson
  */
-public class TableInfo<T, ID> {
-
-	private static final FieldType[] NO_FOREIGN_COLLECTIONS = new FieldType[0];
-
+public class TableInfo<T>
+{
 	public final Class<T> dataClass;
 	private final String tableName;
 	private final String viewQuery;
 	private final FieldType[] fieldTypes;
 	private final ForeignCollectionInfo[] foreignCollections;
 	public final FieldType idField;
-	private final boolean foreignAutoCreate;
-	private Map<String, FieldType> fieldNameMap;
 
 	public TableInfo(Class clazz, String name, String viewQuery, FieldType[] fieldTypes, ForeignCollectionInfo[] foreignCollections)
 			throws SQLException {
@@ -39,7 +32,6 @@ public class TableInfo<T, ID> {
 
 		// find the id field
 		FieldType findIdFieldType = null;
-		boolean foreignAutoCreate = false;
 
 		for (FieldType fieldType : fieldTypes) {
 			if (fieldType.isId() || fieldType.isGeneratedId() ) {
@@ -49,15 +41,10 @@ public class TableInfo<T, ID> {
 				}
 				findIdFieldType = fieldType;
 			}
-			//TODO: foreign
-			/*if (fieldType.isForeignAutoCreate()) {
-				foreignAutoCreate = true;
-			}
-			*/
 		}
+
 		// can be null if there is no id field
 		this.idField = findIdFieldType;
-		this.foreignAutoCreate = foreignAutoCreate;
 	}
 
 	/**

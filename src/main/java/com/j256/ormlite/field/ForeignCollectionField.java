@@ -11,9 +11,7 @@ public @interface ForeignCollectionField
 
 	int maxEagerLevel() default DEFAULT_MAX_EAGER_LEVEL;
 
-	String orderColumnName() default "";
-
-	boolean orderAscending() default true;
+	String orderBy() default "";
 
 	String foreignFieldName();
 }

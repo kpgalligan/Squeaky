@@ -181,7 +181,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		if(createStatement == null)
 		{
 			SQLiteDatabase db = openHelper.getWritableDatabase();
-			TableInfo<T, ID> tableConfig = generatedTableMapper.getTableConfig();
+			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into ");
 			sb.append(tableConfig.getTableName());
@@ -204,8 +204,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			}
 			sb.append(")values(").append(args.toString()).append(")");
 
-			SQLiteStatement sqLiteStatement = db.compileStatement(sb.toString());
-			createStatement = sqLiteStatement;
+			createStatement = db.compileStatement(sb.toString());
 		}
 
 		return createStatement;
@@ -274,7 +273,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		if(updateStatement == null)
 		{
 			SQLiteDatabase db = openHelper.getWritableDatabase();
-			TableInfo<T, ID> tableConfig = generatedTableMapper.getTableConfig();
+			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("update ").append(tableConfig.getTableName()).append(" set ");
 			boolean first = true;
