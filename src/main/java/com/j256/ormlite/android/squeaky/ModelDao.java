@@ -10,6 +10,7 @@ import com.j256.ormlite.field.FieldType;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.GeneratedTableMapper;
 import com.j256.ormlite.table.TableInfo;
+import com.j256.ormlite.table.TransientCache;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -120,6 +121,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	private List<T> makeCursorResults(String where, String[] args, String orderBy) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
+		TransientCache objectCache = new TransientCache();
 		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where, args, null, null, orderBy);
 		try
 		{
@@ -128,7 +130,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				do
 				{
 					T object = generatedTableMapper.createObject(cursor);
-					generatedTableMapper.fillRow(object, cursor, this, Config.MAX_AUTO_REFRESH);
+					generatedTableMapper.fillRow(object, cursor, this, Config.MAX_AUTO_REFRESH, objectCache);
 					results.add(object);
 				} while (cursor.moveToNext());
 			}
@@ -324,7 +326,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			{
 				do
 				{
-					generatedTableMapper.fillRow(data, cursor, this, recursiveAutorefreshCountdown);
+					generatedTableMapper.fillRow(data, cursor, this, recursiveAutorefreshCountdown, null);
 				} while (cursor.moveToNext());
 			}
 		}
