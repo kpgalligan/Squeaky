@@ -176,6 +176,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		{
 			generatedTableMapper.assignId(data, newRowId);
 		}
+
+		notifyChanges();
 	}
 
 	private synchronized SQLiteStatement makeCreateStatement() throws SQLException
@@ -268,6 +270,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		generatedTableMapper.bindVals(sqLiteStatement, data);
 
 		sqLiteStatement.executeUpdateDelete();
+
+		notifyChanges();
 	}
 
 	private synchronized SQLiteStatement makeUpdateStatement() throws SQLException
@@ -309,7 +313,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		fillContentVal(values, idFieldType, newId);
 
-		return db.update(generatedTableMapper.getTableConfig().getTableName(), values, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()});
+		int result = db.update(generatedTableMapper.getTableConfig().getTableName(), values, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()});
+
+		notifyChanges();
+
+		return result;
 	}
 
 	public void refresh(T data) throws SQLException
@@ -343,7 +351,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int deleteById(ID id) throws SQLException
 	{
-		return openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
+		int result = openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
+
+		notifyChanges();
+
+		return result;
 	}
 
 	public int delete(Collection<T> datas) throws SQLException
@@ -360,18 +372,16 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	//TODO: Delete with in statement
 	public int deleteIds(Collection<ID> ids) throws SQLException
 	{
-		int count = 0;
-		for (ID id : ids)
-		{
-			count += deleteById(id);
-		}
-
-		return count;
+		return delete(createWhere().in(idFieldType.getColumnName(), ids));
 	}
 
 	public int delete(Where<T, ID> where) throws SQLException
 	{
-		return openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), null);
+		int result = openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), null);
+
+		notifyChanges();
+
+		return result;
 	}
 
 	public CloseableIterator<T> iterator() throws SQLException
