@@ -223,7 +223,7 @@
               <relocations>
                 <relocation>
                   <pattern>com.squareup.javapoet</pattern>
-                  <shadedPattern>com.j256.ormlite.android.processor.javapoet</shadedPattern>
+                  <shadedPattern>co.touchlab.squeaky.android.processor.javapoet</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>

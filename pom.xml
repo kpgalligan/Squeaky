@@ -17,6 +17,11 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>-->
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 	<scm>
 		<url>https://github.com/touchlab/Squeaky</url>
 		<connection>scm:git:ssh://git@github.com/touchlab/Squeaky.git</connection>
@@ -71,6 +76,15 @@
 				</configuration>
 				<executions>
 					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<compilerArgument>-proc:none</compilerArgument>
+							<includes>
+								<include>com/j256/ormlite/android/processor/OrmLiteAnnotationProcessor.java</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
 						<id>compile-everything-else</id>
 						<phase>compile</phase>
 						<goals>
@@ -80,7 +94,7 @@
 					<execution>
 						<id>compile-TestHelperClass</id>
 						<goals>
-							<goal>compile</goal>
+							<goal>testCompile</goal>
 						</goals>
 						<configuration>
 							<annotationProcessors>
@@ -178,9 +192,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.koenv</groupId>
-			<artifactId>ormlite-processor</artifactId>
-			<version>0.2.0.5</version>
+			<groupId>co.touchlab.squeaky</groupId>
+			<artifactId>squeaky-processor</artifactId>
+			<version>0.3.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
