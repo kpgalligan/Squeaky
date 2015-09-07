@@ -122,12 +122,7 @@
 			<version>3.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>co.touchlab.squeaky</groupId>
-			<artifactId>squeaky-processor</artifactId>
-			<version>0.3.0.0</version>
-			<scope>provided</scope>
-		</dependency>
+
 
 	</dependencies>
 </project>
