@@ -18,8 +18,8 @@ public class Between extends BaseComparison
 	private Object low;
 	private Object high;
 
-	public Between(SqueakyContext openHelper, String columnName, FieldType fieldType, Object low, Object high) throws SQLException {
-		super(openHelper, columnName, fieldType, null, true);
+	public Between(String columnName, FieldType fieldType, Object low, Object high) throws SQLException {
+		super(columnName, fieldType, null, true);
 		this.low = low;
 		this.high = high;
 	}
@@ -30,7 +30,7 @@ public class Between extends BaseComparison
 	}
 
 	@Override
-	public void appendValue(StringBuilder sb, List<ArgumentHolder> argList)
+	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> argList)
 			throws SQLException {
 		if (low == null) {
 			throw new IllegalArgumentException("BETWEEN low value for '" + columnName + "' is null");
@@ -38,8 +38,8 @@ public class Between extends BaseComparison
 		if (high == null) {
 			throw new IllegalArgumentException("BETWEEN high value for '" + columnName + "' is null");
 		}
-		appendArgOrValue(fieldType, sb, argList, low);
+		appendArgOrValue(squeakyContext, fieldType, sb, argList, low);
 		sb.append("AND ");
-		appendArgOrValue(fieldType, sb, argList, high);
+		appendArgOrValue(squeakyContext, fieldType, sb, argList, high);
 	}
 }

@@ -23,8 +23,8 @@ public class SimpleComparison extends BaseComparison
 
 	private final String operation;
 
-	public SimpleComparison(SqueakyContext openHelper, String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
-		super(openHelper, columnName, fieldType, value, true);
+	public SimpleComparison(String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
+		super(columnName, fieldType, value, true);
 		this.operation = operation;
 	}
 

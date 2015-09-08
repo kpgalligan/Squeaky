@@ -20,14 +20,14 @@ public class In extends BaseComparison
 	private Iterable<?> objects;
 	private final boolean in;
 
-	public In(SqueakyContext openHelper, String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
-		super(openHelper, columnName, fieldType, null, true);
+	public In(String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
+		super(columnName, fieldType, null, true);
 		this.objects = objects;
 		this.in = in;
 	}
 
-	public In(SqueakyContext openHelper, String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
-		super(openHelper, columnName, fieldType, null, true);
+	public In(String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
+		super(columnName, fieldType, null, true);
 		// grrrr, Object[] should be Iterable
 		this.objects = Arrays.asList(objects);
 		this.in = in;
@@ -43,7 +43,7 @@ public class In extends BaseComparison
 	}
 
 	@Override
-	public void appendValue(StringBuilder sb, List<ArgumentHolder> columnArgList)
+	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> columnArgList)
 			throws SQLException {
 		sb.append('(');
 		boolean first = true;
@@ -57,7 +57,7 @@ public class In extends BaseComparison
 				sb.append(',');
 			}
 			// for each of our arguments, add it to the output
-			super.appendArgOrValue(fieldType, sb, columnArgList, value);
+			super.appendArgOrValue(squeakyContext, fieldType, sb, columnArgList, value);
 		}
 		sb.append(") ");
 	}

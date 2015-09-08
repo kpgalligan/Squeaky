@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class Raw implements Clause {
 		this.args = args;
 	}
 
-	public void appendSql(String tableName, StringBuilder sb, List<ArgumentHolder> argList) {
+	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb, List<ArgumentHolder> argList) {
 		sb.append(statement);
 		sb.append(' ');
 		for (ArgumentHolder arg : args) {

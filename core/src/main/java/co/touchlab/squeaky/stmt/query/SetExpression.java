@@ -10,8 +10,8 @@ import java.util.List;
 public class SetExpression extends BaseComparison
 {
 
-	public SetExpression(SqueakyContext openHelper, String columnName, FieldType fieldType, String string) throws SQLException {
-		super(openHelper, columnName, fieldType, string, true);
+	public SetExpression(String columnName, FieldType fieldType, String string) throws SQLException {
+		super(columnName, fieldType, string, true);
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class SetExpression extends BaseComparison
 	}
 
 	@Override
-	protected void appendArgOrValue(FieldType fieldType, StringBuilder sb,
+	protected void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, StringBuilder sb,
 			List<ArgumentHolder> selectArgList, Object argOrValue) {
 		// we know it is a string so just append it
 		sb.append(argOrValue).append(' ');

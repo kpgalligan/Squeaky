@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.sql.SQLException;
@@ -51,20 +52,20 @@ public class ManyClause implements Clause, NeedsFutureClause {
 		this.operation = operation;
 	}
 
-	public void appendSql(String tableName, StringBuilder sb,
+	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb,
 			List<ArgumentHolder> selectArgList) throws SQLException {
 		sb.append("(");
-		first.appendSql(tableName, sb, selectArgList);
+		first.appendSql(squeakyContext, tableName, sb, selectArgList);
 		if (second != null) {
 			sb.append(operation);
 			sb.append(' ');
-			second.appendSql(tableName, sb, selectArgList);
+			second.appendSql(squeakyContext, tableName, sb, selectArgList);
 		}
 		if (others != null) {
 			for (int i = startOthersAt; i < others.length; i++) {
 				sb.append(operation);
 				sb.append(' ');
-				others[i].appendSql(tableName, sb, selectArgList);
+				others[i].appendSql(squeakyContext, tableName, sb, selectArgList);
 			}
 		}
 		sb.append(") ");

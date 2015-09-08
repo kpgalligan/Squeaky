@@ -23,15 +23,13 @@ abstract class BaseComparison implements Comparison {
 	protected final String columnName;
 	protected final FieldType fieldType;
 	private final Object value;
-	private final SqueakyContext openHelperHelper;
 
-	protected BaseComparison(SqueakyContext openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
+	protected BaseComparison(String columnName, FieldType fieldType, Object value, boolean isComparison)
 			throws SQLException {
 		if (isComparison && fieldType != null && !fieldType.isComparable()) {
 			throw new SQLException("Field '" + fieldType.getColumnName() + "' is of data type " + fieldType.getDataPersister()
 					+ " which can not be compared");
 		}
-		this.openHelperHelper = openHelper;
 		this.columnName = fieldType.getColumnName();
 		this.fieldType = fieldType;
 		this.value = value;
@@ -39,7 +37,7 @@ abstract class BaseComparison implements Comparison {
 
 	public abstract void appendOperation(StringBuilder sb);
 
-	public void appendSql(String tableName, StringBuilder sb, List<ArgumentHolder> argList)
+	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb, List<ArgumentHolder> argList)
 			throws SQLException {
 		if (tableName != null) {
 			TableUtils.appendEscapedEntityName(sb, tableName);
@@ -49,22 +47,22 @@ abstract class BaseComparison implements Comparison {
 		sb.append(' ');
 		appendOperation(sb);
 		// this needs to call appendValue (not appendArgOrValue) because it may be overridden
-		appendValue(sb, argList);
+		appendValue(squeakyContext, sb, argList);
 	}
 
 	public String getColumnName() {
 		return columnName;
 	}
 
-	public void appendValue(StringBuilder sb, List<ArgumentHolder> argList)
+	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> argList)
 			throws SQLException {
-		appendArgOrValue(fieldType, sb, argList, value);
+		appendArgOrValue(squeakyContext, fieldType, sb, argList, value);
 	}
 
 	/**
 	 * Append to the string builder either a {@link ArgumentHolder} argument or a value object.
 	 */
-	protected void appendArgOrValue(FieldType fieldType, StringBuilder sb,
+	protected void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, StringBuilder sb,
 			List<ArgumentHolder> argList, Object argOrValue) throws SQLException {
 		boolean appendSpace = true;
 		if (argOrValue == null) {
@@ -91,10 +89,10 @@ abstract class BaseComparison implements Comparison {
 			argList.add(argHolder);
 		}
 		else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass())) {
-			GeneratedTableMapper generatedTableMapper = ((ModelDao) openHelperHelper.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
+			GeneratedTableMapper generatedTableMapper = ((ModelDao) squeakyContext.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
 			Object idVal = generatedTableMapper.extractId(argOrValue);
 			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
-			appendArgOrValue(idFieldType, sb, argList, idVal);
+			appendArgOrValue(squeakyContext, idFieldType, sb, argList, idVal);
 			// no need for the space since it was done in the recursion
 			appendSpace = false;
 		} else if (fieldType.isEscapedValue()) {

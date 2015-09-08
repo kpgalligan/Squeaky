@@ -16,8 +16,8 @@ public class SetValue extends BaseComparison
 	 */
 	private static final ArgumentHolder nullValue = new NullArgHolder();
 
-	public SetValue(SqueakyContext openHelper, String columnName, FieldType fieldType, Object value) throws SQLException {
-		super(openHelper, columnName, fieldType, (value == null ? nullValue : value), false);
+	public SetValue(String columnName, FieldType fieldType, Object value) throws SQLException {
+		super(columnName, fieldType, (value == null ? nullValue : value), false);
 	}
 
 	@Override

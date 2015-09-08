@@ -16,8 +16,8 @@ import java.util.List;
 public class IsNull extends BaseComparison
 {
 
-	public IsNull(SqueakyContext openHelper, String columnName, FieldType fieldType) throws SQLException {
-		super(openHelper, columnName, fieldType, null, false);
+	public IsNull(String columnName, FieldType fieldType) throws SQLException {
+		super(columnName, fieldType, null, false);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class IsNull extends BaseComparison
 	}
 
 	@Override
-	public void appendValue(StringBuilder sb, List<ArgumentHolder> argList) {
+	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> argList) {
 		// there is no value
 	}
 }

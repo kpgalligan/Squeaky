@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.sql.SQLException;
@@ -25,6 +26,6 @@ interface Comparison extends Clause {
 	/**
 	 * Add the value of the comparison to the string builder.
 	 */
-	public void appendValue(StringBuilder sb, List<ArgumentHolder> argList)
+	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> argList)
 			throws SQLException;
 }

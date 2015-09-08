@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.Where;
 import co.touchlab.squeaky.table.TableUtils;
@@ -42,7 +43,7 @@ public class Not implements Clause, NeedsFutureClause {
 		}
 	}
 
-	public void appendSql(String tableName, StringBuilder sb,
+	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb,
 			List<ArgumentHolder> selectArgList) throws SQLException {
 		if (comparison == null) {
 			throw new IllegalStateException("Clause has not been set in NOT operation");
@@ -56,7 +57,7 @@ public class Not implements Clause, NeedsFutureClause {
 		TableUtils.appendEscapedEntityName(sb, comparison.getColumnName());
 		sb.append(' ');
 		comparison.appendOperation(sb);
-		comparison.appendValue(sb, selectArgList);
+		comparison.appendValue(squeakyContext, sb, selectArgList);
 
 		sb.append(") ");
 	}
