@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 

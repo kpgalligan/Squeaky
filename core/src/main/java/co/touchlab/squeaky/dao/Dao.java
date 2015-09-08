@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.android.squeaky;
+package co.touchlab.squeaky.dao;
 
 import co.touchlab.squeaky.stmt.Where;
 

@@ -1,7 +1,7 @@
 package co.touchlab.squeaky.table;
 
 import android.database.sqlite.SQLiteDatabase;
-import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.DataPersister;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.field.SqlType;
@@ -399,7 +399,7 @@ public class TableUtils {
 				OLog.i(TAG, "executed {" + label + "} table statement changed: {" + statement + "}");
 			} catch (Exception e) {
 				if (ignoreErrors) {
-					OLog.i(TAG, "ignoring {"+ label +"} error for statement: {"+ statement +"}", e);
+					OLog.i(TAG, "ignoring {" + label + "} error for statement: {" + statement + "}", e);
 				} else {
 					throw SqlExceptionUtil.create("SQL statement failed: " + statement, e);
 				}

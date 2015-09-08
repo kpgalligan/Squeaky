@@ -1,13 +1,12 @@
 package co.touchlab.squeaky.stmt;
 
 import android.text.TextUtils;
-import co.touchlab.squeaky.android.squeaky.Dao;
-import co.touchlab.squeaky.android.squeaky.ModelDao;
-import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.Dao;
+import co.touchlab.squeaky.dao.ModelDao;
+import co.touchlab.squeaky.dao.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.query.*;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
-import co.touchlab.squeaky.table.TableInfo;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

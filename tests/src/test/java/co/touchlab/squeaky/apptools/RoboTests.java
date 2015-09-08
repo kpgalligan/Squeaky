@@ -2,8 +2,8 @@ package co.touchlab.squeaky.apptools;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import co.touchlab.squeaky.android.squeaky.Dao;
-import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.Dao;
+import co.touchlab.squeaky.dao.SqueakyOpenHelper;
 import co.touchlab.squeaky.table.TableUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;

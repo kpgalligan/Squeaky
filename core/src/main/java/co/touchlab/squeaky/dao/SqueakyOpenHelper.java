@@ -1,9 +1,11 @@
-package co.touchlab.squeaky.android.squeaky;
+package co.touchlab.squeaky.dao;
 
 import android.content.Context;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import co.touchlab.squeaky.dao.Dao;
+import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
 import java.util.HashMap;

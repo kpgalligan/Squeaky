@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.field;
 
-import co.touchlab.squeaky.android.squeaky.Dao;
+import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.types.BaseTypeTest;
 import co.touchlab.squeaky.table.DatabaseTable;
 import org.junit.Assert;

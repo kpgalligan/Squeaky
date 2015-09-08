@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.android.squeaky;
+package co.touchlab.squeaky.dao;
 
 import java.io.Closeable;
 import java.sql.SQLException;

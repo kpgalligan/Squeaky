@@ -2,7 +2,7 @@ package co.touchlab.squeaky.table;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import co.touchlab.squeaky.android.squeaky.ModelDao;
+import co.touchlab.squeaky.dao.ModelDao;
 
 import java.sql.SQLException;
 

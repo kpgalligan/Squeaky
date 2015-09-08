@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.android.squeaky;
+package co.touchlab.squeaky.dao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
