@@ -10,7 +10,7 @@ import java.util.Map;
  * Logic for managing access to Dao instances.  If you don't want to extend SqueakyOpenHelper you can use this directly.
  * @author kgalligan
  */
-public class SqueakyOpenHelperHelper
+public class SqueakyContext
 {
 	private final Class[] managingClasses;
 	private final SQLiteOpenHelper helper;
@@ -18,7 +18,7 @@ public class SqueakyOpenHelperHelper
 	private final Map<Class, GeneratedTableMapper> generatedTableMapperMap = new HashMap<Class, GeneratedTableMapper>();
 
 
-	public SqueakyOpenHelperHelper(SQLiteOpenHelper helper, Class[] managingClasses)
+	public SqueakyContext(SQLiteOpenHelper helper, Class[] managingClasses)
 	{
 		this.helper = helper;
 		this.managingClasses = managingClasses;
