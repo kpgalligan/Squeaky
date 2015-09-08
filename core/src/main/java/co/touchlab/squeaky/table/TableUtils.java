@@ -5,8 +5,7 @@ import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.DataPersister;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.field.SqlType;
-import co.touchlab.squeaky.logger.Logger;
-import co.touchlab.squeaky.logger.LoggerFactory;
+import co.touchlab.squeaky.logger.OLog;
 import co.touchlab.squeaky.misc.SqlExceptionUtil;
 
 import java.sql.SQLException;
@@ -19,7 +18,7 @@ import java.util.*;
  */
 public class TableUtils {
 
-	private static Logger logger = LoggerFactory.getLogger(TableUtils.class);
+	public static final String TAG = TableUtils.class.getSimpleName();
 
 	/**
 	 * For static methods only.
@@ -168,13 +167,13 @@ public class TableUtils {
 
 		appendEscapedEntityName(sb, tableName);
 		String statement = sb.toString();
-		logger.info("clearing table '{}' with '{}", tableName, statement);
+		OLog.i(TAG, "clearing table '{" + tableName + "}' with '{" + statement + "}");
 		connectionSource.execSQL(sb.toString());
 	}
 
 	private static <T, ID> int doDropTable(SQLiteDatabase connectionSource,
 			GeneratedTableMapper<T, ID> tableInfo, boolean ignoreErrors) throws SQLException {
-		logger.info("dropping table '{}'", tableInfo.getTableConfig().getTableName());
+		OLog.i(TAG, "dropping table '{" + tableInfo.getTableConfig().getTableName() + "}'");
 		List<String> statements = new ArrayList<String>();
 		addDropIndexStatements(tableInfo, statements);
 		addDropTableStatements(tableInfo, statements);
@@ -186,7 +185,7 @@ public class TableUtils {
 
 	private static <T, ID> int doDropView(SQLiteDatabase connectionSource,
 										   GeneratedTableMapper<T, ID> tableInfo, boolean ignoreErrors) throws SQLException {
-		logger.info("dropping table '{}'", tableInfo.getTableConfig().getTableName());
+		OLog.i(TAG, "dropping table '{" + tableInfo.getTableConfig().getTableName() + "}'");
 		List<String> statements = new ArrayList<String>();
 
 		addDropViewStatements(tableInfo, statements);
@@ -214,7 +213,7 @@ public class TableUtils {
 
 		StringBuilder sb = new StringBuilder(48);
 		for (String indexName : indexSet) {
-			logger.info("dropping index '{}' for table '{}", indexName, tableInfo.getTableConfig().getTableName());
+			OLog.i(TAG, "dropping index '{" + indexName + "}' for table '{" + tableInfo.getTableConfig().getTableName() + "}");
 			sb.append("DROP INDEX ");
 			appendEscapedEntityName(sb, indexName);
 			statements.add(sb.toString());
@@ -309,7 +308,7 @@ public class TableUtils {
 
 		StringBuilder sb = new StringBuilder(128);
 		for (Map.Entry<String, List<String>> indexEntry : indexMap.entrySet()) {
-			logger.info("creating index '{}' for table '{}", indexEntry.getKey(), tableInfo.getTableConfig().getTableName());
+			OLog.i(TAG, "creating index '{" + indexEntry.getKey() + "}' for table '{" + tableInfo.getTableConfig().getTableName() + "}");
 			sb.append("CREATE ");
 			if (unique) {
 				sb.append("UNIQUE ");
@@ -368,7 +367,7 @@ public class TableUtils {
 
 	private static <T, ID> int doCreateTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableInfo,
 			boolean ifNotExists) throws SQLException {
-		logger.info("creating table '{}'", tableInfo.getTableConfig().getTableName());
+		OLog.i(TAG, "creating table '{"+ tableInfo.getTableConfig().getTableName() +"}'");
 		List<String> statements = new ArrayList<String>();
 		addCreateTableStatements(tableInfo, statements, ifNotExists);
 
@@ -380,7 +379,7 @@ public class TableUtils {
 
 	private static <T, ID> int doCreateView(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableInfo,
 			boolean ifNotExists) throws SQLException {
-		logger.info("creating table '{}'", tableInfo.getTableConfig().getTableName());
+		OLog.i(TAG, "creating table '{"+ tableInfo.getTableConfig().getTableName() +"}'");
 		List<String> statements = new ArrayList<String>();
 		addCreateViewStatements(tableInfo, statements, ifNotExists);
 
@@ -397,10 +396,10 @@ public class TableUtils {
 
 			try {
 				connection.execSQL(statement);
-				logger.info("executed {} table statement changed: {}", label, statement);
+				OLog.i(TAG, "executed {" + label + "} table statement changed: {" + statement + "}");
 			} catch (Exception e) {
 				if (ignoreErrors) {
-					logger.info("ignoring {} error '{}' for statement: {}", label, e, statement);
+					OLog.i(TAG, "ignoring {"+ label +"} error for statement: {"+ statement +"}", e);
 				} else {
 					throw SqlExceptionUtil.create("SQL statement failed: " + statement, e);
 				}
