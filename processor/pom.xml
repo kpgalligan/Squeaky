@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>co.touchlab.squeaky</groupId>
+    <artifactId>squeaky-processor</artifactId>
+    <version>0.3.0.1</version>
+    <packaging>jar</packaging>
+    <name>Squeaky ORM Processor</name>
+    <url>https://github.com/touchlab/SqueakyProcessor</url>
+    <description>Annotation Processor for Squeaky</description>
+    <!--<licenses>
+        <license>
+            <name>ISC License</name>
+            <url>http://ormlite.com/docs/license</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>-->
+    <scm>
+        <url>https://github.com/touchlab/SqueakyProcessor</url>
+        <connection>scm:git:ssh://git@github.com/touchlab/SqueakyProcessor.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/touchlab/SqueakyProcessor.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <id>kg</id>
+            <name>Kevin Galligan</name>
+            <url>http://about.me/kpgalligan</url>
+            <organization>Touch Lab</organization>
+            <organizationUrl>http://touchlab.co/</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+        <developer>
+            <id>koesie10</id>
+            <name>Koen Vlaswinkel</name>
+            <url>http://256.com/gray/</url>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+        <!--<resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>-->
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <!-- default empty string that can be overridden on command line. due to surefire's parser bug, if we don't have this here
+            and have any other characters where this is used, it'll get replaced with string "null" -->
+        <surefire.argLine/>
+
+        <android-version>4.1.1.4</android-version>
+        <android-support-version>r6</android-support-version>
+        <!-- external test package versions -->
+        <easymock-version>2.3</easymock-version>
+        <junit-version>4.8.1</junit-version>
+        <squeaky-version>${project.version}</squeaky-version>
+    </properties>
+    <dependencies>
+        <!-- =================================================================== -->
+        <!-- main dependencies -->
+
+        <dependency>
+            <groupId>co.touchlab.squeaky</groupId>
+            <artifactId>squeaky-core</artifactId>
+            <version>0.3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>${android-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.dagger</groupId>
+            <artifactId>dagger</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.dagger</groupId>
+            <artifactId>dagger-compiler</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <!-- =================================================================== -->
+        <!-- test dependencies -->
+
+        <dependency>
+            <groupId>com.google.truth</groupId>
+            <artifactId>truth</artifactId>
+            <version>0.26</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.testing.compile</groupId>
+            <artifactId>compile-testing</artifactId>
+            <version>0.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.robolectric</groupId>
+            <artifactId>robolectric</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>co.touchlab.squeaky</groupId>
+            <artifactId>squeaky-processor</artifactId>
+            <version>0.3.0.0</version>
+            <scope>provided</scope>
+        </dependency>-->
+
+    </dependencies>
+</project>

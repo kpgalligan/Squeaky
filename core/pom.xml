@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>co.touchlab.squeaky</groupId>
+	<artifactId>squeaky-core</artifactId>
+	<version>0.3.0.1</version>
+	<packaging>jar</packaging>
+	<name>Squeaky ORM</name>
+	<url>https://github.com/touchlab/Squeaky</url>
+	<description>Android ORM based on ORMLite</description>
+	<!--<licenses>
+		<license>
+			<name>ISC License</name>
+			<url>http://ormlite.com/docs/license</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>-->
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+	<scm>
+		<url>https://github.com/touchlab/Squeaky</url>
+		<connection>scm:git:ssh://git@github.com/touchlab/Squeaky.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/touchlab/Squeaky.git</developerConnection>
+	</scm>
+	<developers>
+		<developer>
+			<id>kg</id>
+			<name>Kevin Galligan</name>
+			<url>http://about.me/kpgalligan</url>
+			<organization>Touch Lab</organization>
+			<organizationUrl>http://touchlab.co/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</developer>
+		<developer>
+			<id>gray</id>
+			<name>Gray Watson</name>
+			<url>http://256.com/gray/</url>
+			<organization>256.com</organization>
+			<organizationUrl>http://256.com/</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-5</timezone>
+		</developer>
+	</developers>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<properties>
+		<!-- default empty string that can be overridden on command line. due to surefire's parser bug, if we don't have this here 
+			and have any other characters where this is used, it'll get replaced with string "null" -->
+		<surefire.argLine />
+
+		<android-version>4.1.1.4</android-version>
+		<android-support-version>r6</android-support-version>
+		<!-- external test package versions -->
+		<easymock-version>2.3</easymock-version>
+		<junit-version>4.8.1</junit-version>
+		<squeaky-version>${project.version}</squeaky-version>
+	</properties>
+	<dependencies>
+		<!-- =================================================================== -->
+		<!-- main dependencies -->
+
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>android</artifactId>
+			<scope>provided</scope>
+			<version>${android-version}</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.google.android</groupId>
+			<artifactId>support-v4</artifactId>
+			<scope>provided</scope>
+			<version>${android-support-version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- =================================================================== -->
+		<!-- test dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.robolectric</groupId>
+			<artifactId>robolectric</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+
+
+	</dependencies>
+</project>
