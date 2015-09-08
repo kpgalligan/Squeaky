@@ -64,15 +64,6 @@ public class BooleanCharType extends BooleanType {
 	}
 
 	@Override
-	public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
-		if (stringValue.length() == 0) {
-			return Boolean.FALSE;
-		} else {
-			return sqlArgToJava(fieldType, stringValue.charAt(0), columnPos);
-		}
-	}
-
-	@Override
 	public Object makeConfigObject(FieldType fieldType) throws SQLException {
 		String format = fieldType.getFormat();
 		if (format == null) {

@@ -54,9 +54,4 @@ public interface FieldConverter {
 	 * Return the SQL type that is stored in the database for this argument.
 	 */
 	public SqlType getSqlType();
-
-	/**
-	 * Convert a string result value to the related Java field.
-	 */
-	public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) throws SQLException;
 }

@@ -6,8 +6,8 @@ import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.ColumnArg;
 import co.touchlab.squeaky.stmt.SelectArg;
-import co.touchlab.squeaky.table.AndroidDatabaseType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
+import co.touchlab.squeaky.table.TableUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -23,7 +23,6 @@ abstract class BaseComparison implements Comparison {
 	protected final String columnName;
 	protected final FieldType fieldType;
 	private final Object value;
-	public static final AndroidDatabaseType databaseType = new AndroidDatabaseType();
 	private final SqueakyOpenHelper openHelper;
 
 	protected BaseComparison(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
@@ -43,10 +42,10 @@ abstract class BaseComparison implements Comparison {
 	public void appendSql(String tableName, StringBuilder sb, List<ArgumentHolder> argList)
 			throws SQLException {
 		if (tableName != null) {
-			databaseType.appendEscapedEntityName(sb, tableName);
+			TableUtils.appendEscapedEntityName(sb, tableName);
 			sb.append('.');
 		}
-		databaseType.appendEscapedEntityName(sb, columnName);
+		TableUtils.appendEscapedEntityName(sb, columnName);
 		sb.append(' ');
 		appendOperation(sb);
 		// this needs to call appendValue (not appendArgOrValue) because it may be overridden
@@ -79,10 +78,10 @@ abstract class BaseComparison implements Comparison {
 			ColumnArg columnArg = (ColumnArg) argOrValue;
 			String tableName = columnArg.getTableName();
 			if (tableName != null) {
-				databaseType.appendEscapedEntityName(sb, tableName);
+				TableUtils.appendEscapedEntityName(sb, tableName);
 				sb.append('.');
 			}
-			databaseType.appendEscapedEntityName(sb, columnArg.getColumnName());
+			TableUtils.appendEscapedEntityName(sb, columnArg.getColumnName());
 		} else if (fieldType.isArgumentHolderRequired()) {
 			sb.append('?');
 			ArgumentHolder argHolder = new SelectArg();
@@ -99,7 +98,7 @@ abstract class BaseComparison implements Comparison {
 			// no need for the space since it was done in the recursion
 			appendSpace = false;
 		} else if (fieldType.isEscapedValue()) {
-			databaseType.appendEscapedWord(sb, fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
+			TableUtils.appendEscapedWord(sb, fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
 		} else if (fieldType.isForeign()) {
 			/*
 			 * I'm not entirely sure this is correct. This is trying to protect against someone trying to pass an object

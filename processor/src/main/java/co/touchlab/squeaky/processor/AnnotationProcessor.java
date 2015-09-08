@@ -166,21 +166,6 @@ public class AnnotationProcessor extends AbstractProcessor
 			}
 		}
 
-		if (!generatedClasses.isEmpty())
-		{
-//			JavaFile javaFile = generateMainFile();
-			JavaFile helperJavaFile = generateHelperFile();
-			try
-			{
-//				javaFile.writeTo(filer);
-				helperJavaFile.writeTo(filer);
-			} catch (IOException e)
-			{
-				messager.printMessage(Diagnostic.Kind.ERROR, "Code gen failed: failed to generate main class: " + e);
-				return false;
-			}
-		}
-
 		return false;
 	}
 
@@ -304,38 +289,6 @@ fieldConfigs.add(fieldConfig);
 
 		tableHolders.add(tableHolder);
 		return false;
-	}
-
-	private JavaFile generateHelperFile()
-	{
-//		ClassName className = ClassName.get("com.koenv.ormlite.processor", "OrmLiteHelper");
-		ClassName className = ClassName.get("co.touchlab.squeaky.processor", "OrmLiteHelper");
-
-		TypeSpec.Builder configBuilder = TypeSpec.classBuilder(className.simpleName())
-				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-				.addJavadoc("Generated on $L\n", new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date()));
-
-		MethodSpec.Builder findDbColumnMethod = MethodSpec.methodBuilder("safeConvert")
-				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-				.addParameter(Class.class, "type")
-				.addParameter(Object.class, "arg")
-				.returns(Object.class)
-				.addJavadoc("Safe convert val\n");
-
-		findDbColumnMethod.addCode(
-				"\t\tif (Integer.class.equals(type)) {\n" +
-						"\t\t\treturn ((Number)arg).intValue();\n" +
-						"\t\t}else if(Long.class.equals(type)) {\n" +
-						"\t\t\treturn ((Number)arg).longValue();\n" +
-						"\t\t}else if(Short.class.equals(type)) {\n" +
-						"\t\t\treturn ((Number)arg).shortValue();\n" +
-						"\t\t}else{\n" +
-						"\t\t\treturn arg;\n" +
-						"\t\t}\n");
-
-		configBuilder.addMethod(findDbColumnMethod.build());
-
-		return JavaFile.builder(className.packageName(), configBuilder.build()).build();
 	}
 
 	private JavaFile generateClassConfigFile(List<DatabaseTableHolder> databaseTableHolders, DatabaseTableHolder tableHolder)

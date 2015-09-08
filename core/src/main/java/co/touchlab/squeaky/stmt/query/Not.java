@@ -2,6 +2,7 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.Where;
+import co.touchlab.squeaky.table.TableUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -49,10 +50,10 @@ public class Not implements Clause, NeedsFutureClause {
 		// this generates: (NOT 'x' = 123 )
 		sb.append("(NOT ");
 		if (tableName != null) {
-			BaseComparison.databaseType.appendEscapedEntityName(sb, tableName);
+			TableUtils.appendEscapedEntityName(sb, tableName);
 			sb.append('.');
 		}
-		BaseComparison.databaseType.appendEscapedEntityName(sb, comparison.getColumnName());
+		TableUtils.appendEscapedEntityName(sb, comparison.getColumnName());
 		sb.append(' ');
 		comparison.appendOperation(sb);
 		comparison.appendValue(sb, selectArgList);

@@ -1,5 +1,10 @@
 package co.touchlab.squeaky.field;
 
+import android.database.Cursor;
+import co.touchlab.squeaky.field.types.BigDecimalStringType;
+import co.touchlab.squeaky.field.types.DateStringType;
+import co.touchlab.squeaky.field.types.TimeStampStringType;
+import co.touchlab.squeaky.field.types.TimeStampType;
 import co.touchlab.squeaky.table.TableInfo;
 import co.touchlab.squeaky.table.TableUtils;
 
@@ -301,9 +306,9 @@ public class FieldType<T, ID> {
 
 	private void assignDataType(DataPersister dataPersister, String defaultStr) throws SQLException {
 
-		dataPersister = TableUtils.databaseType.getDataPersister(dataPersister);
+		dataPersister = getDataPersister(dataPersister);
 		this.dataPersister = dataPersister;
-		this.fieldConverter = TableUtils.databaseType.getFieldConverter(dataPersister);
+		this.fieldConverter = getFieldConverter(dataPersister);
 
 		this.dataTypeConfigObj = dataPersister.makeConfigObject(this);
 		if (defaultStr == null) {
@@ -326,5 +331,64 @@ public class FieldType<T, ID> {
 		int foreignCollectionLevel;
 		// maximum foreign-collection recursion level
 		int foreignCollectionLevelMax;
+	}
+
+	public DataPersister getDataPersister(DataPersister defaultPersister) {
+		if (defaultPersister == null) {
+			return null;
+		}
+		// we are only overriding certain types
+		switch (defaultPersister.getSqlType()) {
+			case DATE :
+				if (defaultPersister instanceof TimeStampType) {
+					return TimeStampStringType.getSingleton();
+				} else {
+					return DateStringType.getSingleton();
+				}
+			default :
+				return defaultPersister;
+		}
+	}
+
+	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
+
+	public FieldConverter getFieldConverter(DataPersister dataPersister) {
+		// we are only overriding certain types
+		switch (dataPersister.getSqlType()) {
+			case BOOLEAN :
+				return booleanConverter;
+			case BIG_DECIMAL :
+				return BigDecimalStringType.getSingleton();
+			default :
+				return dataPersister;
+		}
+	}
+
+	protected static class BooleanNumberFieldConverter extends BaseFieldConverter
+	{
+		public SqlType getSqlType() {
+			return SqlType.BOOLEAN;
+		}
+		public Object parseDefaultString(FieldType fieldType, String defaultStr) {
+			boolean bool = Boolean.parseBoolean(defaultStr);
+			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
+		}
+		@Override
+		public Object javaToSqlArg(FieldType fieldType, Object obj) {
+			Boolean bool = (Boolean) obj;
+			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
+		}
+		public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+			return (byte)results.getShort(columnPos);
+		}
+		@Override
+		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
+			byte arg = (Byte) sqlArg;
+			return arg == 1;
+		}
+		public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+		{
+			return sqlArgToJava(fieldType, resultToSqlArg(fieldType, results, columnPos), columnPos);
+		}
 	}
 }

@@ -53,13 +53,4 @@ public class BooleanIntegerType extends BooleanType {
 	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
 		return ((Integer) sqlArg == 0 ? Boolean.FALSE : Boolean.TRUE);
 	}
-
-	@Override
-	public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) {
-		if (stringValue.length() == 0) {
-			return Boolean.FALSE;
-		} else {
-			return sqlArgToJava(fieldType, Integer.parseInt(stringValue), columnPos);
-		}
-	}
 }

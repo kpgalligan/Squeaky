@@ -6,7 +6,6 @@ import co.touchlab.squeaky.android.squeaky.ModelDao;
 import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.query.*;
-import co.touchlab.squeaky.table.AndroidDatabaseType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TableInfo;
 
@@ -90,7 +89,6 @@ public class Where<T, ID> {
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final FieldType idFieldType;
 	private final String idColumnName;
-	private static final AndroidDatabaseType databaseType = new AndroidDatabaseType();
 
 	private Clause[] clauseStack = new Clause[CLAUSE_STACK_START_SIZE];
 	private int clauseStackLevel;

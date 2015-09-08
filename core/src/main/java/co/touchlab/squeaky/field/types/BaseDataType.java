@@ -114,8 +114,4 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 	public boolean isArgumentHolderRequired() {
 		return false;
 	}
-
-	public Object resultStringToJava(FieldType fieldType, String stringValue, int columnPos) throws SQLException {
-		return sqlArgToJava(fieldType, parseDefaultString(fieldType, stringValue), columnPos);
-	}
 }

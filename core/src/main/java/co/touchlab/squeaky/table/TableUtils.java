@@ -2,7 +2,9 @@ package co.touchlab.squeaky.table;
 
 import android.database.sqlite.SQLiteDatabase;
 import co.touchlab.squeaky.android.squeaky.SqueakyOpenHelper;
+import co.touchlab.squeaky.field.DataPersister;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.field.SqlType;
 import co.touchlab.squeaky.logger.Logger;
 import co.touchlab.squeaky.logger.LoggerFactory;
 import co.touchlab.squeaky.misc.SqlExceptionUtil;
@@ -18,8 +20,6 @@ import java.util.*;
 public class TableUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(TableUtils.class);
-
-	public static final AndroidDatabaseType databaseType = new AndroidDatabaseType();
 
 	/**
 	 * For static methods only.
@@ -166,7 +166,7 @@ public class TableUtils {
 
 		sb.append("DELETE FROM ");
 
-		databaseType.appendEscapedEntityName(sb, tableName);
+		appendEscapedEntityName(sb, tableName);
 		String statement = sb.toString();
 		logger.info("clearing table '{}' with '{}", tableName, statement);
 		connectionSource.execSQL(sb.toString());
@@ -216,7 +216,7 @@ public class TableUtils {
 		for (String indexName : indexSet) {
 			logger.info("dropping index '{}' for table '{}", indexName, tableInfo.getTableConfig().getTableName());
 			sb.append("DROP INDEX ");
-			databaseType.appendEscapedEntityName(sb, indexName);
+			appendEscapedEntityName(sb, indexName);
 			statements.add(sb.toString());
 			sb.setLength(0);
 		}
@@ -232,7 +232,7 @@ public class TableUtils {
 		if (ifNotExists) {
 			sb.append("IF NOT EXISTS ");
 		}
-		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+		appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
 		sb.append(" (");
 		List<String> additionalArgs = new ArrayList<String>();
 		List<String> statementsBefore = new ArrayList<String>();
@@ -247,12 +247,12 @@ public class TableUtils {
 			}
 
 				// we have to call back to the database type for the specific create syntax
-			databaseType.appendColumnArg(sb, fieldType, additionalArgs);
+			appendColumnArg(sb, fieldType, additionalArgs);
 		}
 		// add any sql that sets any primary key fields
-		databaseType.addPrimaryKeySql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs);
+		addPrimaryKeySql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs);
 		// add any sql that sets any unique fields
-		databaseType.addUniqueComboSql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs);
+		addUniqueComboSql(tableInfo.getTableConfig().getFieldTypes(), additionalArgs);
 		for (String arg : additionalArgs) {
 			// we will have spat out one argument already so we don't have to do the first dance
 			sb.append(", ").append(arg);
@@ -276,7 +276,7 @@ public class TableUtils {
 		if (ifNotExists) {
 			sb.append("IF NOT EXISTS ");
 		}
-		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+		appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
 		sb.append(" AS ");
 		sb.append(tableInfo.getTableConfig().getViewQuery());
 
@@ -318,9 +318,9 @@ public class TableUtils {
 			if (ifNotExists) {
 				sb.append("IF NOT EXISTS ");
 			}
-			databaseType.appendEscapedEntityName(sb, indexEntry.getKey());
+			appendEscapedEntityName(sb, indexEntry.getKey());
 			sb.append(" ON ");
-			databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+			appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
 			sb.append(" ( ");
 			boolean first = true;
 			for (String columnName : indexEntry.getValue()) {
@@ -329,7 +329,7 @@ public class TableUtils {
 				} else {
 					sb.append(", ");
 				}
-				databaseType.appendEscapedEntityName(sb, columnName);
+				appendEscapedEntityName(sb, columnName);
 			}
 			sb.append(" )");
 			statements.add(sb.toString());
@@ -348,7 +348,7 @@ public class TableUtils {
 
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("DROP TABLE ");
-		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+		appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
 		sb.append(' ');
 		statements.addAll(statementsBefore);
 		statements.add(sb.toString());
@@ -360,7 +360,7 @@ public class TableUtils {
 	{
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("DROP VIEW ");
-		databaseType.appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
+		appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
 		sb.append(' ');
 
 		statements.add(sb.toString());
@@ -422,4 +422,287 @@ public class TableUtils {
 		addCreateViewStatements(tableInfo, statements, ifNotExists);
 		return statements;
 	}
+
+	public static void appendEscapedEntityName(StringBuilder sb, String name) {
+		sb.append('`').append(name).append('`');
+	}
+
+	/**
+	 * Output the SQL type for the default value for the type.
+	 */
+	private static void appendDefaultValue(StringBuilder sb, FieldType fieldType, Object defaultValue) {
+		if (fieldType.isEscapedDefaultValue()) {
+			appendEscapedWord(sb, defaultValue.toString());
+		} else {
+			sb.append(defaultValue);
+		}
+	}
+
+	public static void addPrimaryKeySql(FieldType[] fieldTypes, List<String> additionalArgs) {
+		StringBuilder sb = null;
+		for (FieldType fieldType : fieldTypes) {
+			if (fieldType.isGeneratedId()) {
+				// don't add anything
+			} else if (fieldType.isId()) {
+				if (sb == null) {
+					sb = new StringBuilder(48);
+					sb.append("PRIMARY KEY (");
+				} else {
+					sb.append(',');
+				}
+				appendEscapedEntityName(sb, fieldType.getColumnName());
+			}
+		}
+		if (sb != null) {
+			sb.append(") ");
+			additionalArgs.add(sb.toString());
+		}
+	}
+
+	public static void addUniqueComboSql(FieldType[] fieldTypes, List<String> additionalArgs) {
+		StringBuilder sb = null;
+		for (FieldType fieldType : fieldTypes) {
+			if (fieldType.isUniqueCombo()) {
+				if (sb == null) {
+					sb = new StringBuilder(48);
+					sb.append("UNIQUE (");
+				} else {
+					sb.append(',');
+				}
+				appendEscapedEntityName(sb, fieldType.getColumnName());
+			}
+		}
+		if (sb != null) {
+			sb.append(") ");
+			additionalArgs.add(sb.toString());
+		}
+	}
+
+	public static void appendEscapedWord(StringBuilder sb, String word) {
+		sb.append('\'').append(word).append('\'');
+	}
+
+	/**
+	 * Add SQL to handle a unique=true field. THis is not for uniqueCombo=true.
+	 */
+	private static void addSingleUnique(FieldType fieldType, List<String> additionalArgs) {
+		StringBuilder alterSb = new StringBuilder();
+		alterSb.append(" UNIQUE (");
+		appendEscapedEntityName(alterSb, fieldType.getColumnName());
+		alterSb.append(")");
+		additionalArgs.add(alterSb.toString());
+	}
+
+	public static void appendColumnArg(StringBuilder sb, FieldType fieldType, List<String> additionalArgs) throws SQLException {
+		appendEscapedEntityName(sb, fieldType.getColumnName());
+		sb.append(' ');
+		DataPersister dataPersister = fieldType.getDataPersister();
+		// first try the per-field width
+
+		switch (dataPersister.getSqlType()) {
+
+			case STRING :
+				appendStringType(sb);
+				break;
+
+			case LONG_STRING :
+				appendLongStringType(sb);
+				break;
+
+			case BOOLEAN :
+				appendBooleanType(sb);
+				break;
+
+			case DATE :
+				appendDateType(sb);
+				break;
+
+			case CHAR :
+				appendCharType(sb);
+				break;
+
+			case BYTE :
+				appendByteType(sb);
+				break;
+
+			case BYTE_ARRAY :
+				appendByteArrayType(sb);
+				break;
+
+			case SHORT :
+				appendShortType(sb);
+				break;
+
+			case INTEGER :
+				appendIntegerType(sb);
+				break;
+
+			case LONG :
+				appendLongType(sb, fieldType);
+				break;
+
+			case FLOAT :
+				appendFloatType(sb);
+				break;
+
+			case DOUBLE :
+				appendDoubleType(sb);
+				break;
+
+			case SERIALIZABLE :
+				appendSerializableType(sb);
+				break;
+
+			case BIG_DECIMAL :
+				appendBigDecimalNumericType(sb);
+				break;
+
+			case UNKNOWN :
+			default :
+				// shouldn't be able to get here unless we have a missing case
+				throw new IllegalArgumentException("Unknown SQL-type " + dataPersister.getSqlType());
+		}
+		sb.append(' ');
+
+		/*
+		 * NOTE: the configure id methods must be in this order since isGeneratedIdSequence is also isGeneratedId and
+		 * isId. isGeneratedId is also isId.
+		 */
+		if (fieldType.isGeneratedId()) {
+			configureGeneratedId(sb, fieldType);
+		}
+		// if we have a generated-id then neither the not-null nor the default make sense and cause syntax errors
+		if (!fieldType.isGeneratedId()) {
+			Object defaultValue = fieldType.getDefaultValue();
+			if (defaultValue != null) {
+				sb.append("DEFAULT ");
+				appendDefaultValue(sb, fieldType, defaultValue);
+				sb.append(' ');
+			}
+			if (!fieldType.isCanBeNull()) {
+				sb.append("NOT NULL ");
+			}
+			if (fieldType.isUnique()) {
+				addSingleUnique(fieldType, additionalArgs);
+			}
+		}
+	}
+
+	/**
+	 * Output the SQL type for a Java String.
+	 */
+	protected static void appendStringType(StringBuilder sb) {
+		sb.append("VARCHAR");
+	}
+
+	/**
+	 * Output the SQL type for a Java Long String.
+	 */
+	protected static void appendLongStringType(StringBuilder sb) {
+		sb.append("TEXT");
+	}
+
+	/**
+	 * Output the SQL type for a Java Date.
+	 */
+	protected static void appendDateType(StringBuilder sb) {
+		sb.append("TIMESTAMP");
+	}
+
+	/**
+	 * Output the SQL type for a Java boolean.
+	 */
+	protected static void appendBooleanType(StringBuilder sb) {
+		sb.append("BOOLEAN");
+	}
+
+	/**
+	 * Output the SQL type for a Java char.
+	 */
+	protected static void appendCharType(StringBuilder sb) {
+		sb.append("CHAR");
+	}
+
+	/**
+	 * Output the SQL type for a Java byte.
+	 */
+	protected static void appendByteType(StringBuilder sb) {
+		sb.append("TINYINT");
+	}
+
+	/**
+	 * Output the SQL type for a Java short.
+	 */
+	protected static void appendShortType(StringBuilder sb) {
+		sb.append("SMALLINT");
+	}
+
+	/**
+	 * Output the SQL type for a Java integer.
+	 */
+	private static void appendIntegerType(StringBuilder sb) {
+		sb.append("INTEGER");
+	}
+
+	/**
+	 * Output the SQL type for a Java float.
+	 */
+	private static void appendFloatType(StringBuilder sb) {
+		sb.append("FLOAT");
+	}
+
+	/**
+	 * Output the SQL type for a Java double.
+	 */
+	private static void appendDoubleType(StringBuilder sb) {
+		sb.append("DOUBLE PRECISION");
+	}
+
+	/**
+	 * Output the SQL type for either a serialized Java object or a byte[].
+	 */
+	protected static void appendByteArrayType(StringBuilder sb) {
+		sb.append("BLOB");
+	}
+
+	/**
+	 * Output the SQL type for a serialized Java object.
+	 */
+	protected static void appendSerializableType(StringBuilder sb) {
+		sb.append("BLOB");
+	}
+
+	/**
+	 * Output the SQL type for a BigDecimal object.
+	 */
+	protected static void appendBigDecimalNumericType(StringBuilder sb) {
+		sb.append("NUMERIC");
+	}
+
+	protected static void appendLongType(StringBuilder sb, FieldType fieldType) {
+		/*
+		 * This is unfortunate. SQLIte requires that a generated-id have the string "INTEGER PRIMARY KEY AUTOINCREMENT"
+		 * even though the maximum generated value is 64-bit. See configureGeneratedId below.
+		 */
+		if (fieldType.getSqlType() == SqlType.LONG && fieldType.isGeneratedId()) {
+			sb.append("INTEGER");
+		} else {
+			sb.append("BIGINT");
+		}
+	}
+
+	protected static void configureGeneratedId(StringBuilder sb, FieldType fieldType) {
+		/*
+		 * Even though the documentation talks about INTEGER, it is 64-bit with a maximum value of 9223372036854775807.
+		 * See http://www.sqlite.org/faq.html#q1 and http://www.sqlite.org/autoinc.html
+		 */
+		if (fieldType.getSqlType() != SqlType.INTEGER && fieldType.getSqlType() != SqlType.LONG) {
+			throw new IllegalArgumentException(
+					"Sqlite requires that auto-increment generated-id be integer or long type");
+		}
+		sb.append("PRIMARY KEY AUTOINCREMENT ");
+		// no additional call to configureId here
+	}
+
+
 }
