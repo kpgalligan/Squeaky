@@ -1,6 +1,7 @@
 package co.touchlab.squeaky.table;
 
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.field.FieldsEnum;
 import co.touchlab.squeaky.field.ForeignCollectionInfo;
 
 import java.sql.SQLException;
@@ -21,12 +22,17 @@ public class TableInfo<T>
 	private final ForeignCollectionInfo[] foreignCollections;
 	public final FieldType idField;
 
-	public TableInfo(Class clazz, String name, String viewQuery, FieldType[] fieldTypes, ForeignCollectionInfo[] foreignCollections)
+	public TableInfo(Class clazz, String name, String viewQuery, FieldsEnum[] fields, ForeignCollectionInfo[] foreignCollections)
 			throws SQLException {
 		this.dataClass = clazz;
 		this.tableName = name;
 		this.viewQuery = viewQuery;
-		this.fieldTypes = fieldTypes;
+		this.fieldTypes = new FieldType[fields.length];
+		int i = 0;
+		for (FieldsEnum field : fields)
+		{
+			fieldTypes[i++] = field.getFieldType();
+		}
 		this.foreignCollections = foreignCollections;
 
 		// find the id field

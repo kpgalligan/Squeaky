@@ -11,7 +11,7 @@ import java.sql.SQLException;
 /**
  * @author graywatson
  */
-public class FieldType<T, ID> {
+public class FieldType {
 
 	/** default suffix added to fields that are id fields of foreign objects */
 	public static final String FOREIGN_ID_FIELD_SUFFIX = "_id";

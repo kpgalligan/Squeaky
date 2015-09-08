@@ -31,8 +31,6 @@ import co.touchlab.squeaky.field.*;
 import co.touchlab.squeaky.stmt.Where;
 import co.touchlab.squeaky.table.*;
 import com.google.common.base.Joiner;
-//import com.j256.ormlite.android.squeaky.Dao;
-
 import com.squareup.javapoet.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,6 +47,8 @@ import java.io.*;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+//import com.j256.ormlite.android.squeaky.Dao;
 
 public class AnnotationProcessor extends AbstractProcessor
 {
@@ -309,7 +309,7 @@ fieldConfigs.add(fieldConfig);
 
 		TypeSpec.Builder configBuilder = TypeSpec.classBuilder(configName.simpleName())
 				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-				.addField(FieldType[].class, "fieldConfigs")
+				.addField(FieldsEnum[].class, "fields")
 				.addField(ForeignCollectionInfo[].class, "foreignConfigs")
 				.addField(staticInstanceField)
 				.addSuperinterface(ParameterizedTypeName.get(ClassName.get(GeneratedTableMapper.class), className, idType == null ? ClassName.get(Object.class) : idType))
@@ -319,7 +319,7 @@ fieldConfigs.add(fieldConfig);
 		MethodSpec constructor = MethodSpec.constructorBuilder()
 				.addModifiers(Modifier.PUBLIC)
 //				.addException(SQLException.class)
-				.addStatement("this.$N = $N()", "fieldConfigs", "getFieldConfigs")
+				.addStatement("this.$N = $N()", "fields", "getFields")
 				.addStatement("this.$N = $N()", "foreignConfigs", "getForeignConfigs")
 				.build();
 
@@ -410,28 +410,49 @@ fieldConfigs.add(fieldConfig);
 
 	private MethodSpec fieldConfigs(List<DatabaseTableHolder> databaseTableHolders, List<FieldTypeGen> fieldTypeGens, String tableName, ClassName className, TypeSpec.Builder configBuilder)
 	{
-		TypeName listOfFieldConfigs = ParameterizedTypeName.get(List.class, FieldType.class);
-		TypeName arrayListOfFieldConfigs = ParameterizedTypeName.get(ArrayList.class, FieldType.class);
+		TypeSpec.Builder fieldsEnumBuilder = TypeSpec.enumBuilder("Fields")
+				.addModifiers(Modifier.PUBLIC)
+				.addSuperinterface(FieldsEnum.class)
+				.addField(FieldType.class, "fieldType", Modifier.PRIVATE, Modifier.FINAL)
+				.addMethod(MethodSpec.constructorBuilder()
+						.addParameter(FieldType.class, "fieldType")
+						.addStatement("this.$N = $N", "fieldType", "fieldType")
+						.build())
+				.addMethod(
+						MethodSpec.methodBuilder("getFieldType")
+								.addModifiers(Modifier.PUBLIC)
+								.addAnnotation(Override.class)
+								.returns(FieldType.class)
+								.addStatement("return $N", "fieldType")
+								.build());
 
-		MethodSpec.Builder fieldConfigsMethodBuilder = MethodSpec.methodBuilder("getFieldConfigs")
+
+		TypeName listOfFieldConfigs = ParameterizedTypeName.get(List.class, FieldsEnum.class);
+		TypeName arrayListOfFieldConfigs = ParameterizedTypeName.get(ArrayList.class, FieldsEnum.class);
+
+		MethodSpec.Builder fieldConfigsMethodBuilder = MethodSpec.methodBuilder("getFields")
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
 //				.addException(SQLException.class)
-				.returns(FieldType[].class)
-				.addStatement("$T list = new $T()", listOfFieldConfigs, arrayListOfFieldConfigs);
-
-		fieldConfigsMethodBuilder.addStatement("$T config = null", FieldType.class);
+				.returns(FieldsEnum[].class);
 
 		for (FieldTypeGen config : fieldTypeGens)
 		{
-			fieldConfigsMethodBuilder.addCode(getFieldConfig(databaseTableHolders, config, config.databaseField, tableName, className));
-			fieldConfigsMethodBuilder.addStatement("list.add(config)");
+			fieldsEnumBuilder
+					.addEnumConstant(config.fieldName,
+							TypeSpec.anonymousClassBuilder("$L", getFieldConfig(databaseTableHolders, config, config.databaseField, tableName, className)).build()
+					);
+//			fieldConfigsMethodBuilder.addCode(getFieldConfig(databaseTableHolders, config, config.databaseField, tableName, className));
+//			fieldConfigsMethodBuilder.addStatement("list.add(Fields.$L)", config.fieldName);
 		}
 
-		fieldConfigsMethodBuilder.addStatement("return list.toArray(new FieldType[list.size()])");
+
+		fieldConfigsMethodBuilder.addStatement("return Fields.values()");
 
 		MethodSpec fieldConfigsMethod = fieldConfigsMethodBuilder.build();
 
 		configBuilder.addMethod(fieldConfigsMethod);
+
+		configBuilder.addType(fieldsEnumBuilder.build());
 		return fieldConfigsMethod;
 	}
 
@@ -812,8 +833,8 @@ fieldConfigs.add(fieldConfig);
 				assignBlock.addStatement("stmt.bindNull($L)", assignCount + 1);
 				assignBlock.add("}else{\n");
 				String stmt = blobType ?
-						"stmt.bind$L($L, (byte[])fieldConfigs[$L].getDataPersister().javaToSqlArg(fieldConfigs[$L], val$L))" :
-						"stmt.bind$L($L, fieldConfigs[$L].getDataPersister().javaToSqlArg(fieldConfigs[$L], val$L).toString())";
+						"stmt.bind$L($L, (byte[])fields[$L].getFieldType().getDataPersister().javaToSqlArg(fields[$L].getFieldType(), val$L))" :
+						"stmt.bind$L($L, fields[$L].getFieldType().getDataPersister().javaToSqlArg(fields[$L].getFieldType(), val$L).toString())";
 				assignBlock.addStatement(stmt, blobType ? "Blob" : "String", assignCount+1, configCount, configCount, assignCount+1);
 				assignBlock.add("}\n");
 
@@ -1012,7 +1033,7 @@ fieldConfigs.add(fieldConfig);
 
 		if (hasDefualtEnumValue)
 		{
-			builder.addStatement("config = new $T( " +
+			builder.add("new $T( " +
 							"$S," +
 							"$S," +
 							"$S," +
@@ -1057,7 +1078,7 @@ fieldConfigs.add(fieldConfig);
 			);
 		} else
 		{
-			builder.addStatement("config = new $T( " +
+			builder.add("new $T( " +
 							"$S," +
 							"$S," +
 							"$S," +
@@ -1305,7 +1326,7 @@ fieldConfigs.add(fieldConfig);
 					accessData = "results.getBlob(" + count + ")";
 					break;
 				default:
-					accessData = "(" + config.dataTypeClassname + ")fieldConfigs[" + count + "].getDataPersister().resultToJava(fieldConfigs[" + count + "], results, " + count + ")";
+					accessData = "(" + config.dataTypeClassname + ")fields[" + count + "].getFieldType().getDataPersister().resultToJava(fields[" + count + "].getFieldType(), results, " + count + ")";
 			}
 			return this;
 		}
