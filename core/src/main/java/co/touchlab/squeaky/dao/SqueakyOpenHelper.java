@@ -13,18 +13,18 @@ import co.touchlab.squeaky.table.GeneratedTableMapper;
  */
 public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 {
-	private final SqueakyOpenHelperHelper helperHelper;
+	private final SqueakyContext helperHelper;
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class... managingClasses)
 	{
 		super(context, name, factory, version);
-		helperHelper = new SqueakyOpenHelperHelper(this, managingClasses);
+		helperHelper = new SqueakyContext(this, managingClasses);
 	}
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Class[] managingClasses)
 	{
 		super(context, name, factory, version, errorHandler);
-		helperHelper = new SqueakyOpenHelperHelper(this, managingClasses);
+		helperHelper = new SqueakyContext(this, managingClasses);
 	}
 
 	public Dao getDao(Class clazz)

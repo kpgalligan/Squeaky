@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.Where;
@@ -20,13 +20,13 @@ public class In extends BaseComparison
 	private Iterable<?> objects;
 	private final boolean in;
 
-	public In(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
+	public In(SqueakyContext openHelper, String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
 		super(openHelper, columnName, fieldType, null, true);
 		this.objects = objects;
 		this.in = in;
 	}
 
-	public In(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
+	public In(SqueakyContext openHelper, String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
 		super(openHelper, columnName, fieldType, null, true);
 		// grrrr, Object[] should be Iterable
 		this.objects = Arrays.asList(objects);

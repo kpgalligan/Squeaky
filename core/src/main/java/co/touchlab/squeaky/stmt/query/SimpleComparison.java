@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ public class SimpleComparison extends BaseComparison
 
 	private final String operation;
 
-	public SimpleComparison(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
+	public SimpleComparison(SqueakyContext openHelper, String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
 		super(openHelper, columnName, fieldType, value, true);
 		this.operation = operation;
 	}

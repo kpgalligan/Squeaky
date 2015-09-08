@@ -3,7 +3,7 @@ package co.touchlab.squeaky.stmt;
 import android.text.TextUtils;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.ModelDao;
-import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.query.*;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
@@ -84,7 +84,7 @@ public class Where<T, ID> {
 	private final static int CLAUSE_STACK_START_SIZE = 4;
 
 	private final ModelDao<T, ID> modelDao;
-	private final SqueakyOpenHelperHelper openHelperHelper;
+	private final SqueakyContext openHelperHelper;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final FieldType idFieldType;
 	private final String idColumnName;

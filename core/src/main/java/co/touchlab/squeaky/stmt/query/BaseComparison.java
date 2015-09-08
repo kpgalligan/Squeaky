@@ -1,7 +1,7 @@
 package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.ModelDao;
-import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.ColumnArg;
@@ -23,9 +23,9 @@ abstract class BaseComparison implements Comparison {
 	protected final String columnName;
 	protected final FieldType fieldType;
 	private final Object value;
-	private final SqueakyOpenHelperHelper openHelperHelper;
+	private final SqueakyContext openHelperHelper;
 
-	protected BaseComparison(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
+	protected BaseComparison(SqueakyContext openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
 			throws SQLException {
 		if (isComparison && fieldType != null && !fieldType.isComparable()) {
 			throw new SQLException("Field '" + fieldType.getColumnName() + "' is of data type " + fieldType.getDataPersister()

@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.NullArgHolder;
@@ -16,7 +16,7 @@ public class SetValue extends BaseComparison
 	 */
 	private static final ArgumentHolder nullValue = new NullArgHolder();
 
-	public SetValue(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, Object value) throws SQLException {
+	public SetValue(SqueakyContext openHelper, String columnName, FieldType fieldType, Object value) throws SQLException {
 		super(openHelper, columnName, fieldType, (value == null ? nullValue : value), false);
 	}
 

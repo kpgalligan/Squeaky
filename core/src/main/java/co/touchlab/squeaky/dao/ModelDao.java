@@ -27,13 +27,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
 	private final String[] tableCols;
-	private final SqueakyOpenHelperHelper openHelperHelper;
+	private final SqueakyContext openHelperHelper;
 	private final FieldType idFieldType;
 
 	private SQLiteStatement createStatement;
 	private SQLiteStatement updateStatement;
 
-	protected ModelDao(SqueakyOpenHelperHelper openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
+	protected ModelDao(SqueakyContext openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
 	{
 		this.openHelperHelper = openHelper;
 		this.entityClass = entityClass;
@@ -485,7 +485,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return generatedTableMapper;
 	}
 
-	public SqueakyOpenHelperHelper getOpenHelper()
+	public SqueakyContext getOpenHelper()
 	{
 		return openHelperHelper;
 	}
