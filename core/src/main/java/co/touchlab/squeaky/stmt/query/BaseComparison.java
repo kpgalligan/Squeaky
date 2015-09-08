@@ -1,7 +1,7 @@
 package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.ModelDao;
-import co.touchlab.squeaky.dao.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.ColumnArg;
@@ -23,15 +23,15 @@ abstract class BaseComparison implements Comparison {
 	protected final String columnName;
 	protected final FieldType fieldType;
 	private final Object value;
-	private final SqueakyOpenHelper openHelper;
+	private final SqueakyOpenHelperHelper openHelperHelper;
 
-	protected BaseComparison(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
+	protected BaseComparison(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, Object value, boolean isComparison)
 			throws SQLException {
 		if (isComparison && fieldType != null && !fieldType.isComparable()) {
 			throw new SQLException("Field '" + fieldType.getColumnName() + "' is of data type " + fieldType.getDataPersister()
 					+ " which can not be compared");
 		}
-		this.openHelper = openHelper;
+		this.openHelperHelper = openHelper;
 		this.columnName = fieldType.getColumnName();
 		this.fieldType = fieldType;
 		this.value = value;
@@ -91,7 +91,7 @@ abstract class BaseComparison implements Comparison {
 			argList.add(argHolder);
 		}
 		else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass())) {
-			GeneratedTableMapper generatedTableMapper = ((ModelDao) openHelper.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
+			GeneratedTableMapper generatedTableMapper = ((ModelDao) openHelperHelper.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
 			Object idVal = generatedTableMapper.extractId(argOrValue);
 			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
 			appendArgOrValue(idFieldType, sb, argList, idVal);

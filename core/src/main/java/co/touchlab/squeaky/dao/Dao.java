@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by kgalligan on 6/15/15.
+ * Public data access interface.  Used for reading and writing objects.
+ *
+ * @author graywatson, kgalligan
  */
 public interface Dao<T, ID>
 {

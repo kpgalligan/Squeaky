@@ -4,68 +4,44 @@ import android.content.Context;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import co.touchlab.squeaky.dao.Dao;
-import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Created by kgalligan on 6/15/15.
+ * SQLiteOpenHelper you should extend to manage data access.  Generally works the same as the standard SQLiteOpenHelper.
+ *
+ * @author kgalligan
  */
 public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 {
-	private final Class[] managingClasses;
-
-	private final Map<Class, ModelDao> daoMap = new HashMap<Class, ModelDao>();
-	private final Map<Class, GeneratedTableMapper> generatedTableMapperMap = new HashMap<Class, GeneratedTableMapper>();
+	private final SqueakyOpenHelperHelper helperHelper;
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class... managingClasses)
 	{
 		super(context, name, factory, version);
-		this.managingClasses = managingClasses;
+		helperHelper = new SqueakyOpenHelperHelper(this, managingClasses);
 	}
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Class[] managingClasses)
 	{
 		super(context, name, factory, version, errorHandler);
-		this.managingClasses = managingClasses;
+		helperHelper = new SqueakyOpenHelperHelper(this, managingClasses);
 	}
 
-	public synchronized Dao getDao(Class clazz)
+	public Dao getDao(Class clazz)
 	{
-		ModelDao dao = daoMap.get(clazz);
-		if(dao == null)
-		{
-			dao = new ModelDao(this, clazz, getGeneratedTableMapper(clazz));
-			daoMap.put(clazz, dao);
-		}
-
-		return dao;
+		return helperHelper.getDao(clazz);
 	}
 
 	@Override
 	public synchronized void close()
 	{
-		for (Dao dao : daoMap.values())
-		{
-			((ModelDao)dao).cleanUp();
-		}
-		daoMap.clear();
+		helperHelper.close();
 		super.close();
 	}
 
 	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
 	{
-		GeneratedTableMapper generatedTableMapper = generatedTableMapperMap.get(clazz);
-		if(generatedTableMapper == null)
-		{
-			generatedTableMapper = loadGeneratedTableMapper(clazz);
-			generatedTableMapperMap.put(clazz, generatedTableMapper);
-		}
-
-		return generatedTableMapper;
+		return helperHelper.getGeneratedTableMapper(clazz);
 	}
 
 	public static GeneratedTableMapper loadGeneratedTableMapper(Class clazz)
@@ -82,6 +58,6 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 
 	public Class[] getManagingClasses()
 	{
-		return managingClasses;
+		return helperHelper.getManagingClasses();
 	}
 }

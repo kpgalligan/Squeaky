@@ -17,7 +17,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by kgalligan on 6/15/15.
+ * Internal Dao implementation.  Loads and uses the generated code.  You probably don't want to create this directly.
+ *
+ * @author graywatson, kgalligan
  */
 public class ModelDao<T, ID> implements Dao<T, ID>
 {
@@ -25,15 +27,15 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
 	private final String[] tableCols;
-	private final SqueakyOpenHelper openHelper;
+	private final SqueakyOpenHelperHelper openHelperHelper;
 	private final FieldType idFieldType;
 
 	private SQLiteStatement createStatement;
 	private SQLiteStatement updateStatement;
 
-	protected ModelDao(SqueakyOpenHelper openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
+	protected ModelDao(SqueakyOpenHelperHelper openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
 	{
-		this.openHelper = openHelper;
+		this.openHelperHelper = openHelper;
 		this.entityClass = entityClass;
 		try
 		{
@@ -122,7 +124,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		List<T> results = new ArrayList<T>();
 		TransientCache objectCache = new TransientCache();
-		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where, args, null, null, orderBy);
+		Cursor cursor = openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where, args, null, null, orderBy);
 		try
 		{
 			if (cursor.moveToFirst())
@@ -184,7 +186,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		if(createStatement == null)
 		{
-			SQLiteDatabase db = openHelper.getWritableDatabase();
+			SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into ");
@@ -278,7 +280,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		if(updateStatement == null)
 		{
-			SQLiteDatabase db = openHelper.getWritableDatabase();
+			SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("update ").append(tableConfig.getTableName()).append(" set ");
@@ -307,7 +309,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int updateId(T data, ID newId) throws SQLException
 	{
-		SQLiteDatabase db = openHelper.getWritableDatabase();
+		SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
 
 		ContentValues values = new ContentValues();
 
@@ -327,7 +329,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException
 	{
-		Cursor cursor = openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
+		Cursor cursor = openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
 		try
 		{
 			if (cursor.moveToFirst())
@@ -351,7 +353,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int deleteById(ID id) throws SQLException
 	{
-		int result = openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
+		int result = openHelperHelper.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
 
 		notifyChanges();
 
@@ -377,7 +379,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int delete(Where<T, ID> where) throws SQLException
 	{
-		int result = openHelper.getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), null);
+		int result = openHelperHelper.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), null);
 
 		notifyChanges();
 
@@ -387,7 +389,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public CloseableIterator<T> iterator() throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, null, null, null, null, null),
+				openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, null, null, null, null, null),
 				ModelDao.this
 		);
 	}
@@ -395,14 +397,14 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public CloseableIterator<T> iterator(Where<T, ID> where) throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				openHelper.getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where.getStatement(), null, null, null, null),
+				openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where.getStatement(), null, null, null, null),
 				ModelDao.this
 		);
 	}
 
 	public long queryRawValue(String query, String... arguments) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelper.getWritableDatabase(), query, arguments);
+		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), query, arguments);
 	}
 
 	/*private void assignStatementArguments(CompiledStatement compiledStatement, String[] arguments) throws SQLException {
@@ -444,12 +446,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf() throws SQLException
 	{
-		return DatabaseUtils.queryNumEntries(openHelper.getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
+		return DatabaseUtils.queryNumEntries(openHelperHelper.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
 	}
 
 	public long countOf(Where<T, ID> where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelper.getWritableDatabase(), "select count(*) from "+ generatedTableMapper.getTableConfig().getTableName() +" where "+ where.getStatement(), null);
+		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ generatedTableMapper.getTableConfig().getTableName() +" where "+ where.getStatement(), null);
 	}
 
 	//TODO could be faster
@@ -483,8 +485,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return generatedTableMapper;
 	}
 
-	public SqueakyOpenHelper getOpenHelper()
+	public SqueakyOpenHelperHelper getOpenHelper()
 	{
-		return openHelper;
+		return openHelperHelper;
 	}
 }

@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.dao.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public class SetExpression extends BaseComparison
 {
 
-	public SetExpression(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType, String string) throws SQLException {
+	public SetExpression(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType, String string) throws SQLException {
 		super(openHelper, columnName, fieldType, string, true);
 	}
 

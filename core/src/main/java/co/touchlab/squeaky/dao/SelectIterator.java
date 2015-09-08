@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * Created by kgalligan on 6/15/15.
+ * @author graywatson, kgalligan
  */
 public class SelectIterator<T, ID> implements CloseableIterator<T>
 {

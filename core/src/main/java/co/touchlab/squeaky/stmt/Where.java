@@ -3,7 +3,7 @@ package co.touchlab.squeaky.stmt;
 import android.text.TextUtils;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.ModelDao;
-import co.touchlab.squeaky.dao.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.query.*;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
@@ -84,7 +84,7 @@ public class Where<T, ID> {
 	private final static int CLAUSE_STACK_START_SIZE = 4;
 
 	private final ModelDao<T, ID> modelDao;
-	private final SqueakyOpenHelper openHelper;
+	private final SqueakyOpenHelperHelper openHelperHelper;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final FieldType idFieldType;
 	private final String idColumnName;
@@ -96,7 +96,7 @@ public class Where<T, ID> {
 	public Where(ModelDao<T, ID> modelDao) throws SQLException
 	{
 		this.modelDao = modelDao;
-		this.openHelper = modelDao.getOpenHelper();
+		this.openHelperHelper = modelDao.getOpenHelper();
 		this.generatedTableMapper = modelDao.getGeneratedTableMapper();
 		this.idFieldType = generatedTableMapper.getTableConfig().idField;
 		if (idFieldType == null) {
@@ -166,7 +166,7 @@ public class Where<T, ID> {
 	public Where<T, ID> between(String columnName, Object low, Object high) throws SQLException
 	{
 
-		addClause(new Between(openHelper, columnName, findColumnFieldType(columnName), low, high));
+		addClause(new Between(openHelperHelper, columnName, findColumnFieldType(columnName), low, high));
 		return this;
 	}
 
@@ -174,7 +174,7 @@ public class Where<T, ID> {
 	 * Add a '=' clause so the column must be equal to the value.
 	 */
 	public Where<T, ID> eq(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.EQUAL_TO_OPERATION));
 		return this;
 	}
@@ -183,7 +183,7 @@ public class Where<T, ID> {
 	 * Add a '&gt;=' clause so the column must be greater-than or equals-to the value.
 	 */
 	public Where<T, ID> ge(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.GREATER_THAN_EQUAL_TO_OPERATION));
 		return this;
 	}
@@ -192,7 +192,7 @@ public class Where<T, ID> {
 	 * Add a '&gt;' clause so the column must be greater-than the value.
 	 */
 	public Where<T, ID> gt(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.GREATER_THAN_OPERATION));
 		return this;
 	}
@@ -201,7 +201,7 @@ public class Where<T, ID> {
 	 * Add a IN clause so the column must be equal-to one of the objects from the list passed in.
 	 */
 	public Where<T, ID> in(String columnName, Iterable<?> objects) throws SQLException {
-		addClause(new In(openHelper, columnName, findColumnFieldType(columnName), objects, true));
+		addClause(new In(openHelperHelper, columnName, findColumnFieldType(columnName), objects, true));
 		return this;
 	}
 
@@ -209,7 +209,7 @@ public class Where<T, ID> {
 	 * Same as {@link #in(String, Iterable)} except with a NOT IN clause.
 	 */
 	public Where<T, ID> notIn(String columnName, Iterable<?> objects) throws SQLException {
-		addClause(new In(openHelper, columnName, findColumnFieldType(columnName), objects, false));
+		addClause(new In(openHelperHelper, columnName, findColumnFieldType(columnName), objects, false));
 		return this;
 	}
 
@@ -231,7 +231,7 @@ public class Where<T, ID> {
 	 * Add a 'IS NULL' clause so the column must be null. '=' NULL does not work.
 	 */
 	public Where<T, ID> isNull(String columnName) throws SQLException {
-		addClause(new IsNull(openHelper, columnName, findColumnFieldType(columnName)));
+		addClause(new IsNull(openHelperHelper, columnName, findColumnFieldType(columnName)));
 		return this;
 	}
 
@@ -239,7 +239,7 @@ public class Where<T, ID> {
 	 * Add a 'IS NOT NULL' clause so the column must not be null. '&lt;&gt;' NULL does not work.
 	 */
 	public Where<T, ID> isNotNull(String columnName) throws SQLException {
-		addClause(new IsNotNull(openHelper, columnName, findColumnFieldType(columnName)));
+		addClause(new IsNotNull(openHelperHelper, columnName, findColumnFieldType(columnName)));
 		return this;
 	}
 
@@ -247,7 +247,7 @@ public class Where<T, ID> {
 	 * Add a '&lt;=' clause so the column must be less-than or equals-to the value.
 	 */
 	public Where<T, ID> le(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.LESS_THAN_EQUAL_TO_OPERATION));
 		return this;
 	}
@@ -256,7 +256,7 @@ public class Where<T, ID> {
 	 * Add a '&lt;' clause so the column must be less-than the value.
 	 */
 	public Where<T, ID> lt(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.LESS_THAN_OPERATION));
 		return this;
 	}
@@ -265,7 +265,7 @@ public class Where<T, ID> {
 	 * Add a LIKE clause so the column must mach the value using '%' patterns.
 	 */
 	public Where<T, ID> like(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.LIKE_OPERATION));
 		return this;
 	}
@@ -274,7 +274,7 @@ public class Where<T, ID> {
 	 * Add a '&lt;&gt;' clause so the column must be not-equal-to the value.
 	 */
 	public Where<T, ID> ne(String columnName, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value,
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value,
 				SimpleComparison.NOT_EQUAL_TO_OPERATION));
 		return this;
 	}
@@ -362,7 +362,7 @@ public class Where<T, ID> {
 		if (idColumnName == null) {
 			throw new SQLException("Object has no id column specified");
 		}
-		addClause(new SimpleComparison(openHelper, idColumnName, idFieldType, id, SimpleComparison.EQUAL_TO_OPERATION));
+		addClause(new SimpleComparison(openHelperHelper, idColumnName, idFieldType, id, SimpleComparison.EQUAL_TO_OPERATION));
 		return this;
 	}
 
@@ -373,7 +373,7 @@ public class Where<T, ID> {
 		if (idColumnName == null) {
 			throw new SQLException("Object has no id column specified");
 		}
-		addClause(new SimpleComparison(openHelper, idColumnName, idFieldType, dataDao.extractId(data),
+		addClause(new SimpleComparison(openHelperHelper, idColumnName, idFieldType, dataDao.extractId(data),
 				SimpleComparison.EQUAL_TO_OPERATION));
 		return this;
 	}
@@ -413,7 +413,7 @@ public class Where<T, ID> {
 	 * operator for the database and that it be formatted correctly.
 	 */
 	public Where<T, ID> rawComparison(String columnName, String rawOperator, Object value) throws SQLException {
-		addClause(new SimpleComparison(openHelper, columnName, findColumnFieldType(columnName), value, rawOperator));
+		addClause(new SimpleComparison(openHelperHelper, columnName, findColumnFieldType(columnName), value, rawOperator));
 		return this;
 	}
 
@@ -500,7 +500,7 @@ public class Where<T, ID> {
 						+ " seems to be a Where object, did you mean the QueryBuilder?");
 			}
 		}
-		addClause(new In(openHelper, columnName, findColumnFieldType(columnName), objects, in));
+		addClause(new In(openHelperHelper, columnName, findColumnFieldType(columnName), objects, in));
 		return this;
 	}
 

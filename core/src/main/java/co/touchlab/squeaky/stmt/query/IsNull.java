@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.dao.SqueakyOpenHelper;
+import co.touchlab.squeaky.dao.SqueakyOpenHelperHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.Where;
@@ -16,7 +16,7 @@ import java.util.List;
 public class IsNull extends BaseComparison
 {
 
-	public IsNull(SqueakyOpenHelper openHelper, String columnName, FieldType fieldType) throws SQLException {
+	public IsNull(SqueakyOpenHelperHelper openHelper, String columnName, FieldType fieldType) throws SQLException {
 		super(openHelper, columnName, fieldType, null, false);
 	}
 

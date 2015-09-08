@@ -5,8 +5,6 @@ import co.touchlab.squeaky.field.types.BigDecimalStringType;
 import co.touchlab.squeaky.field.types.DateStringType;
 import co.touchlab.squeaky.field.types.TimeStampStringType;
 import co.touchlab.squeaky.field.types.TimeStampType;
-import co.touchlab.squeaky.table.TableInfo;
-import co.touchlab.squeaky.table.TableUtils;
 
 import java.sql.SQLException;
 
