@@ -56,6 +56,11 @@ public class QueryTest extends BaseTypeTest
 		StmtTestHelper.assertWhere("`lDate` = 	" + now.getTime(),
 				dao.createWhere().eq("lDate", now));
 
+		StmtTestHelper.assertWhere("(`name` = 'asdf' AND `ival` = 123)", dao.createWhere().eq("name", "asdf").and().eq("ival", 123));
+
+		Where<Foo, Object> complexWhere = dao.createWhere();
+		complexWhere.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424).and().between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456);
+		StmtTestHelper.assertWhere("((`lval` = 2223424 AND `dval` BETWEEN 123 AND 456 ) OR `ival` = 123 ) ", complexWhere.or(complexWhere, complexWhere.eq("ival", 123)));
 //		dao.createWhere().and()
 	}
 
