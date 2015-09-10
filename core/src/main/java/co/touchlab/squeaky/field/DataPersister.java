@@ -1,7 +1,6 @@
 package co.touchlab.squeaky.field;
 
 import co.touchlab.squeaky.field.types.BaseDataType;
-import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.sql.SQLException;
 
@@ -61,8 +60,5 @@ public interface DataPersister extends FieldConverter {
 	 */
 	boolean isComparable();
 
-	/**
-	 * Must use {@link ArgumentHolder} when querying for values of this type.
-	 */
 	boolean isArgumentHolderRequired();
 }

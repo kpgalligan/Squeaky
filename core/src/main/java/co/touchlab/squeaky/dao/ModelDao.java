@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import co.touchlab.squeaky.Config;
 import co.touchlab.squeaky.field.FieldType;
-import co.touchlab.squeaky.stmt.Where;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TableInfo;
+import co.touchlab.squeaky.table.TableUtils;
 import co.touchlab.squeaky.table.TransientCache;
 
 import java.sql.SQLException;
@@ -115,11 +115,6 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return makeCursorResults(query.toString(), args, null);
 	}
 
-	public Where<T, ID> createWhere() throws SQLException
-	{
-		return new Where<T, ID>(this);
-	}
-
 	private List<T> makeCursorResults(String where, String[] args, String orderBy) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
@@ -155,13 +150,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return query(where, null);
 	}
 
-	public List<T> query(Where<T, ID> where, String orderBy)throws SQLException
+	public List<T> query(Query where, String orderBy)throws SQLException
 	{
 		String statement = where.getStatement();
 		return query(statement, orderBy);
 	}
 
-	public List<T> query(Where<T, ID> where)throws SQLException
+	public List<T> query(Query where)throws SQLException
 	{
 		return query(where, null);
 	}
@@ -374,10 +369,32 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	//TODO: Delete with in statement
 	public int deleteIds(Collection<ID> ids) throws SQLException
 	{
-		return delete(createWhere().in(idFieldType.getColumnName(), ids));
+		final StringBuilder sb = new StringBuilder();
+		sb.append(idFieldType.getColumnName()).append(" in (");
+		boolean first = true;
+		for (ID id : ids)
+		{
+			if(first)
+				first = false;
+			else
+				sb.append(',');
+			if(idFieldType.isEscapedValue())
+				TableUtils.appendEscapedWord(sb, id.toString());
+			else
+				sb.append(id.toString());
+		}
+		sb.append(")");
+		return delete(new Query()
+		{
+			@Override
+			public String getStatement()
+			{
+				return sb.toString();
+			}
+		});
 	}
 
-	public int delete(Where<T, ID> where) throws SQLException
+	public int delete(Query where) throws SQLException
 	{
 		int result = openHelperHelper.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), null);
 
@@ -394,7 +411,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		);
 	}
 
-	public CloseableIterator<T> iterator(Where<T, ID> where) throws SQLException
+	public CloseableIterator<T> iterator(Query where) throws SQLException
 	{
 		return new SelectIterator<T, ID>(
 				openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where.getStatement(), null, null, null, null),
@@ -449,7 +466,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return DatabaseUtils.queryNumEntries(openHelperHelper.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
 	}
 
-	public long countOf(Where<T, ID> where) throws SQLException
+	public long countOf(Query where) throws SQLException
 	{
 		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ generatedTableMapper.getTableConfig().getTableName() +" where "+ where.getStatement(), null);
 	}

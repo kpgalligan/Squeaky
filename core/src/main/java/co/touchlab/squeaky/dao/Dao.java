@@ -1,7 +1,5 @@
 package co.touchlab.squeaky.dao;
 
-import co.touchlab.squeaky.stmt.Where;
-
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -27,10 +25,8 @@ public interface Dao<T, ID>
 //
 //	DeleteBuilder<T, ID> deleteBuilder();
 
-	Where<T, ID> createWhere() throws SQLException;
-
-	List<T> query(Where<T, ID> where) throws SQLException;
-	List<T> query(Where<T, ID> where, String orderBy) throws SQLException;
+	List<T> query(Query where) throws SQLException;
+	List<T> query(Query where, String orderBy) throws SQLException;
 
 	void create(T data) throws SQLException;
 
@@ -55,11 +51,11 @@ public interface Dao<T, ID>
 
 	int deleteIds(Collection<ID> ids) throws SQLException;
 
-	int delete(Where<T, ID> preparedDelete) throws SQLException;
+	int delete(Query preparedDelete) throws SQLException;
 
 	CloseableIterator<T> iterator() throws SQLException;
 
-	CloseableIterator<T> iterator(Where<T, ID> where) throws SQLException;
+	CloseableIterator<T> iterator(Query where) throws SQLException;
 
 	/**
 	 * Perform a raw query that returns a single value (usually an aggregate function like MAX or COUNT). If the query
@@ -108,7 +104,7 @@ public interface Dao<T, ID>
 
 	long countOf() throws SQLException;
 
-	long countOf(Where<T, ID> preparedQuery) throws SQLException;
+	long countOf(Query preparedQuery) throws SQLException;
 
 	/**
 	 * Returns true if an object exists that matches this ID otherwise false.

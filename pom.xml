@@ -15,6 +15,7 @@
     <modules>
         <module>core</module>
         <module>processor</module>
+        <module>query</module>
         <module>tests</module>
     </modules>
 </project>

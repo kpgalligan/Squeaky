@@ -28,7 +28,7 @@ import android.database.sqlite.SQLiteStatement;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.field.*;
-import co.touchlab.squeaky.stmt.Where;
+import co.touchlab.squeaky.dao.Query;
 import co.touchlab.squeaky.table.*;
 import com.google.common.base.Joiner;
 import com.squareup.javapoet.*;

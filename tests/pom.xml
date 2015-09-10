@@ -90,6 +90,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>co.touchlab.squeaky</groupId>
+            <artifactId>squeaky-query</artifactId>
+            <version>0.3.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
             <version>1.1.0</version>
