@@ -3,6 +3,7 @@ package co.touchlab.squeaky.stmt;
 import android.text.TextUtils;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.ModelDao;
+import co.touchlab.squeaky.dao.Query;
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.query.*;
@@ -79,7 +80,8 @@ import java.util.List;
  * 
  * @author graywatson
  */
-public class Where<T, ID> implements Queryable<T> {
+public class Where<T, ID> implements Queryable<T>, Query
+{
 
 	private final static int CLAUSE_STACK_START_SIZE = 4;
 
@@ -92,9 +94,12 @@ public class Where<T, ID> implements Queryable<T> {
 
 	private Clause clause;
 
-	public Where(ModelDao<T, ID> modelDao) throws SQLException
+	public Where(Dao<T, ID> d) throws SQLException
 	{
-		this.modelDao = modelDao;
+		if(!(d instanceof ModelDao))
+			throw new SQLException("Dao must be a ModelDao instance");
+
+		this.modelDao = (ModelDao<T, ID>)d;
 		this.openHelperHelper = modelDao.getOpenHelper();
 		this.generatedTableMapper = modelDao.getGeneratedTableMapper();
 		this.idFieldType = generatedTableMapper.getTableConfig().idField;
