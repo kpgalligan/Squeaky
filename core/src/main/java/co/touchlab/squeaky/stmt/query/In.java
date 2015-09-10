@@ -20,14 +20,14 @@ public class In extends BaseComparison
 	private Iterable<?> objects;
 	private final boolean in;
 
-	public In(String columnName, FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
-		super(columnName, fieldType, null, true);
+	public In(FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
+		super(fieldType, null, true);
 		this.objects = objects;
 		this.in = in;
 	}
 
-	public In(String columnName, FieldType fieldType, Object[] objects, boolean in) throws SQLException {
-		super(columnName, fieldType, null, true);
+	public In(FieldType fieldType, Object[] objects, boolean in) throws SQLException {
+		super(fieldType, null, true);
 		// grrrr, Object[] should be Iterable
 		this.objects = Arrays.asList(objects);
 		this.in = in;
@@ -49,7 +49,7 @@ public class In extends BaseComparison
 		boolean first = true;
 		for (Object value : objects) {
 			if (value == null) {
-				throw new IllegalArgumentException("one of the IN values for '" + columnName + "' is null");
+				throw new IllegalArgumentException("one of the IN values for '" + fieldType.getColumnName() + "' is null");
 			}
 			if (first) {
 				first = false;

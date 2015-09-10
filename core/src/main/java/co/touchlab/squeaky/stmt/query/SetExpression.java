@@ -10,8 +10,8 @@ import java.util.List;
 public class SetExpression extends BaseComparison
 {
 
-	public SetExpression(String columnName, FieldType fieldType, String string) throws SQLException {
-		super(columnName, fieldType, string, true);
+	public SetExpression(FieldType fieldType, String string) throws SQLException {
+		super(fieldType, string, true);
 	}
 
 	@Override

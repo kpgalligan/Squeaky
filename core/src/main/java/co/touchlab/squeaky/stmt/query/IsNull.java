@@ -16,8 +16,8 @@ import java.util.List;
 public class IsNull extends BaseComparison
 {
 
-	public IsNull(String columnName, FieldType fieldType) throws SQLException {
-		super(columnName, fieldType, null, false);
+	public IsNull(FieldType fieldType) throws SQLException {
+		super(fieldType, null, false);
 	}
 
 	@Override

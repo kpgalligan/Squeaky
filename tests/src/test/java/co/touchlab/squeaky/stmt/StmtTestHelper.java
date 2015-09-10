@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt;
 
+import co.touchlab.squeaky.stmt.query.Queryable;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +11,7 @@ import org.junit.Assert;
  */
 public class StmtTestHelper
 {
-	public static void assertWhere(String wherePart, Where w)throws Exception
+	public static void assertWhere(String wherePart, Queryable w)throws Exception
 	{
 		String whereStatement = w.getStatement();
 		Statement l = CCJSqlParserUtil.parse("SELECT * FROM foo where " + whereStatement);

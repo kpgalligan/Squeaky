@@ -4,6 +4,8 @@ import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,67 +13,194 @@ import java.util.List;
  * 
  * @author graywatson
  */
-public class ManyClause implements Clause, NeedsFutureClause {
+public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public static final String AND_OPERATION = "AND";
 	public static final String OR_OPERATION = "OR";
 
-	private final Clause first;
-	private Clause second;
-	private final Clause[] others;
-	private final int startOthersAt;
+	private final List<Clause> clauses;
 	private final String operation;
+	private final QueryFactory queryFactory;
+	private final Queryable<T> parent;
 
-	public ManyClause(Clause first, String operation) {
-		this.first = first;
-		// second will be set later
-		this.second = null;
-		this.others = null;
-		this.startOthersAt = 0;
+	public ManyClause(Queryable<T> parent, QueryFactory queryFactory, String operation) {
+		this.parent = parent;
+		this.clauses = new ArrayList<>(2);
 		this.operation = operation;
+		this.queryFactory = queryFactory;
 	}
 
-	public ManyClause(Clause first, Clause second, Clause[] others, String operation) {
-		this.first = first;
-		this.second = second;
-		this.others = others;
-		this.startOthersAt = 0;
-		this.operation = operation;
+	@Override
+	public String getStatement() throws SQLException
+	{
+		return parent.getStatement();
 	}
 
-	public ManyClause(Clause[] others, String operation) {
-		this.first = others[0];
-		if (others.length < 2) {
-			this.second = null;
-			this.startOthersAt = others.length;
-		} else {
-			this.second = others[1];
-			this.startOthersAt = 2;
-		}
-		this.others = others;
-		this.operation = operation;
+	@Override
+	public List<T> query() throws SQLException
+	{
+		return parent.query();
+	}
+
+	@Override
+	public List<T> query(String orderBy) throws SQLException
+	{
+		return parent.query(orderBy);
+	}
+
+	@Override
+	public Queryable<T> reset()
+	{
+		return parent.reset();
+	}
+
+	public ManyClause<T> eq(String columnFieldName, Object value) throws SQLException
+	{
+		clauses.add(queryFactory.eq(columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> gt(String columnFieldName, Object value) throws SQLException
+	{
+		clauses.add(queryFactory.gt(columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> ge(String columnFieldName, Object value) throws SQLException
+	{
+		
+		clauses.add(queryFactory.ge(columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> lt(String columnFieldName, Object value) throws SQLException
+	{
+		
+		clauses.add(queryFactory.lt(columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> le(String columnFieldName, Object value) throws SQLException
+	{
+		
+		clauses.add(queryFactory.le(columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> like(String columnFieldName, Object value) throws SQLException
+	{
+		
+		clauses.add(queryFactory.like(columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> ne(String columnFieldName, Object value) throws SQLException
+	{
+		
+		clauses.add(queryFactory.ne(columnFieldName, value));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> in(String columnFieldName, Iterable<?> objects) throws SQLException
+	{
+		clauses.add(queryFactory.in(columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> notIn(String columnFieldName, Iterable<?> objects) throws SQLException
+	{
+		clauses.add(queryFactory.notIn(columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> in(String columnFieldName, Object... objects) throws SQLException
+	{
+		clauses.add(queryFactory.in(columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> notIn(String columnFieldName, Object... objects) throws SQLException
+	{
+		clauses.add(queryFactory.notIn(columnFieldName, objects));
+		return this;
+	}
+
+	public ManyClause<T> between(String columnFieldName, Object low, Object high) throws SQLException
+	{
+		
+		clauses.add(queryFactory.between(columnFieldName, low, high));
+		return this;
+	}
+
+	public ManyClause<T> isNull(String columnFieldName) throws SQLException
+	{
+		
+		clauses.add(queryFactory.isNull(columnFieldName));
+		return this;
+	}
+
+	public ManyClause<T> isNotNull(String columnFieldName) throws SQLException
+	{
+		
+		clauses.add(queryFactory.isNotNull(columnFieldName));
+		return this;
+	}
+
+	public ManyClause<T> and()
+	{
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION);
+		clauses.add(manyClause);
+		return manyClause;
+	}
+
+	public ManyClause<T> or()
+	{
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION);
+		clauses.add(manyClause);
+		return manyClause;
+	}
+
+	public Not not()throws SQLException
+	{
+		Not<T> not = new Not<T>(this, queryFactory);
+		clauses.add(not);
+		return not;
+	}
+
+	@Override
+	public Queryable<T> end()throws SQLException
+	{
+		return parent;
 	}
 
 	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb,
 			List<ArgumentHolder> selectArgList) throws SQLException {
-		sb.append("(");
-		first.appendSql(squeakyContext, tableName, sb, selectArgList);
-		if (second != null) {
-			sb.append(operation);
-			sb.append(' ');
-			second.appendSql(squeakyContext, tableName, sb, selectArgList);
-		}
-		if (others != null) {
-			for (int i = startOthersAt; i < others.length; i++) {
+
+		if(clauses.size() == 0)
+			throw new SQLException("Clause list can't be empty for "+ operation);
+
+		boolean first = true;
+
+		for (Clause clause : clauses)
+		{
+			if(first)
+			{
+				first = false;
+				sb.append("(");
+			}
+			else
+			{
 				sb.append(operation);
 				sb.append(' ');
-				others[i].appendSql(squeakyContext, tableName, sb, selectArgList);
 			}
-		}
-		sb.append(") ");
-	}
 
-	public void setMissingClause(Clause right) {
-		second = right;
+			clause.appendSql(squeakyContext, tableName, sb, selectArgList);
+		}
+
+		sb.append(") ");
 	}
 }

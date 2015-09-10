@@ -23,8 +23,8 @@ public class SimpleComparison extends BaseComparison
 
 	private final String operation;
 
-	public SimpleComparison(String columnName, FieldType fieldType, Object value, String operation) throws SQLException {
-		super(columnName, fieldType, value, true);
+	public SimpleComparison(FieldType fieldType, Object value, String operation) throws SQLException {
+		super(fieldType, value, true);
 		this.operation = operation;
 	}
 

@@ -4,6 +4,7 @@ import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.DataType;
 import co.touchlab.squeaky.field.DatabaseField;
 import co.touchlab.squeaky.field.types.BaseTypeTest;
+import co.touchlab.squeaky.stmt.query.Queryable;
 import co.touchlab.squeaky.table.DatabaseTable;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +42,11 @@ public class QueryTest extends BaseTypeTest
 		Class<Foo> clazz = Foo.class;
 		Dao<Foo, Object> dao = helper.getDao(clazz);
 
-		StmtTestHelper.assertWhere("`name` = 'asdf'",
-				dao.createWhere().eq("name", "asdf"));
+		Where<Foo, Object> where = dao.createWhere();
+
+		where.eq("name", "asdf");
+
+		StmtTestHelper.assertWhere("`name` = 'asdf'", where);
 		StmtTestHelper.assertWhere("`ival` = 123",
 				dao.createWhere().eq("ival", 123));
 		StmtTestHelper.assertWhere("`lval` = 234235234234",
@@ -56,11 +60,33 @@ public class QueryTest extends BaseTypeTest
 		StmtTestHelper.assertWhere("`lDate` = 	" + now.getTime(),
 				dao.createWhere().eq("lDate", now));
 
-		StmtTestHelper.assertWhere("(`name` = 'asdf' AND `ival` = 123)", dao.createWhere().eq("name", "asdf").and().eq("ival", 123));
+		StmtTestHelper.assertWhere("(NOT `lDate` = 	" + now.getTime() + ")",
+				dao.createWhere().not().eq("lDate", now));
 
-		Where<Foo, Object> complexWhere = dao.createWhere();
-		complexWhere.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424).and().between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456);
-		StmtTestHelper.assertWhere("((`lval` = 2223424 AND `dval` BETWEEN 123 AND 456 ) OR `ival` = 123 ) ", complexWhere.or(complexWhere, complexWhere.eq("ival", 123)));
+		Where<Foo, Object> makeAnd = dao.createWhere();
+		makeAnd.and().eq("name", "asdf").eq("ival", 123);
+		StmtTestHelper.assertWhere("(`name` = 'asdf' AND `ival` = 123)", makeAnd);
+
+		Queryable bigWhere =
+				dao.createWhere()
+						.or()
+							.and()
+								.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)
+								.between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456)
+							.end()
+							.eq("ival", 123)
+						.end();
+
+		/*Where<Foo, Object> complexWhere = dao.createWhere();
+		ManyClause or = complexWhere.or();
+
+		or.and()
+			.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)
+			.between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456);
+
+		or.eq("ival", 123);*/
+
+		StmtTestHelper.assertWhere("((`lval` = 2223424 AND `dval` BETWEEN 123 AND 456 ) OR `ival` = 123 ) ", bigWhere);
 //		dao.createWhere().and()
 	}
 

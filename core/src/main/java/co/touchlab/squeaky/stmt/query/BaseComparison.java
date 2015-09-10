@@ -20,17 +20,15 @@ import java.util.List;
 abstract class BaseComparison implements Comparison {
 
 	private static final String NUMBER_CHARACTERS = "0123456789.-+";
-	protected final String columnName;
 	protected final FieldType fieldType;
 	private final Object value;
 
-	protected BaseComparison(String columnName, FieldType fieldType, Object value, boolean isComparison)
+	protected BaseComparison(FieldType fieldType, Object value, boolean isComparison)
 			throws SQLException {
 		if (isComparison && fieldType != null && !fieldType.isComparable()) {
 			throw new SQLException("Field '" + fieldType.getColumnName() + "' is of data type " + fieldType.getDataPersister()
 					+ " which can not be compared");
 		}
-		this.columnName = fieldType.getColumnName();
 		this.fieldType = fieldType;
 		this.value = value;
 	}
@@ -43,7 +41,7 @@ abstract class BaseComparison implements Comparison {
 			TableUtils.appendEscapedEntityName(sb, tableName);
 			sb.append('.');
 		}
-		TableUtils.appendEscapedEntityName(sb, columnName);
+		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ');
 		appendOperation(sb);
 		// this needs to call appendValue (not appendArgOrValue) because it may be overridden
@@ -51,7 +49,7 @@ abstract class BaseComparison implements Comparison {
 	}
 
 	public String getColumnName() {
-		return columnName;
+		return fieldType.getColumnName();
 	}
 
 	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> argList)
@@ -70,7 +68,7 @@ abstract class BaseComparison implements Comparison {
 		} else if (argOrValue instanceof ArgumentHolder) {
 			sb.append('?');
 			ArgumentHolder argHolder = (ArgumentHolder) argOrValue;
-			argHolder.setMetaInfo(columnName, fieldType);
+			argHolder.setMetaInfo(fieldType.getColumnName(), fieldType);
 			argList.add(argHolder);
 		} else if (argOrValue instanceof ColumnArg) {
 			ColumnArg columnArg = (ColumnArg) argOrValue;
@@ -83,7 +81,7 @@ abstract class BaseComparison implements Comparison {
 		} else if (fieldType.isArgumentHolderRequired()) {
 			sb.append('?');
 			ArgumentHolder argHolder = new SelectArg();
-			argHolder.setMetaInfo(columnName, fieldType);
+			argHolder.setMetaInfo(fieldType.getColumnName(), fieldType);
 			// conversion is done when the getValue() is called
 			argHolder.setValue(argOrValue);
 			argList.add(argHolder);
@@ -124,7 +122,7 @@ abstract class BaseComparison implements Comparison {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(columnName).append(' ');
+		sb.append(fieldType.getColumnName()).append(' ');
 		appendOperation(sb);
 		sb.append(' ');
 		sb.append(value);
