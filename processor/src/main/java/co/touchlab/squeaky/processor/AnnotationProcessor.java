@@ -336,7 +336,7 @@ fieldConfigs.add(fieldConfig);
 		objectToString(fieldTypeGens, className, configBuilder);
 		objectsEqual(fieldTypeGens, className, configBuilder);
 
-		addForeignCollectionFillers(foreignCollectionInfos, className, idType, configBuilder);
+		addForeignCollectionFillers(configureClassDefinitions, foreignCollectionInfos, className, idType, configBuilder);
 
 		MethodSpec fieldConfigsMethod = fieldConfigs(databaseTableHolders, fieldTypeGens, tableName, className, configBuilder);
 		MethodSpec foreignConfigsMethod = foreignConfigs(foreignCollectionInfos, configBuilder);
@@ -349,7 +349,7 @@ fieldConfigs.add(fieldConfig);
 		return JavaFile.builder(configName.packageName(), configBuilder.build()).build();
 	}
 
-	private void addForeignCollectionFillers(List<ForeignCollectionHolder> foreignCollectionInfos, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
+	private void addForeignCollectionFillers(ConfigureClassDefinitions configureClassDefinitions, List<ForeignCollectionHolder> foreignCollectionInfos, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
 	{
 		ParameterizedTypeName modelDaoType = ParameterizedTypeName.get(ClassName.get(ModelDao.class), className, idType == null ? ClassName.get(Object.class) : idType);
 
@@ -376,9 +376,16 @@ fieldConfigs.add(fieldConfig);
 					.addParameter(className, "data")
 					.addParameter(modelDaoType, "modelDao");
 
-			fillCollectionMethod.addStatement("$T dao = modelDao.getOpenHelper().getDao($T.class)", Dao.class, ClassName.bestGuess(foreignCollectionInfo.foreignTypeName));
+			fillCollectionMethod.addStatement("$T foreignDao = (ModelDao)modelDao.getOpenHelper().getDao($T.class)", ModelDao.class, ClassName.bestGuess(foreignCollectionInfo.foreignTypeName));
+
+
+
 			fillCollectionMethod.addStatement("$T where = dao.createWhere().eq($S, data)", Where.class, foreignCollectionInfo.foreignCollectionField.foreignFieldName());
 			fillCollectionMethod.addStatement("data.$N = dao.query(where, $S)", foreignCollectionInfo.variableName, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
+
+
+
+			fillCollectionMethod.addStatement("data.$N = dao.findForeignCollectionValues($T.extractId(data), $S)", configureClassDefinitions.configName, foreignCollectionInfo.variableName, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
 
 			configBuilder.addMethod(fillCollectionMethod.build());
 		}

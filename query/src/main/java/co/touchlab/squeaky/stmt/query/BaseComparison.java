@@ -4,7 +4,6 @@ import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.ArgumentHolder;
-import co.touchlab.squeaky.stmt.ColumnArg;
 import co.touchlab.squeaky.stmt.SelectArg;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TableUtils;
@@ -70,14 +69,6 @@ abstract class BaseComparison implements Comparison {
 			ArgumentHolder argHolder = (ArgumentHolder) argOrValue;
 			argHolder.setMetaInfo(fieldType.getColumnName(), fieldType);
 			argList.add(argHolder);
-		} else if (argOrValue instanceof ColumnArg) {
-			ColumnArg columnArg = (ColumnArg) argOrValue;
-			String tableName = columnArg.getTableName();
-			if (tableName != null) {
-				TableUtils.appendEscapedEntityName(sb, tableName);
-				sb.append('.');
-			}
-			TableUtils.appendEscapedEntityName(sb, columnArg.getColumnName());
 		} else if (fieldType.isArgumentHolderRequired()) {
 			sb.append('?');
 			ArgumentHolder argHolder = new SelectArg();

@@ -451,6 +451,26 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		generatedTableMapper.fillForeignCollection(data, this, fieldName);
 	}
 
+	public List findForeignCollectionValues(final Object sourceId, final FieldType foreignIdField)throws SQLException
+	{
+		return query(new Query()
+		{
+			@Override
+			public String getStatement() throws SQLException
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.append(foreignIdField.getColumnName());
+				sb.append(" = ");
+
+				if(foreignIdField.getDataPersister().isEscapedValue())
+					TableUtils.appendEscapedWord(sb, sourceId.toString());
+				else
+					sb.append(sourceId.toString());
+				return sb.toString();
+			}
+		});
+	}
+
 	public Class<T> getDataClass()
 	{
 		return entityClass;
