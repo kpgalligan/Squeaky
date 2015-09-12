@@ -60,7 +60,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		List<String> statements = new ArrayList<>();
 
 		{
-			Where<Child, Integer> where = childDao.createWhere();
+			Where<Child, Integer> where = new Where<>(childDao);
 			Where<Child, Integer> subwhere = where.eq("parent", parent);
 			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
@@ -68,7 +68,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		}
 
 		{
-			Where<Child, Integer> where = childDao.createWhere();
+			Where<Child, Integer> where = new Where<>(childDao);
 			Where<Child, Integer> subwhere = where.eq("parent_id", parent.id);
 			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
@@ -76,7 +76,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		}
 
 		{
-			Where<Child, Integer> where = childDao.createWhere();
+			Where<Child, Integer> where = new Where<>(childDao);
 			Where<Child, Integer> subwhere = where.eq("parent_id", parent);
 			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);
@@ -84,7 +84,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		}
 
 		{
-			Where<Child, Integer> where = childDao.createWhere();
+			Where<Child, Integer> where = new Where<>(childDao);
 			Where<Child, Integer> subwhere = where.eq("parent", parent.id);
 			statements.add(subwhere.getStatement());
 			List<Child> childList = childDao.query(subwhere);

@@ -1,11 +1,9 @@
 package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
-import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -177,8 +175,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 		return parent;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb,
-			List<ArgumentHolder> selectArgList) throws SQLException {
+	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb) throws SQLException {
 
 		if(clauses.size() == 0)
 			throw new SQLException("Clause list can't be empty for "+ operation);
@@ -198,7 +195,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 				sb.append(' ');
 			}
 
-			clause.appendSql(squeakyContext, tableName, sb, selectArgList);
+			clause.appendSql(squeakyContext, tableName, sb);
 		}
 
 		sb.append(") ");

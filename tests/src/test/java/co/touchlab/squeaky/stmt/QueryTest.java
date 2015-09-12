@@ -42,33 +42,34 @@ public class QueryTest extends BaseTypeTest
 		Class<Foo> clazz = Foo.class;
 		Dao<Foo, Object> dao = helper.getDao(clazz);
 
-		Where<Foo, Object> where = dao.createWhere();
+
+		Where<Foo, Object> where = new Where(dao);
 
 		where.eq("name", "asdf");
 
 		StmtTestHelper.assertWhere("`name` = 'asdf'", where);
 		StmtTestHelper.assertWhere("`ival` = 123",
-				dao.createWhere().eq("ival", 123));
+				new Where<Foo, Object>(dao).eq("ival", 123));
 		StmtTestHelper.assertWhere("`lval` = 234235234234",
-				dao.createWhere().eq("lval", 234235234234l));
+				new Where<Foo, Object>(dao).eq("lval", 234235234234l));
 		StmtTestHelper.assertWhere("`dval` = 23.45234",
-				dao.createWhere().eq("dval", 23.45234));
+				new Where<Foo, Object>(dao).eq("dval", 23.45234));
 		Date now = new Date();
 		String dateString = new SimpleDateFormat("MM/dd/yyyy HH:mm").format(now);
 		StmtTestHelper.assertWhere("`sDate` = '" + dateString + "'",
-				dao.createWhere().eq("sDate", now));
+				new Where<Foo, Object>(dao).eq("sDate", now));
 		StmtTestHelper.assertWhere("`lDate` = 	" + now.getTime(),
-				dao.createWhere().eq("lDate", now));
+				new Where<Foo, Object>(dao).eq("lDate", now));
 
 		StmtTestHelper.assertWhere("(NOT `lDate` = 	" + now.getTime() + ")",
-				dao.createWhere().not().eq("lDate", now));
+				new Where<Foo, Object>(dao).not().eq("lDate", now));
 
-		Where<Foo, Object> makeAnd = dao.createWhere();
+		Where<Foo, Object> makeAnd = new Where<>(dao);
 		makeAnd.and().eq("name", "asdf").eq("ival", 123);
 		StmtTestHelper.assertWhere("(`name` = 'asdf' AND `ival` = 123)", makeAnd);
 
 		Queryable bigWhere =
-				dao.createWhere()
+				new Where<Foo, Object>(dao)
 						.or()
 							.and()
 								.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)

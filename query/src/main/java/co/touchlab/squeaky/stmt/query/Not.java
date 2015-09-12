@@ -1,10 +1,7 @@
 package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
-import co.touchlab.squeaky.field.FieldType;
-import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.Where;
-import co.touchlab.squeaky.table.TableUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -28,14 +25,13 @@ public class Not<T> implements Clause, Queryable<T> {
 		this.parent = parent;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb,
-			List<ArgumentHolder> selectArgList) throws SQLException {
+	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb) throws SQLException {
 		if (comparison == null) {
 			throw new IllegalStateException("Clause has not been set in NOT operation");
 		}
 		// this generates: (NOT 'x' = 123 )
 		sb.append("(NOT ");
-		comparison.appendSql(squeakyContext, tableName, sb, selectArgList);
+		comparison.appendSql(squeakyContext, tableName, sb);
 
 		sb.append(") ");
 	}

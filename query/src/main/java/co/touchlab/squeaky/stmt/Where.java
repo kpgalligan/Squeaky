@@ -94,7 +94,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 
 	private Clause clause;
 
-	public Where(Dao<T, ID> d) throws SQLException
+	public Where(Dao d) throws SQLException
 	{
 		if(!(d instanceof ModelDao))
 			throw new SQLException("Dao must be a ModelDao instance");
@@ -267,7 +267,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 	 */
 	public String getStatement() throws SQLException {
 		StringBuilder sb = new StringBuilder();
-		appendSql(null, sb, new ArrayList<ArgumentHolder>());
+		appendSql(null, sb);
 		return sb.toString();
 	}
 
@@ -287,8 +287,8 @@ public class Where<T, ID> implements Queryable<T>, Query
 	 * @param tableName
 	 *            Name of the table to prepend to any column names or null to be ignored.
 	 */
-	void appendSql(String tableName, StringBuilder sb, List<ArgumentHolder> columnArgList) throws SQLException {
-		clause.appendSql(openHelperHelper, tableName, sb, columnArgList);
+	void appendSql(String tableName, StringBuilder sb) throws SQLException {
+		clause.appendSql(openHelperHelper, tableName, sb);
 	}
 
 	@Override

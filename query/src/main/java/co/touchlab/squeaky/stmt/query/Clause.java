@@ -1,10 +1,8 @@
 package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
-import co.touchlab.squeaky.stmt.ArgumentHolder;
 
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Internal marker class for query clauses.
@@ -19,6 +17,6 @@ public interface Clause {
 	 * @param tableName
 	 *            Name of the table to prepend to any column names or null to be ignored.
 	 */
-	void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb, List<ArgumentHolder> argList)
+	void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb)
 			throws SQLException;
 }

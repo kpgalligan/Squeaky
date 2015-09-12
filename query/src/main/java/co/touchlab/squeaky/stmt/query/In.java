@@ -2,12 +2,10 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
-import co.touchlab.squeaky.stmt.ArgumentHolder;
 import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Internal class handling the SQL 'in' query part. Used by {@link Where#in}.
@@ -43,7 +41,7 @@ public class In extends BaseComparison
 	}
 
 	@Override
-	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb, List<ArgumentHolder> columnArgList)
+	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb)
 			throws SQLException {
 		sb.append('(');
 		boolean first = true;
@@ -57,7 +55,7 @@ public class In extends BaseComparison
 				sb.append(',');
 			}
 			// for each of our arguments, add it to the output
-			super.appendArgOrValue(squeakyContext, fieldType, sb, columnArgList, value);
+			super.appendArgOrValue(squeakyContext, fieldType, sb, value);
 		}
 		sb.append(") ");
 	}

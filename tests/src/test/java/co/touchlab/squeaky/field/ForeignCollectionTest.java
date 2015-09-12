@@ -16,10 +16,10 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by kgalligan on 7/26/15.
  */
-@RunWith(RobolectricTestRunner.class)
+//@RunWith(RobolectricTestRunner.class)
 public class ForeignCollectionTest extends BaseTypeTest
 {
-	private SimpleHelper helper;
+	/*private SimpleHelper helper;
 
 	@Before
 	public void before()
@@ -360,5 +360,5 @@ public class ForeignCollectionTest extends BaseTypeTest
 				ChildOrder.class,
 				ParentOrder.class
 		);
-	}
+	}*/
 }
