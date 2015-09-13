@@ -303,18 +303,4 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public String toString() {
 		return "where clause: " + clause;
 	}
-
-	private FieldType findColumnFieldType(String columnName) throws SQLException
-	{
-		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
-		for (FieldType fieldType : fieldTypes)
-		{
-			if(TextUtils.equals(fieldType.getColumnName(), columnName)
-					||
-					TextUtils.equals(fieldType.getFieldName(), columnName))
-				return fieldType;
-		}
-
-		return null;
-	}
 }

@@ -39,14 +39,4 @@ public class ByteArrayType extends BaseDataType {
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
 		return results.getBlob(columnPos);
 	}
-
-	@Override
-	public boolean isArgumentHolderRequired() {
-		return true;
-	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return byte[].class;
-	}
 }

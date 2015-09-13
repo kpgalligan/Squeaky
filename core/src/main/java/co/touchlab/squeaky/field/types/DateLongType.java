@@ -66,9 +66,4 @@ public class DateLongType extends BaseDateType {
 	public boolean isEscapedValue() {
 		return false;
 	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return Date.class;
-	}
 }

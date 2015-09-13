@@ -76,16 +76,6 @@ public class DateTimeType extends BaseDataType {
 		return false;
 	}
 
-	@Override
-	public Class<?> getPrimaryClass() {
-		try {
-			return getDateTimeClass();
-		} catch (ClassNotFoundException e) {
-			// ignore the exception
-			return null;
-		}
-	}
-
 	private Object createInstance(Long sqlArg) throws SQLException {
 		try {
 			if (millisConstructor == null) {

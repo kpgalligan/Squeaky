@@ -68,16 +68,6 @@ public class StringBytesType extends BaseDataType {
 		}
 	}
 
-	@Override
-	public boolean isArgumentHolderRequired() {
-		return true;
-	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return String.class;
-	}
-
 	private String getCharsetName(FieldType fieldType) {
 		if (fieldType == null || fieldType.getFormat() == null) {
 			return DEFAULT_STRING_BYTES_CHARSET_NAME;

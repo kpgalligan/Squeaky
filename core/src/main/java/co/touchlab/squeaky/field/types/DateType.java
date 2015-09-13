@@ -62,11 +62,6 @@ public class DateType extends BaseDateType {
 		return new Timestamp(date.getTime());
 	}
 
-	@Override
-	public boolean isArgumentHolderRequired() {
-		return true;
-	}
-
 	/**
 	 * Return the default date format configuration.
 	 */

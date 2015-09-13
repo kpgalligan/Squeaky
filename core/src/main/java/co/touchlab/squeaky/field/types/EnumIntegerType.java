@@ -82,9 +82,4 @@ public class EnumIntegerType extends BaseEnumType {
 		}
 		return enumIntMap;
 	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return int.class;
-	}
 }

@@ -86,14 +86,4 @@ public class SerializableType extends BaseDataType {
 	public boolean isComparable() {
 		return false;
 	}
-
-	@Override
-	public boolean isArgumentHolderRequired() {
-		return true;
-	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return Serializable.class;
-	}
 }

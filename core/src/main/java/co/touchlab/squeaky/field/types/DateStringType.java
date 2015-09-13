@@ -81,9 +81,4 @@ public class DateStringType extends BaseDateType {
 			return new DateStringFormatConfig(format);
 		}
 	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return byte[].class;
-	}
 }

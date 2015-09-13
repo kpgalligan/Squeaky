@@ -262,13 +262,6 @@ public class FieldType {
 	}
 
 	/**
-	 * Call through to {@link DataPersister#isArgumentHolderRequired()}
-	 */
-	public boolean isArgumentHolderRequired() {
-		return dataPersister.isArgumentHolderRequired();
-	}
-
-	/**
 	 * Return whether or not the field value passed in is the default value for the type of the field. Null will return
 	 * true.
 	 */

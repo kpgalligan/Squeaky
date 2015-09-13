@@ -25,9 +25,4 @@ public class LongStringType extends StringType {
 	protected LongStringType(SqlType sqlType, Class<?>[] classes) {
 		super(sqlType, classes);
 	}
-
-	@Override
-	public Class<?> getPrimaryClass() {
-		return String.class;
-	}
 }

@@ -66,14 +66,6 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 		return sqlArgToJava(fieldType, resultToSqlArg(fieldType, results, columnPos), columnPos);
 	}
 
-	public Class<?> getPrimaryClass() {
-		if (classes.length == 0) {
-			return null;
-		} else {
-			return classes[0];
-		}
-	}
-
 	/**
 	 * @throws SQLException
 	 *             If there are problems creating the config object. Needed for subclasses.
@@ -109,9 +101,5 @@ public abstract class BaseDataType extends BaseFieldConverter implements DataPer
 
 	public boolean isComparable() {
 		return true;
-	}
-
-	public boolean isArgumentHolderRequired() {
-		return false;
 	}
 }
