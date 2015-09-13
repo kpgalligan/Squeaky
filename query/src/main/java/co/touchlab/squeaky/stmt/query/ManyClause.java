@@ -191,6 +191,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 			}
 			else
 			{
+				sb.append(' ');
 				sb.append(operation);
 				sb.append(' ');
 			}

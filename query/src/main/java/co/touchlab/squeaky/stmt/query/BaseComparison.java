@@ -41,7 +41,9 @@ abstract class BaseComparison implements Comparison {
 		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ');
 		appendOperation(sb);
-		sb.append(" ?");
+		sb.append(' ');
+		if(value != null)
+			sb.append('?');
 	}
 
 	public String getColumnName() {

@@ -90,7 +90,9 @@ public class QueryTest extends BaseTypeTest
 
 		or.eq("ival", 123);*/
 
-//		StmtTestHelper.assertWhere("((`lval` = 2223424 AND `dval` BETWEEN 123 AND 456 ) OR `ival` = 123 ) ", bigWhere);
+		StmtTestHelper.assertWhere("((`lval` = ? AND `dval` BETWEEN ? AND ? ) OR `ival` = ? ) ",
+				(Where<Foo, Object>)bigWhere,
+				new String[]{"2223424", "123", "456", "123"});
 //		dao.createWhere().and()
 	}
 
