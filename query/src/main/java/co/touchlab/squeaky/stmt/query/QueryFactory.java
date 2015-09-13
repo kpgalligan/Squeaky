@@ -5,6 +5,7 @@ import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Created by kgalligan on 9/8/15.
@@ -55,13 +56,13 @@ public class QueryFactory
 		return initOp(columnFieldName, value, SimpleComparison.NOT_EQUAL_TO_OPERATION);
 	}
 
-	public Clause in(String columnFieldName, Iterable<?> objects) throws SQLException
+	public Clause in(String columnFieldName, Collection<?> objects) throws SQLException
 	{
 		FieldType fieldType = findFieldType(columnFieldName);
 		return new In(fieldType, objects, true);
 	}
 
-	public Clause notIn(String columnFieldName, Iterable<?> objects) throws SQLException
+	public Clause notIn(String columnFieldName, Collection<?> objects) throws SQLException
 	{
 		FieldType fieldType = findFieldType(columnFieldName);
 		return new In(fieldType, objects, false);

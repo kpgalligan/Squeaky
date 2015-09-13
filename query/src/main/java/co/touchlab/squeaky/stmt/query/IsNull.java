@@ -5,6 +5,7 @@ import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Internal class handling the SQL 'IS NULL' comparison query part. Used by {@link Where#isNull}.
@@ -24,7 +25,7 @@ public class IsNull extends BaseComparison
 	}
 
 	@Override
-	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb) {
+	public void appendValue(SqueakyContext squeakyContext, List<String> params) {
 		// there is no value
 	}
 }

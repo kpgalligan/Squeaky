@@ -37,6 +37,12 @@ public class Not<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
+	public void appendValue(SqueakyContext squeakyContext, List<String> params) throws SQLException
+	{
+		comparison.appendValue(squeakyContext, params);
+	}
+
+	@Override
 	public String toString() {
 		if (comparison == null) {
 			return "NOT without comparison";

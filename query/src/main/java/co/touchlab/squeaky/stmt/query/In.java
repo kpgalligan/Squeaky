@@ -6,6 +6,9 @@ import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Internal class handling the SQL 'in' query part. Used by {@link Where#in}.
@@ -15,10 +18,10 @@ import java.util.Arrays;
 public class In extends BaseComparison
 {
 
-	private Iterable<?> objects;
+	private Collection<?> objects;
 	private final boolean in;
 
-	public In(FieldType fieldType, Iterable<?> objects, boolean in) throws SQLException {
+	public In(FieldType fieldType, Collection<?> objects, boolean in) throws SQLException {
 		super(fieldType, null, true);
 		this.objects = objects;
 		this.in = in;
@@ -34,29 +37,28 @@ public class In extends BaseComparison
 	@Override
 	public void appendOperation(StringBuilder sb) {
 		if (in) {
-			sb.append("IN ");
+			sb.append("IN (");
 		} else {
-			sb.append("NOT IN ");
+			sb.append("NOT IN (");
 		}
+		for (int i=0; i<objects.size(); i++)
+		{
+			if(i > 0)
+				sb.append(',');
+
+			sb.append('?');
+		}
+		sb.append(')');
 	}
 
 	@Override
-	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb)
+	public void appendValue(SqueakyContext squeakyContext, List<String> params)
 			throws SQLException {
-		sb.append('(');
-		boolean first = true;
 		for (Object value : objects) {
 			if (value == null) {
 				throw new IllegalArgumentException("one of the IN values for '" + fieldType.getColumnName() + "' is null");
 			}
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
-			}
-			// for each of our arguments, add it to the output
-			super.appendArgOrValue(squeakyContext, fieldType, sb, value);
+			super.appendArgOrValue(squeakyContext, fieldType, params, value);
 		}
-		sb.append(") ");
 	}
 }

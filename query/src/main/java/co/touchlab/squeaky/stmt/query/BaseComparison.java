@@ -41,21 +41,19 @@ abstract class BaseComparison implements Comparison {
 		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ');
 		appendOperation(sb);
-		// this needs to call appendValue (not appendArgOrValue) because it may be overridden
-		appendValue(squeakyContext, sb);
+		sb.append(" ?");
 	}
 
 	public String getColumnName() {
 		return fieldType.getColumnName();
 	}
 
-	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb)
+	public void appendValue(SqueakyContext squeakyContext, List<String> params)
 			throws SQLException {
-		appendArgOrValue(squeakyContext, fieldType, sb, value);
+		appendArgOrValue(squeakyContext, fieldType, params, value);
 	}
 
-	protected void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, StringBuilder sb, Object argOrValue) throws SQLException {
-		boolean appendSpace = true;
+	protected void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, List<String> params, Object argOrValue) throws SQLException {
 		if (argOrValue == null) {
 			throw new SQLException("argument for '" + fieldType.getFieldName() + "' is null");
 		}
@@ -63,12 +61,10 @@ abstract class BaseComparison implements Comparison {
 			GeneratedTableMapper generatedTableMapper = ((ModelDao) squeakyContext.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
 			Object idVal = generatedTableMapper.extractId(argOrValue);
 			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
-			appendArgOrValue(squeakyContext, idFieldType, sb, idVal);
+			appendArgOrValue(squeakyContext, idFieldType, params, idVal);
 			// no need for the space since it was done in the recursion
-			appendSpace = false;
-		} else if (fieldType.isEscapedValue()) {
-			TableUtils.appendEscapedWord(sb, fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
 		} else if (fieldType.isForeign()) {
+			//TODO  Need to find out if this is even useful
 			/*
 			 * I'm not entirely sure this is correct. This is trying to protect against someone trying to pass an object
 			 * into a comparison with a foreign field. Typically if they pass the same field type, then ORMLite will
@@ -82,13 +78,10 @@ abstract class BaseComparison implements Comparison {
 							+ "'. Maybe you are passing the wrong object to comparison: " + this);
 				}
 			}
-			sb.append(value);
+			params.add(value);
 		} else {
 			// numbers can't have quotes around them in derby
-			sb.append(fieldType.convertJavaFieldToSqlArgValue(argOrValue));
-		}
-		if (appendSpace) {
-			sb.append(' ');
+			params.add(fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
 		}
 	}
 

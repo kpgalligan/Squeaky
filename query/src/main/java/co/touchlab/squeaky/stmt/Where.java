@@ -271,14 +271,22 @@ public class Where<T, ID> implements Queryable<T>, Query
 		return sb.toString();
 	}
 
+	@Override
+	public String[] getParameters() throws SQLException
+	{
+		List<String> params = new ArrayList<>();
+		clause.appendValue(openHelperHelper, params);
+		return params.toArray(new String[params.size()]);
+	}
+
 	public List<T> query() throws SQLException
 	{
-		return modelDao.query(getStatement());
+		return modelDao.query(getStatement(), getParameters());
 	}
 
 	public List<T> query(String orderBy)throws SQLException
 	{
-		return modelDao.query(getStatement(), orderBy);
+		return modelDao.query(getStatement(), getParameters(), orderBy);
 	}
 
 	/**

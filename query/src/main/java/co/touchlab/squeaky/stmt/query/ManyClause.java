@@ -200,4 +200,13 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 		sb.append(") ");
 	}
+
+	@Override
+	public void appendValue(SqueakyContext squeakyContext, List<String> params) throws SQLException
+	{
+		for (Clause clause : clauses)
+		{
+			clause.appendValue(squeakyContext, params);
+		}
+	}
 }

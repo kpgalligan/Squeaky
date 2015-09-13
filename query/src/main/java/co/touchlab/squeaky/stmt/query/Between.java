@@ -5,6 +5,7 @@ import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Internal class handling the SQL 'between' query part. Used by {@link Where#between}.
@@ -24,11 +25,11 @@ public class Between extends BaseComparison
 
 	@Override
 	public void appendOperation(StringBuilder sb) {
-		sb.append("BETWEEN ");
+		sb.append("BETWEEN ? AND ?");
 	}
 
 	@Override
-	public void appendValue(SqueakyContext squeakyContext, StringBuilder sb)
+	public void appendValue(SqueakyContext squeakyContext, List<String> params)
 			throws SQLException {
 		if (low == null) {
 			throw new IllegalArgumentException("BETWEEN low value for '" + fieldType.getColumnName() + "' is null");
@@ -36,8 +37,8 @@ public class Between extends BaseComparison
 		if (high == null) {
 			throw new IllegalArgumentException("BETWEEN high value for '" + fieldType.getColumnName() + "' is null");
 		}
-		appendArgOrValue(squeakyContext, fieldType, sb, low);
-		sb.append("AND ");
-		appendArgOrValue(squeakyContext, fieldType, sb, high);
+
+		appendArgOrValue(squeakyContext, fieldType, params, low);
+		appendArgOrValue(squeakyContext, fieldType, params, high);
 	}
 }
