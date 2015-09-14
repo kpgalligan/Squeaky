@@ -1,6 +1,5 @@
 package co.touchlab.squeaky.stmt;
 
-import android.text.TextUtils;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.dao.Query;
@@ -82,7 +81,6 @@ import java.util.List;
  */
 public class Where<T, ID> implements Queryable<T>, Query
 {
-
 	private final static int CLAUSE_STACK_START_SIZE = 4;
 
 	private final ModelDao<T, ID> modelDao;
@@ -91,6 +89,8 @@ public class Where<T, ID> implements Queryable<T>, Query
 	private final FieldType idFieldType;
 	private final String idColumnName;
 	private final QueryFactory queryFactory;
+	private int joinTableCount = 0;
+	private final List<JoinAlias> joins = new ArrayList<>();
 
 	private Clause clause;
 
@@ -114,49 +114,97 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> eq(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.eq(columnFieldName, value);
+		clause = queryFactory.eq(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+
+	public Where<T, ID> eq(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.eq(joinAlias.tableType, columnFieldName, value);
 		return this;
 	}
 
 	public Where<T, ID> gt(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.gt(columnFieldName, value);
+		clause = queryFactory.gt(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+
+	public Where<T, ID> gt(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.gt(joinAlias.tableType, columnFieldName, value);
 		return this;
 	}
 
 	public Where<T, ID> ge(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.ge(columnFieldName, value);
+		clause = queryFactory.ge(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.ge(joinAlias.tableType,  columnFieldName, value);
 		return this;
 	}
 
 	public Where<T, ID> lt(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.lt(columnFieldName, value);
+		clause = queryFactory.lt(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+
+	public Where<T, ID> lt(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.lt(joinAlias.tableType, columnFieldName, value);
 		return this;
 	}
 
 	public Where<T, ID> le(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.le(columnFieldName, value);
+		clause = queryFactory.le(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+
+	public Where<T, ID> le(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.le(joinAlias.tableType, columnFieldName, value);
 		return this;
 	}
 
 	public Where<T, ID> like(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.like(columnFieldName, value);
+		clause = queryFactory.like(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+
+	public Where<T, ID> like(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.like(joinAlias.tableType, columnFieldName, value);
 		return this;
 	}
 
 	public Where<T, ID> ne(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.ne(columnFieldName, value);
+		clause = queryFactory.ne(modelDao.getDataClass(), columnFieldName, value);
+		return this;
+	}
+
+	public Where<T, ID> ne(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.ne(joinAlias.tableType, columnFieldName, value);
 		return this;
 	}
 
@@ -164,7 +212,15 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> in(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.in(columnFieldName, objects);
+		clause = queryFactory.in(modelDao.getDataClass(), columnFieldName, objects);
+		return this;
+	}
+
+	@Override
+	public Where<T, ID> in(JoinAlias joinAlias, String columnFieldName, Iterable<?> objects) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.in(joinAlias.tableType, columnFieldName, objects);
 		return this;
 	}
 
@@ -172,7 +228,15 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> notIn(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.notIn(columnFieldName, objects);
+		clause = queryFactory.notIn(modelDao.getDataClass(), columnFieldName, objects);
+		return this;
+	}
+
+	@Override
+	public Where<T, ID> notIn(JoinAlias joinAlias, String columnFieldName, Iterable<?> objects) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.notIn(joinAlias.tableType, columnFieldName, objects);
 		return this;
 	}
 
@@ -180,7 +244,15 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> in(String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.in(columnFieldName, objects);
+		clause = queryFactory.in(modelDao.getDataClass(), columnFieldName, objects);
+		return this;
+	}
+
+	@Override
+	public Where<T, ID> in(JoinAlias joinAlias, String columnFieldName, Object... objects) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.in(joinAlias.tableType, columnFieldName, objects);
 		return this;
 	}
 
@@ -188,35 +260,64 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> notIn(String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.notIn(columnFieldName, objects);
+		clause = queryFactory.notIn(modelDao.getDataClass(), columnFieldName, objects);
+		return this;
+	}
+
+	@Override
+	public Where<T, ID> notIn(JoinAlias joinAlias, String columnFieldName, Object... objects) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.notIn(joinAlias.tableType, columnFieldName, objects);
 		return this;
 	}
 
 	public Where<T, ID> between(String columnFieldName, Object low, Object high) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.between(columnFieldName, low, high);
+		clause = queryFactory.between(modelDao.getDataClass(), columnFieldName, low, high);
+		return this;
+	}
+
+	public Where<T, ID> between(JoinAlias joinAlias, String columnFieldName, Object low, Object high) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.between(joinAlias.tableType, columnFieldName, low, high);
 		return this;
 	}
 
 	public Where<T, ID> isNull(String columnFieldName) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.isNull(columnFieldName);
+		clause = queryFactory.isNull(modelDao.getDataClass(), columnFieldName);
+		return this;
+	}
+
+	public Where<T, ID> isNull(JoinAlias joinAlias, String columnFieldName) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.isNull(joinAlias.tableType, columnFieldName);
 		return this;
 	}
 
 	public Where<T, ID> isNotNull(String columnFieldName) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.isNotNull(columnFieldName);
+		clause = queryFactory.isNotNull(modelDao.getDataClass(), columnFieldName);
+		return this;
+	}
+
+	public Where<T, ID> isNotNull(JoinAlias joinAlias, String columnFieldName) throws SQLException
+	{
+		checkClause();
+		clause = queryFactory.isNotNull(joinAlias.tableType, columnFieldName);
 		return this;
 	}
 
 	public ManyClause and()throws SQLException
 	{
 		checkClause();
-		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION);
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION, modelDao.getDataClass());
 		clause = manyClause;
 		return manyClause;
 	}
@@ -224,7 +325,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public ManyClause or()throws SQLException
 	{
 		checkClause();
-		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION);
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION, modelDao.getDataClass());
 		clause = manyClause;
 		return manyClause;
 	}
@@ -232,7 +333,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Not not()throws SQLException
 	{
 		checkClause();
-		Not<T> not = new Not<T>(this, queryFactory);
+		Not<T> not = new Not<T>(this, queryFactory, modelDao.getDataClass());
 		clause = not;
 		return not;
 	}
@@ -241,6 +342,42 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Queryable<T> end() throws SQLException
 	{
 		throw new SQLException("Where is not a child and can't be ended");
+	}
+
+	public JoinAlias join(String field)throws SQLException
+	{
+		FieldType fieldType = openHelperHelper.findFieldType(modelDao.getDataClass(), field);
+		if(fieldType.isForeign())
+		{
+			JoinAlias joinAlias = new JoinAlias(fieldType.getFieldType(), "t" + (joinTableCount++), fieldType);
+			joins.add(joinAlias);
+			return joinAlias;
+		}
+
+		return null;
+	}
+
+	public String getFromStatement()throws SQLException
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(generatedTableMapper.getTableConfig().getTableName());
+		sb.append(' ');
+		sb.append(ModelDao.DEFAULT_TABLE_PREFIX);
+
+		for (JoinAlias join : joins)
+		{
+			sb.append(" join ");
+			GeneratedTableMapper joinMapper = openHelperHelper.getGeneratedTableMapper(join.fieldType.getFieldType());
+			sb.append(joinMapper.getTableConfig().getTableName());
+			sb.append(' ');
+			sb.append(join.tablePrefix);
+			sb.append(" on ");
+			sb.append(ModelDao.DEFAULT_TABLE_PREFIX).append('.').append(join.fieldType.getColumnName());
+			sb.append(" = ");
+			sb.append(join.tablePrefix).append('.').append(joinMapper.getTableConfig().idField.getColumnName());
+		}
+
+		return sb.toString();
 	}
 
 	private void checkClause() throws SQLException

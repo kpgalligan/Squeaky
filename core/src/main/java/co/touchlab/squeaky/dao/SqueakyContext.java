@@ -1,8 +1,10 @@
 package co.touchlab.squeaky.dao;
 
 import android.database.sqlite.SQLiteOpenHelper;
+import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,5 +67,20 @@ public class SqueakyContext
 	public SQLiteOpenHelper getHelper()
 	{
 		return helper;
+	}
+
+	public FieldType findFieldType(Class c, String columnFieldName) throws SQLException
+	{
+		GeneratedTableMapper generatedTableMapper = getGeneratedTableMapper(c);
+		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
+		for (FieldType fieldType : fieldTypes)
+		{
+			if(fieldType.getFieldName().equalsIgnoreCase(columnFieldName) || fieldType.getColumnName().equalsIgnoreCase(columnFieldName))
+			{
+				return fieldType;
+			}
+		}
+
+		throw new SQLException("No field type found for "+ columnFieldName);
 	}
 }

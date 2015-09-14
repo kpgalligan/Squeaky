@@ -1,6 +1,7 @@
 package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
+import co.touchlab.squeaky.stmt.JoinAlias;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,9 +21,11 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 	private final String operation;
 	private final QueryFactory queryFactory;
 	private final Queryable<T> parent;
+	private final Class defaultType;
 
-	public ManyClause(Queryable<T> parent, QueryFactory queryFactory, String operation) {
+	public ManyClause(Queryable<T> parent, QueryFactory queryFactory, String operation, Class defaultType) {
 		this.parent = parent;
+		this.defaultType = defaultType;
 		this.clauses = new ArrayList<>(2);
 		this.operation = operation;
 		this.queryFactory = queryFactory;
@@ -54,117 +57,213 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> eq(String columnFieldName, Object value) throws SQLException
 	{
-		clauses.add(queryFactory.eq(columnFieldName, value));
+		clauses.add(queryFactory.eq(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> eq(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		clauses.add(queryFactory.eq(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	public ManyClause<T> gt(String columnFieldName, Object value) throws SQLException
 	{
-		clauses.add(queryFactory.gt(columnFieldName, value));
+		clauses.add(queryFactory.gt(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> gt(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+		clauses.add(queryFactory.gt(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	public ManyClause<T> ge(String columnFieldName, Object value) throws SQLException
 	{
 		
-		clauses.add(queryFactory.ge(columnFieldName, value));
+		clauses.add(queryFactory.ge(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> ge(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+
+		clauses.add(queryFactory.ge(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	public ManyClause<T> lt(String columnFieldName, Object value) throws SQLException
 	{
 		
-		clauses.add(queryFactory.lt(columnFieldName, value));
+		clauses.add(queryFactory.lt(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> lt(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+
+		clauses.add(queryFactory.lt(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	public ManyClause<T> le(String columnFieldName, Object value) throws SQLException
 	{
 		
-		clauses.add(queryFactory.le(columnFieldName, value));
+		clauses.add(queryFactory.le(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> le(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+
+		clauses.add(queryFactory.le(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	public ManyClause<T> like(String columnFieldName, Object value) throws SQLException
 	{
 		
-		clauses.add(queryFactory.like(columnFieldName, value));
+		clauses.add(queryFactory.like(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> like(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+
+		clauses.add(queryFactory.like(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	public ManyClause<T> ne(String columnFieldName, Object value) throws SQLException
 	{
 		
-		clauses.add(queryFactory.ne(columnFieldName, value));
+		clauses.add(queryFactory.ne(defaultType, columnFieldName, value));
+		return this;
+	}
+
+	public ManyClause<T> ne(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
+	{
+
+		clauses.add(queryFactory.ne(joinAlias.tableType, columnFieldName, value));
 		return this;
 	}
 
 	@Override
 	public ManyClause<T> in(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
-		clauses.add(queryFactory.in(columnFieldName, objects));
+		clauses.add(queryFactory.in(defaultType, columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> in(JoinAlias joinAlias, String columnFieldName, Iterable<?> objects) throws SQLException
+	{
+		clauses.add(queryFactory.in(joinAlias.tableType, columnFieldName, objects));
 		return this;
 	}
 
 	@Override
 	public ManyClause<T> notIn(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
-		clauses.add(queryFactory.notIn(columnFieldName, objects));
+		clauses.add(queryFactory.notIn(defaultType, columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> notIn(JoinAlias joinAlias, String columnFieldName, Iterable<?> objects) throws SQLException
+	{
+		clauses.add(queryFactory.notIn(joinAlias.tableType, columnFieldName, objects));
 		return this;
 	}
 
 	@Override
 	public ManyClause<T> in(String columnFieldName, Object... objects) throws SQLException
 	{
-		clauses.add(queryFactory.in(columnFieldName, objects));
+		clauses.add(queryFactory.in(defaultType, columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> in(JoinAlias joinAlias, String columnFieldName, Object... objects) throws SQLException
+	{
+		clauses.add(queryFactory.in(joinAlias.tableType, columnFieldName, objects));
 		return this;
 	}
 
 	@Override
 	public ManyClause<T> notIn(String columnFieldName, Object... objects) throws SQLException
 	{
-		clauses.add(queryFactory.notIn(columnFieldName, objects));
+		clauses.add(queryFactory.notIn(defaultType, columnFieldName, objects));
+		return this;
+	}
+
+	@Override
+	public ManyClause<T> notIn(JoinAlias joinAlias, String columnFieldName, Object... objects) throws SQLException
+	{
+		clauses.add(queryFactory.notIn(joinAlias.tableType, columnFieldName, objects));
 		return this;
 	}
 
 	public ManyClause<T> between(String columnFieldName, Object low, Object high) throws SQLException
 	{
 		
-		clauses.add(queryFactory.between(columnFieldName, low, high));
+		clauses.add(queryFactory.between(defaultType, columnFieldName, low, high));
+		return this;
+	}
+
+	public ManyClause<T> between(JoinAlias joinAlias, String columnFieldName, Object low, Object high) throws SQLException
+	{
+
+		clauses.add(queryFactory.between(joinAlias.tableType, columnFieldName, low, high));
 		return this;
 	}
 
 	public ManyClause<T> isNull(String columnFieldName) throws SQLException
 	{
 		
-		clauses.add(queryFactory.isNull(columnFieldName));
+		clauses.add(queryFactory.isNull(defaultType, columnFieldName));
+		return this;
+	}
+
+	public ManyClause<T> isNull(JoinAlias joinAlias, String columnFieldName) throws SQLException
+	{
+
+		clauses.add(queryFactory.isNull(joinAlias.tableType, columnFieldName));
 		return this;
 	}
 
 	public ManyClause<T> isNotNull(String columnFieldName) throws SQLException
 	{
 		
-		clauses.add(queryFactory.isNotNull(columnFieldName));
+		clauses.add(queryFactory.isNotNull(defaultType, columnFieldName));
+		return this;
+	}
+
+	public ManyClause<T> isNotNull(JoinAlias joinAlias, String columnFieldName) throws SQLException
+	{
+
+		clauses.add(queryFactory.isNotNull(joinAlias.tableType, columnFieldName));
 		return this;
 	}
 
 	public ManyClause<T> and()
 	{
-		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION);
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION, defaultType);
 		clauses.add(manyClause);
 		return manyClause;
 	}
 
 	public ManyClause<T> or()
 	{
-		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION);
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION, defaultType);
 		clauses.add(manyClause);
 		return manyClause;
 	}
 
 	public Not not()throws SQLException
 	{
-		Not<T> not = new Not<T>(this, queryFactory);
+		Not<T> not = new Not<T>(this, queryFactory, defaultType);
 		clauses.add(not);
 		return not;
 	}

@@ -9,4 +9,5 @@ public interface Query
 {
 	String getStatement()throws SQLException;
 	String[] getParameters()throws SQLException;
+	String getFromStatement()throws SQLException;
 }

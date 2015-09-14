@@ -3,6 +3,7 @@ package co.touchlab.squeaky.stmt.query;
 import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TableUtils;
 
@@ -18,10 +19,12 @@ abstract class BaseComparison implements Comparison {
 
 	private static final String NUMBER_CHARACTERS = "0123456789.-+";
 	protected final FieldType fieldType;
+	private final JoinAlias joinAlias;
 	private final Object value;
 
-	protected BaseComparison(FieldType fieldType, Object value, boolean isComparison)
+	protected BaseComparison(FieldType fieldType, Object value, boolean isComparison, JoinAlias joinAlias)
 			throws SQLException {
+		this.joinAlias = joinAlias;
 		if (isComparison && fieldType != null && !fieldType.isComparable()) {
 			throw new SQLException("Field '" + fieldType.getColumnName() + "' is of data type " + fieldType.getDataPersister()
 					+ " which can not be compared");
@@ -36,6 +39,11 @@ abstract class BaseComparison implements Comparison {
 			throws SQLException {
 		if (tableName != null) {
 			TableUtils.appendEscapedEntityName(sb, tableName);
+			sb.append('.');
+		}
+		if(joinAlias != null)
+		{
+			sb.append(joinAlias.tablePrefix);
 			sb.append('.');
 		}
 		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());

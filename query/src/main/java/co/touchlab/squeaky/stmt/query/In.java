@@ -2,12 +2,12 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,18 +17,25 @@ import java.util.List;
  */
 public class In extends BaseComparison
 {
-
 	private Collection<?> objects;
 	private final boolean in;
 
 	public In(FieldType fieldType, Collection<?> objects, boolean in) throws SQLException {
-		super(fieldType, null, true);
+		this(fieldType, objects, in, null);
+	}
+
+	public In(FieldType fieldType, Object[] objects, boolean in) throws SQLException {
+		this(fieldType, objects, in, null);
+	}
+
+	public In(FieldType fieldType, Collection<?> objects, boolean in, JoinAlias joinAlias) throws SQLException {
+		super(fieldType, null, true, joinAlias);
 		this.objects = objects;
 		this.in = in;
 	}
 
-	public In(FieldType fieldType, Object[] objects, boolean in) throws SQLException {
-		super(fieldType, null, true);
+	public In(FieldType fieldType, Object[] objects, boolean in, JoinAlias joinAlias) throws SQLException {
+		super(fieldType, null, true, joinAlias);
 		// grrrr, Object[] should be Iterable
 		this.objects = Arrays.asList(objects);
 		this.in = in;

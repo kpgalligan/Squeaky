@@ -2,6 +2,7 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
@@ -17,8 +18,13 @@ public class Between extends BaseComparison
 	private Object low;
 	private Object high;
 
-	public Between(FieldType fieldType, Object low, Object high) throws SQLException {
-		super(fieldType, null, true);
+	public Between(FieldType fieldType, Object low, Object high) throws SQLException
+	{
+		this(fieldType, low, high, null);
+	}
+
+	public Between(FieldType fieldType, Object low, Object high, JoinAlias joinAlias) throws SQLException {
+		super(fieldType, null, true, joinAlias);
 		this.low = low;
 		this.high = high;
 	}

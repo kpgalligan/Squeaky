@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 import co.touchlab.squeaky.Config;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
@@ -23,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ModelDao<T, ID> implements Dao<T, ID>
 {
+	public static final String DEFAULT_TABLE_PREFIX = "t";
+
 	private final Class<T> entityClass;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
@@ -89,12 +92,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> queryForAll() throws SQLException
 	{
-		return makeCursorResults(null, null, null);
+		return makeCursorResults(createDefaultFrom(), null, null, null);
 	}
 
 	public List<T> queryForEq(String fieldName, Object value) throws SQLException
 	{
-		return makeCursorResults(fieldName + " = ?", new String[]{value.toString()}, null);
+		return makeCursorResults(createDefaultFrom(), fieldName + " = ?", new String[]{value.toString()}, null);
 	}
 
 	public List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException
@@ -112,14 +115,36 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			args[count++] = val == null ? null : val.toString();
 		}
 
-		return makeCursorResults(query.toString(), args, null);
+		return makeCursorResults(createDefaultFrom(), query.toString(), args, null);
 	}
 
-	private List<T> makeCursorResults(String where, String[] args, String orderBy) throws SQLException
+	private String createDefaultFrom() throws SQLException
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(generatedTableMapper.getTableConfig().getTableName());
+		sb.append(' ');
+		sb.append(DEFAULT_TABLE_PREFIX);
+
+		return sb.toString();
+	}
+
+	private List<T> makeCursorResults(String from, String where, String[] args, String orderBy) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
 		TransientCache objectCache = new TransientCache();
-		Cursor cursor = openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where, args, null, null, orderBy);
+		StringBuilder sb = new StringBuilder();
+		sb.append("select ").append(TextUtils.join(",", tableCols)).append(" from ").append(from);
+		if(!TextUtils.isEmpty(where))
+			sb.append(" where ").append(where);
+
+		if(!TextUtils.isEmpty(orderBy))
+			sb.append(" order by ").append(orderBy);
+
+		String sql = sb.toString();
+		Cursor cursor = openHelperHelper.getHelper().getWritableDatabase()
+				.rawQuery(sql, args);
+
 		try
 		{
 			if (cursor.moveToFirst())
@@ -142,18 +167,17 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> query(String where, String[] args, String orderBy) throws SQLException
 	{
-		return makeCursorResults(where, args, orderBy);
+		return makeCursorResults(createDefaultFrom(), where, args, orderBy);
 	}
 
 	public List<T> query(String where, String[] args)throws SQLException
 	{
-		return query(where, args);
+		return query(where, args, null);
 	}
 
 	public List<T> query(Query where, String orderBy)throws SQLException
 	{
-		String statement = where.getStatement();
-		return query(statement, where.getParameters(), orderBy);
+		return makeCursorResults(where.getFromStatement(), where.getStatement(), where.getParameters(), orderBy);
 	}
 
 	public List<T> query(Query where)throws SQLException
@@ -396,6 +420,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			public String[] getParameters() throws SQLException
 			{
 				return null;
+			}
+
+			@Override
+			public String getFromStatement() throws SQLException
+			{
+				return createDefaultFrom();
 			}
 		});
 	}

@@ -2,6 +2,7 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.stmt.Where;
 
 import java.sql.SQLException;
@@ -14,9 +15,12 @@ import java.util.List;
  */
 public class IsNull extends BaseComparison
 {
-
 	public IsNull(FieldType fieldType) throws SQLException {
-		super(fieldType, null, false);
+		this(fieldType, null);
+	}
+
+	public IsNull(FieldType fieldType, JoinAlias joinAlias) throws SQLException {
+		super(fieldType, null, false, joinAlias);
 	}
 
 	@Override

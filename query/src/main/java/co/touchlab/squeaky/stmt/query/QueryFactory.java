@@ -13,107 +13,91 @@ import java.util.Collection;
 public class QueryFactory
 {
 	private final SqueakyContext squeakyContext;
-	private final Class c;
 
 	public QueryFactory(SqueakyContext squeakyContext, Class c)
 	{
 		this.squeakyContext = squeakyContext;
-		this.c = c;
 	}
 
-	public Clause eq(String columnFieldName, Object value) throws SQLException
+	public Clause eq(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.EQUAL_TO_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.EQUAL_TO_OPERATION);
 	}
 
-	public Clause gt(String columnFieldName, Object value) throws SQLException
+	public Clause gt(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.GREATER_THAN_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.GREATER_THAN_OPERATION);
 	}
 
-	public Clause ge(String columnFieldName, Object value) throws SQLException
+	public Clause ge(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.GREATER_THAN_EQUAL_TO_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.GREATER_THAN_EQUAL_TO_OPERATION);
 	}
 
-	public Clause lt(String columnFieldName, Object value) throws SQLException
+	public Clause lt(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.LESS_THAN_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.LESS_THAN_OPERATION);
 	}
 
-	public Clause le(String columnFieldName, Object value) throws SQLException
+	public Clause le(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.LESS_THAN_EQUAL_TO_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.LESS_THAN_EQUAL_TO_OPERATION);
 	}
 
-	public Clause like(String columnFieldName, Object value) throws SQLException
+	public Clause like(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.LIKE_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.LIKE_OPERATION);
 	}
 
-	public Clause ne(String columnFieldName, Object value) throws SQLException
+	public Clause ne(Class c, String columnFieldName, Object value) throws SQLException
 	{
-		return initOp(columnFieldName, value, SimpleComparison.NOT_EQUAL_TO_OPERATION);
+		return initOp(c, columnFieldName, value, SimpleComparison.NOT_EQUAL_TO_OPERATION);
 	}
 
-	public Clause in(String columnFieldName, Collection<?> objects) throws SQLException
+	public Clause in(Class c, String columnFieldName, Collection<?> objects) throws SQLException
 	{
-		FieldType fieldType = findFieldType(columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
 		return new In(fieldType, objects, true);
 	}
 
-	public Clause notIn(String columnFieldName, Collection<?> objects) throws SQLException
+	public Clause notIn(Class c, String columnFieldName, Collection<?> objects) throws SQLException
 	{
-		FieldType fieldType = findFieldType(columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
 		return new In(fieldType, objects, false);
 	}
 
-	public Clause in(String columnFieldName, Object... objects) throws SQLException
+	public Clause in(Class c, String columnFieldName, Object... objects) throws SQLException
 	{
-		FieldType fieldType = findFieldType(columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
 		return new In(fieldType, objects, true);
 	}
 
-	public Clause notIn(String columnFieldName, Object... objects) throws SQLException
+	public Clause notIn(Class c, String columnFieldName, Object... objects) throws SQLException
 	{
-		FieldType fieldType = findFieldType(columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
 		return new In(fieldType, objects, false);
 	}
 
-	public Clause between(String columnFieldName, Object low, Object high) throws SQLException
+	public Clause between(Class c, String columnFieldName, Object low, Object high) throws SQLException
 	{
-		FieldType fieldType = findFieldType(columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
 		return new Between(fieldType, low, high);
 	}
 
-	public Clause isNull(String columnFieldName) throws SQLException
+	public Clause isNull(Class c, String columnFieldName) throws SQLException
 	{
-		return new IsNull(findFieldType(columnFieldName));
+		return new IsNull(squeakyContext.findFieldType(c, columnFieldName));
 	}
 
-	public Clause isNotNull(String columnFieldName) throws SQLException
+	public Clause isNotNull(Class c, String columnFieldName) throws SQLException
 	{
-		return new IsNotNull(findFieldType(columnFieldName));
+		return new IsNotNull(squeakyContext.findFieldType(c, columnFieldName));
 	}
 
-	private Clause initOp(String columnFieldName, Object value, String op) throws SQLException
+	private Clause initOp(Class c, String columnFieldName, Object value, String op) throws SQLException
 	{
-		FieldType fieldType = findFieldType(columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
+
 		return new SimpleComparison(fieldType, value, op);
-	}
-
-	private FieldType findFieldType(String columnFieldName) throws SQLException
-	{
-		GeneratedTableMapper generatedTableMapper = squeakyContext.getGeneratedTableMapper(c);
-		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
-		for (FieldType fieldType : fieldTypes)
-		{
-			if(fieldType.getFieldName().equalsIgnoreCase(columnFieldName) || fieldType.getColumnName().equalsIgnoreCase(columnFieldName))
-			{
-				return fieldType;
-			}
-		}
-
-		throw new SQLException("No field type found for "+ columnFieldName);
 	}
 }

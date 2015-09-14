@@ -1,7 +1,7 @@
 package co.touchlab.squeaky.stmt.query;
 
-import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.stmt.JoinAlias;
 
 import java.sql.SQLException;
 
@@ -12,7 +12,6 @@ import java.sql.SQLException;
  */
 public class SimpleComparison extends BaseComparison
 {
-
 	public final static String EQUAL_TO_OPERATION = "=";
 	public final static String GREATER_THAN_OPERATION = ">";
 	public final static String GREATER_THAN_EQUAL_TO_OPERATION = ">=";
@@ -24,7 +23,11 @@ public class SimpleComparison extends BaseComparison
 	private final String operation;
 
 	public SimpleComparison(FieldType fieldType, Object value, String operation) throws SQLException {
-		super(fieldType, value, true);
+		this(fieldType, value, operation, null);
+	}
+
+	public SimpleComparison(FieldType fieldType, Object value, String operation, JoinAlias joinAlias) throws SQLException {
+		super(fieldType, value, true, joinAlias);
 		this.operation = operation;
 	}
 
