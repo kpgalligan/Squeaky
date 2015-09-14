@@ -79,7 +79,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		for (int i=0; i<fieldTypes.length; i++)
 		{
-			selectList[i] = fieldTypes[i].getColumnName();
+			selectList[i] = DEFAULT_TABLE_PREFIX + "." + fieldTypes[i].getColumnName();
 		}
 		return selectList;
 	}
@@ -133,17 +133,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		List<T> results = new ArrayList<T>();
 		TransientCache objectCache = new TransientCache();
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ").append(TextUtils.join(",", tableCols)).append(" from ").append(from);
-		if(!TextUtils.isEmpty(where))
-			sb.append(" where ").append(where);
-
-		if(!TextUtils.isEmpty(orderBy))
-			sb.append(" order by ").append(orderBy);
-
-		String sql = sb.toString();
-		Cursor cursor = openHelperHelper.getHelper().getWritableDatabase()
-				.rawQuery(sql, args);
+		Cursor cursor = makeCursor(from, where, args, orderBy);
 
 		try
 		{
@@ -163,6 +153,21 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 
 		return results;
+	}
+
+	private Cursor makeCursor(String from, String where, String[] args, String orderBy)
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("select ").append(TextUtils.join(",", tableCols)).append(" from ").append(from);
+		if(!TextUtils.isEmpty(where))
+			sb.append(" where ").append(where);
+
+		if(!TextUtils.isEmpty(orderBy))
+			sb.append(" order by ").append(orderBy);
+
+		String sql = sb.toString();
+		return openHelperHelper.getHelper().getWritableDatabase()
+				.rawQuery(sql, args);
 	}
 
 	public List<T> query(String where, String[] args, String orderBy) throws SQLException
@@ -348,7 +353,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException
 	{
-		Cursor cursor = openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
+		Cursor cursor = makeCursor(createDefaultFrom(), idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null);
 		try
 		{
 			if (cursor.moveToFirst())
@@ -432,7 +437,19 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int delete(Query where) throws SQLException
 	{
-		int result = openHelperHelper.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), where.getStatement(), where.getParameters());
+		StringBuilder sb = new StringBuilder();
+		sb.append("delete from ").append(where.getFromStatement());
+		String whereStatement = where.getStatement();
+		if(!TextUtils.isEmpty(whereStatement))
+			sb.append(" where ").append(whereStatement);
+
+		SQLiteStatement sqLiteStatement = openHelperHelper.getHelper().getWritableDatabase().compileStatement(sb.toString());
+		String[] parameters = where.getParameters();
+
+		if(parameters != null && parameters.length > 0)
+			sqLiteStatement.bindAllArgsAsStrings(parameters);
+
+		int result = sqLiteStatement.executeUpdateDelete();
 
 		notifyChanges();
 
@@ -442,7 +459,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public CloseableIterator<T> iterator() throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, null, null, null, null, null),
+				makeCursor(createDefaultFrom(), null, null, null),
 				ModelDao.this
 		);
 	}
@@ -450,7 +467,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public CloseableIterator<T> iterator(Query where) throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				openHelperHelper.getHelper().getWritableDatabase().query(generatedTableMapper.getTableConfig().getTableName(), tableCols, where.getStatement(), where.getParameters(), null, null, null),
+				makeCursor(where.getFromStatement(), where.getStatement(), where.getParameters(), null),
 				ModelDao.this
 		);
 	}
@@ -524,7 +541,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf(Query where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ generatedTableMapper.getTableConfig().getTableName() +" where "+ where.getStatement(), where.getParameters());
+		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ where.getFromStatement() +" where "+ where.getStatement(), where.getParameters());
 	}
 
 	//TODO could be faster

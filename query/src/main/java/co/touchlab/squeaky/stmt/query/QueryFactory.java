@@ -2,6 +2,7 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
 import java.sql.SQLException;
@@ -19,85 +20,85 @@ public class QueryFactory
 		this.squeakyContext = squeakyContext;
 	}
 
-	public Clause eq(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause eq(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.EQUAL_TO_OPERATION);
 	}
 
-	public Clause gt(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause gt(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.GREATER_THAN_OPERATION);
 	}
 
-	public Clause ge(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause ge(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.GREATER_THAN_EQUAL_TO_OPERATION);
 	}
 
-	public Clause lt(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause lt(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.LESS_THAN_OPERATION);
 	}
 
-	public Clause le(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause le(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.LESS_THAN_EQUAL_TO_OPERATION);
 	}
 
-	public Clause like(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause like(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.LIKE_OPERATION);
 	}
 
-	public Clause ne(Class c, String columnFieldName, Object value) throws SQLException
+	public Clause ne(JoinAlias c, String columnFieldName, Object value) throws SQLException
 	{
 		return initOp(c, columnFieldName, value, SimpleComparison.NOT_EQUAL_TO_OPERATION);
 	}
 
-	public Clause in(Class c, String columnFieldName, Collection<?> objects) throws SQLException
+	public Clause in(JoinAlias c, String columnFieldName, Collection<?> objects) throws SQLException
 	{
-		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
-		return new In(fieldType, objects, true);
+		FieldType fieldType = squeakyContext.findFieldType(c.tableType, columnFieldName);
+		return new In(fieldType, objects, true, c);
 	}
 
-	public Clause notIn(Class c, String columnFieldName, Collection<?> objects) throws SQLException
+	public Clause notIn(JoinAlias c, String columnFieldName, Collection<?> objects) throws SQLException
 	{
-		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
-		return new In(fieldType, objects, false);
+		FieldType fieldType = squeakyContext.findFieldType(c.tableType, columnFieldName);
+		return new In(fieldType, objects, false, c);
 	}
 
-	public Clause in(Class c, String columnFieldName, Object... objects) throws SQLException
+	public Clause in(JoinAlias c, String columnFieldName, Object... objects) throws SQLException
 	{
-		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
-		return new In(fieldType, objects, true);
+		FieldType fieldType = squeakyContext.findFieldType(c.tableType, columnFieldName);
+		return new In(fieldType, objects, true, c);
 	}
 
-	public Clause notIn(Class c, String columnFieldName, Object... objects) throws SQLException
+	public Clause notIn(JoinAlias c, String columnFieldName, Object... objects) throws SQLException
 	{
-		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
-		return new In(fieldType, objects, false);
+		FieldType fieldType = squeakyContext.findFieldType(c.tableType, columnFieldName);
+		return new In(fieldType, objects, false, c);
 	}
 
-	public Clause between(Class c, String columnFieldName, Object low, Object high) throws SQLException
+	public Clause between(JoinAlias c, String columnFieldName, Object low, Object high) throws SQLException
 	{
-		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
-		return new Between(fieldType, low, high);
+		FieldType fieldType = squeakyContext.findFieldType(c.tableType, columnFieldName);
+		return new Between(fieldType, low, high, c);
 	}
 
-	public Clause isNull(Class c, String columnFieldName) throws SQLException
+	public Clause isNull(JoinAlias c, String columnFieldName) throws SQLException
 	{
-		return new IsNull(squeakyContext.findFieldType(c, columnFieldName));
+		return new IsNull(squeakyContext.findFieldType(c.tableType, columnFieldName), c);
 	}
 
-	public Clause isNotNull(Class c, String columnFieldName) throws SQLException
+	public Clause isNotNull(JoinAlias c, String columnFieldName) throws SQLException
 	{
-		return new IsNotNull(squeakyContext.findFieldType(c, columnFieldName));
+		return new IsNotNull(squeakyContext.findFieldType(c.tableType, columnFieldName), c);
 	}
 
-	private Clause initOp(Class c, String columnFieldName, Object value, String op) throws SQLException
+	private Clause initOp(JoinAlias joinAlias, String columnFieldName, Object value, String op) throws SQLException
 	{
-		FieldType fieldType = squeakyContext.findFieldType(c, columnFieldName);
+		FieldType fieldType = squeakyContext.findFieldType(joinAlias.tableType, columnFieldName);
 
-		return new SimpleComparison(fieldType, value, op);
+		return new SimpleComparison(fieldType, value, op, joinAlias);
 	}
 }

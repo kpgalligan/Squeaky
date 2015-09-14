@@ -18,7 +18,7 @@ public class Raw implements Clause {
 		this.statement = statement;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb) {
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb) {
 		sb.append(statement);
 	}
 

@@ -14,11 +14,8 @@ public interface Clause {
 
 	/**
 	 * Add to the string-builder the appropriate SQL for this clause.
-	 * 
-	 * @param tableName
-	 *            Name of the table to prepend to any column names or null to be ignored.
 	 */
-	void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb)
+	void appendSql(SqueakyContext squeakyContext, StringBuilder sb)
 			throws SQLException;
 
 	void appendValue(SqueakyContext squeakyContext, List<String> params)

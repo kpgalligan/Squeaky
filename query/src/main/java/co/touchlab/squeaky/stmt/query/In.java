@@ -20,14 +20,6 @@ public class In extends BaseComparison
 	private Collection<?> objects;
 	private final boolean in;
 
-	public In(FieldType fieldType, Collection<?> objects, boolean in) throws SQLException {
-		this(fieldType, objects, in, null);
-	}
-
-	public In(FieldType fieldType, Object[] objects, boolean in) throws SQLException {
-		this(fieldType, objects, in, null);
-	}
-
 	public In(FieldType fieldType, Collection<?> objects, boolean in, JoinAlias joinAlias) throws SQLException {
 		super(fieldType, null, true, joinAlias);
 		this.objects = objects;

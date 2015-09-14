@@ -22,10 +22,6 @@ public class SimpleComparison extends BaseComparison
 
 	private final String operation;
 
-	public SimpleComparison(FieldType fieldType, Object value, String operation) throws SQLException {
-		this(fieldType, value, operation, null);
-	}
-
 	public SimpleComparison(FieldType fieldType, Object value, String operation, JoinAlias joinAlias) throws SQLException {
 		super(fieldType, value, true, joinAlias);
 		this.operation = operation;

@@ -17,24 +17,24 @@ public class Not<T> implements Clause, Queryable<T> {
 	private final QueryFactory queryFactory;
 	private Clause comparison = null;
 	private final Queryable<T> parent;
-	private final Class defaultType;
+	private final JoinAlias joinAlias;
 
 	/**
 	 * In this case we will consume a future clause.
 	 */
-	public Not(Queryable<T> parent, QueryFactory queryFactory, Class defaultType) {
+	public Not(Queryable<T> parent, QueryFactory queryFactory, JoinAlias joinAlias) {
 		this.queryFactory = queryFactory;
 		this.parent = parent;
-		this.defaultType = defaultType;
+		this.joinAlias = joinAlias;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb) throws SQLException {
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb) throws SQLException {
 		if (comparison == null) {
 			throw new IllegalStateException("Clause has not been set in NOT operation");
 		}
 		// this generates: (NOT 'x' = 123 )
 		sb.append("(NOT ");
-		comparison.appendSql(squeakyContext, tableName, sb);
+		comparison.appendSql(squeakyContext, sb);
 
 		sb.append(") ");
 	}
@@ -82,7 +82,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> eq(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.eq(defaultType, columnFieldName, value);
+		comparison = queryFactory.eq(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -90,7 +90,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> eq(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.eq(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.eq(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -98,7 +98,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> gt(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.gt(defaultType, columnFieldName, value);
+		comparison = queryFactory.gt(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -106,7 +106,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> gt(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.gt(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.gt(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -114,7 +114,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> ge(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.ge(defaultType, columnFieldName, value);
+		comparison = queryFactory.ge(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -122,7 +122,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> ge(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.ge(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.ge(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -130,7 +130,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> lt(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.lt(defaultType, columnFieldName, value);
+		comparison = queryFactory.lt(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -138,7 +138,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> lt(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.lt(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.lt(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -146,7 +146,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> le(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.le(defaultType, columnFieldName, value);
+		comparison = queryFactory.le(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -154,7 +154,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> le(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.le(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.le(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -162,7 +162,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> like(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.like(defaultType, columnFieldName, value);
+		comparison = queryFactory.like(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -170,7 +170,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> like(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.like(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.like(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -178,7 +178,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> ne(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.ne(defaultType, columnFieldName, value);
+		comparison = queryFactory.ne(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -186,7 +186,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> ne(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.ne(joinAlias.tableType, columnFieldName, value);
+		comparison = queryFactory.ne(joinAlias, columnFieldName, value);
 		return parent;
 	}
 
@@ -194,7 +194,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> in(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.in(defaultType, columnFieldName, objects);
+		comparison = queryFactory.in(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -202,7 +202,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> in(JoinAlias joinAlias, String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.in(joinAlias.tableType, columnFieldName, objects);
+		comparison = queryFactory.in(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -210,7 +210,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> notIn(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.notIn(defaultType, columnFieldName, objects);
+		comparison = queryFactory.notIn(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -218,7 +218,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> notIn(JoinAlias joinAlias, String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.notIn(joinAlias.tableType, columnFieldName, objects);
+		comparison = queryFactory.notIn(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -226,7 +226,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> in(String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.in(defaultType, columnFieldName, objects);
+		comparison = queryFactory.in(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -234,7 +234,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> in(JoinAlias joinAlias, String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.in(joinAlias.tableType, columnFieldName, objects);
+		comparison = queryFactory.in(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -242,7 +242,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> notIn(String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.notIn(defaultType, columnFieldName, objects);
+		comparison = queryFactory.notIn(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -250,7 +250,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> notIn(JoinAlias joinAlias, String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.notIn(joinAlias.tableType, columnFieldName, objects);
+		comparison = queryFactory.notIn(joinAlias, columnFieldName, objects);
 		return parent;
 	}
 
@@ -258,7 +258,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> between(String columnFieldName, Object low, Object high) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.between(defaultType, columnFieldName, low, high);
+		comparison = queryFactory.between(joinAlias, columnFieldName, low, high);
 		return parent;
 	}
 
@@ -266,7 +266,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> between(JoinAlias joinAlias, String columnFieldName, Object low, Object high) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.between(joinAlias.tableType, columnFieldName, low, high);
+		comparison = queryFactory.between(joinAlias, columnFieldName, low, high);
 		return parent;
 	}
 
@@ -274,7 +274,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> isNull(String columnFieldName) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.isNull(defaultType, columnFieldName);
+		comparison = queryFactory.isNull(joinAlias, columnFieldName);
 		return parent;
 	}
 
@@ -282,7 +282,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> isNull(JoinAlias joinAlias, String columnFieldName) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.isNull(joinAlias.tableType, columnFieldName);
+		comparison = queryFactory.isNull(joinAlias, columnFieldName);
 		return parent;
 	}
 
@@ -290,7 +290,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> isNotNull(String columnFieldName) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.isNotNull(defaultType, columnFieldName);
+		comparison = queryFactory.isNotNull(joinAlias, columnFieldName);
 		return parent;
 	}
 
@@ -298,7 +298,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> isNotNull(JoinAlias joinAlias, String columnFieldName) throws SQLException
 	{
 		checkClause();
-		comparison = queryFactory.isNotNull(joinAlias.tableType, columnFieldName);
+		comparison = queryFactory.isNotNull(joinAlias, columnFieldName);
 		return parent;
 	}
 
@@ -306,7 +306,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> and() throws SQLException
 	{
 		checkClause();
-		ManyClause<T> manyClause = new ManyClause<T>(parent, queryFactory, ManyClause.AND_OPERATION, defaultType);
+		ManyClause<T> manyClause = new ManyClause<T>(parent, queryFactory, ManyClause.AND_OPERATION, joinAlias);
 		comparison = manyClause;
 		return manyClause;
 	}
@@ -315,7 +315,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	public Queryable<T> or() throws SQLException
 	{
 		checkClause();
-		ManyClause<T> manyClause = new ManyClause<T>(parent, queryFactory, ManyClause.OR_OPERATION, defaultType);
+		ManyClause<T> manyClause = new ManyClause<T>(parent, queryFactory, ManyClause.OR_OPERATION, joinAlias);
 		comparison = manyClause;
 		return manyClause;
 	}

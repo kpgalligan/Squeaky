@@ -13,7 +13,8 @@ public class StmtTestHelper
 {
 	public static void assertWhere(String wherePart, Where w, String[] params)throws Exception
 	{
-		String whereStatement = w.getStatement();
+		wherePart = cleanWhitespace(wherePart);
+		String whereStatement = cleanWhitespace(w.getStatement());
 		Statement l = CCJSqlParserUtil.parse("SELECT * FROM foo where " + whereStatement);
 		Statement r = CCJSqlParserUtil.parse("SELECT * FROM foo WHERE " + wherePart);
 		Assert.assertTrue(StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(l.toString()), StringUtils.trimToEmpty(r.toString())));
@@ -27,5 +28,28 @@ public class StmtTestHelper
 				Assert.assertEquals(whereParams[i], params[i]);
 			}
 		}
+	}
+
+	private static String cleanWhitespace(String a)
+	{
+		char lastChar = ' ';
+		StringBuilder sb = new StringBuilder();
+		for(int i=0; i<a.length(); i++)
+		{
+			char c = a.charAt(i);
+			if(c == ' ')
+			{
+				if(i+1 < a.length() && (a.charAt(i+1) == ' ' || a.charAt(i+1) == ')'))
+				{
+					continue;
+				}
+			}
+
+			sb.append(c);
+
+			lastChar = c;
+		}
+
+		return sb.toString();
 	}
 }

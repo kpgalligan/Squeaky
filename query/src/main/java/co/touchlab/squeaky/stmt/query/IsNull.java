@@ -15,10 +15,6 @@ import java.util.List;
  */
 public class IsNull extends BaseComparison
 {
-	public IsNull(FieldType fieldType) throws SQLException {
-		this(fieldType, null);
-	}
-
 	public IsNull(FieldType fieldType, JoinAlias joinAlias) throws SQLException {
 		super(fieldType, null, false, joinAlias);
 	}

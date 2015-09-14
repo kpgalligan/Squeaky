@@ -35,17 +35,11 @@ abstract class BaseComparison implements Comparison {
 
 	public abstract void appendOperation(StringBuilder sb);
 
-	public void appendSql(SqueakyContext squeakyContext, String tableName, StringBuilder sb)
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb)
 			throws SQLException {
-		if (tableName != null) {
-			TableUtils.appendEscapedEntityName(sb, tableName);
-			sb.append('.');
-		}
-		if(joinAlias != null)
-		{
-			sb.append(joinAlias.tablePrefix);
-			sb.append('.');
-		}
+
+		sb.append(joinAlias.tablePrefix);
+		sb.append('.');
 		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ');
 		appendOperation(sb);

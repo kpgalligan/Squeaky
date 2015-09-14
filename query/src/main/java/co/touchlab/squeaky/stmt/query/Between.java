@@ -18,11 +18,6 @@ public class Between extends BaseComparison
 	private Object low;
 	private Object high;
 
-	public Between(FieldType fieldType, Object low, Object high) throws SQLException
-	{
-		this(fieldType, low, high, null);
-	}
-
 	public Between(FieldType fieldType, Object low, Object high, JoinAlias joinAlias) throws SQLException {
 		super(fieldType, null, true, joinAlias);
 		this.low = low;

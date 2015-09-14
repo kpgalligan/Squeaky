@@ -47,29 +47,29 @@ public class QueryTest extends BaseTypeTest
 
 		where.eq("name", "asdf");
 
-		StmtTestHelper.assertWhere("`name` = ?", where, new String[]{"asdf"});
-		StmtTestHelper.assertWhere("`name` = ?",
+		StmtTestHelper.assertWhere("t.`name` = ?", where, new String[]{"asdf"});
+		StmtTestHelper.assertWhere("t.`name` = ?",
 				new Where<Foo, Object>(dao).eq("name", "sdf'wfsd"),
 				new String[]{"sdf'wfsd"});
-		StmtTestHelper.assertWhere("`ival` = ?",
+		StmtTestHelper.assertWhere("t.`ival` = ?",
 				new Where<Foo, Object>(dao).eq("ival", 123), new String[]{"123"});
-		StmtTestHelper.assertWhere("`lval` = ?",
+		StmtTestHelper.assertWhere("t.`lval` = ?",
 				new Where<Foo, Object>(dao).eq("lval", 234235234234l), new String[]{"234235234234"});
-		StmtTestHelper.assertWhere("`dval` = ?",
+		StmtTestHelper.assertWhere("t.`dval` = ?",
 				new Where<Foo, Object>(dao).eq("dval", 23.45234), new String[]{"23.45234"});
 		Date now = new Date();
 		String dateString = new SimpleDateFormat("MM/dd/yyyy HH:mm").format(now);
-		StmtTestHelper.assertWhere("`sDate` = ?",
+		StmtTestHelper.assertWhere("t.`sDate` = ?",
 				new Where<Foo, Object>(dao).eq("sDate", now), new String[]{dateString});
-		StmtTestHelper.assertWhere("`lDate` = ?",
+		StmtTestHelper.assertWhere("t.`lDate` = ?",
 				new Where<Foo, Object>(dao).eq("lDate", now), new String[]{Long.toString(now.getTime())});
 
-		StmtTestHelper.assertWhere("(NOT `lDate` = ?)",
+		StmtTestHelper.assertWhere("(NOT t.`lDate` = ?)",
 				(Where<Foo, Object>)(new Where<Foo, Object>(dao).not().eq("lDate", now)), new String[]{Long.toString(now.getTime())});
 
 		Where<Foo, Object> makeAnd = new Where<>(dao);
 		makeAnd.and().eq("name", "asdf").eq("ival", 123);
-		StmtTestHelper.assertWhere("(`name` = ? AND `ival` = ?)", makeAnd, new String[]{"asdf", "123"});
+		StmtTestHelper.assertWhere("(t.`name` = ? AND t.`ival` = ?)", makeAnd, new String[]{"asdf", "123"});
 
 		Queryable bigWhere =
 				new Where<Foo, Object>(dao)
@@ -90,7 +90,7 @@ public class QueryTest extends BaseTypeTest
 
 		or.eq("ival", 123);*/
 
-		StmtTestHelper.assertWhere("((`lval` = ? AND `dval` BETWEEN ? AND ? ) OR `ival` = ? ) ",
+		StmtTestHelper.assertWhere("((t.`lval` = ? AND t.`dval` BETWEEN ? AND ? ) OR t.`ival` = ? ) ",
 				(Where<Foo, Object>)bigWhere,
 				new String[]{"2223424", "123", "456", "123"});
 //		dao.createWhere().and()
