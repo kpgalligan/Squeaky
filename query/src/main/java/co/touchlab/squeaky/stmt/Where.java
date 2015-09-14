@@ -91,7 +91,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 	private final QueryFactory queryFactory;
 	private int joinTableCount = 0;
 	private final List<JoinAlias> joins = new ArrayList<>();
-	private final JoinAlias joinAlias;
+	private final JoinAlias defaultJoinAlias;
 
 	private Clause clause;
 
@@ -110,13 +110,13 @@ public class Where<T, ID> implements Queryable<T>, Query
 		} else {
 			this.idColumnName = idFieldType.getColumnName();
 		}
-		this.joinAlias = new JoinAlias(modelDao.getDataClass(), ModelDao.DEFAULT_TABLE_PREFIX, null);
+		this.defaultJoinAlias = new JoinAlias(this, ModelDao.DEFAULT_TABLE_PREFIX, modelDao.getDataClass(), ModelDao.DEFAULT_TABLE_PREFIX, null);
 	}
 
 	public Where<T, ID> eq(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.eq(joinAlias, columnFieldName, value);
+		clause = queryFactory.eq(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 
@@ -130,7 +130,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> gt(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.gt(joinAlias, columnFieldName, value);
+		clause = queryFactory.gt(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 
@@ -144,7 +144,7 @@ public class Where<T, ID> implements Queryable<T>, Query
 	public Where<T, ID> ge(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.ge(joinAlias, columnFieldName, value);
+		clause = queryFactory.ge(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value) throws SQLException
@@ -157,7 +157,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> lt(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.lt(joinAlias, columnFieldName, value);
+		clause = queryFactory.lt(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 
@@ -171,7 +171,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> le(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.le(joinAlias, columnFieldName, value);
+		clause = queryFactory.le(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 
@@ -185,7 +185,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> like(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.like(joinAlias, columnFieldName, value);
+		clause = queryFactory.like(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 
@@ -199,7 +199,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> ne(String columnFieldName, Object value) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.ne(joinAlias, columnFieldName, value);
+		clause = queryFactory.ne(defaultJoinAlias, columnFieldName, value);
 		return this;
 	}
 
@@ -214,7 +214,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> in(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.in(joinAlias, columnFieldName, objects);
+		clause = queryFactory.in(defaultJoinAlias, columnFieldName, objects);
 		return this;
 	}
 
@@ -230,7 +230,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> notIn(String columnFieldName, Iterable<?> objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.notIn(joinAlias, columnFieldName, objects);
+		clause = queryFactory.notIn(defaultJoinAlias, columnFieldName, objects);
 		return this;
 	}
 
@@ -246,7 +246,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> in(String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.in(joinAlias, columnFieldName, objects);
+		clause = queryFactory.in(defaultJoinAlias, columnFieldName, objects);
 		return this;
 	}
 
@@ -262,7 +262,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> notIn(String columnFieldName, Object... objects) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.notIn(joinAlias, columnFieldName, objects);
+		clause = queryFactory.notIn(defaultJoinAlias, columnFieldName, objects);
 		return this;
 	}
 
@@ -277,7 +277,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> between(String columnFieldName, Object low, Object high) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.between(joinAlias, columnFieldName, low, high);
+		clause = queryFactory.between(defaultJoinAlias, columnFieldName, low, high);
 		return this;
 	}
 
@@ -291,7 +291,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> isNull(String columnFieldName) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.isNull(joinAlias, columnFieldName);
+		clause = queryFactory.isNull(defaultJoinAlias, columnFieldName);
 		return this;
 	}
 
@@ -305,7 +305,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Where<T, ID> isNotNull(String columnFieldName) throws SQLException
 	{
 		checkClause();
-		clause = queryFactory.isNotNull(joinAlias, columnFieldName);
+		clause = queryFactory.isNotNull(defaultJoinAlias, columnFieldName);
 		return this;
 	}
 
@@ -319,7 +319,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public ManyClause and()throws SQLException
 	{
 		checkClause();
-		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION, joinAlias);
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.AND_OPERATION, defaultJoinAlias);
 		clause = manyClause;
 		return manyClause;
 	}
@@ -327,7 +327,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public ManyClause or()throws SQLException
 	{
 		checkClause();
-		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION, joinAlias);
+		ManyClause<T> manyClause = new ManyClause<T>(this, queryFactory, ManyClause.OR_OPERATION, defaultJoinAlias);
 		clause = manyClause;
 		return manyClause;
 	}
@@ -335,7 +335,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	public Not not()throws SQLException
 	{
 		checkClause();
-		Not<T> not = new Not<T>(this, queryFactory, joinAlias);
+		Not<T> not = new Not<T>(this, queryFactory, defaultJoinAlias);
 		clause = not;
 		return not;
 	}
@@ -348,10 +348,20 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 
 	public JoinAlias join(String field)throws SQLException
 	{
-		FieldType fieldType = openHelperHelper.findFieldType(modelDao.getDataClass(), field);
+		return makeJoin(defaultJoinAlias.tablePrefix, field, modelDao.getDataClass());
+	}
+
+	public JoinAlias join(JoinAlias parent, String field)throws SQLException
+	{
+		return makeJoin(parent.tablePrefix, field, parent.tableType);
+	}
+
+	private JoinAlias makeJoin(String parentPrefix, String field, Class<T> dataClass) throws SQLException
+	{
+		FieldType fieldType = openHelperHelper.findFieldType(dataClass, field);
 		if(fieldType.isForeign())
 		{
-			JoinAlias joinAlias = new JoinAlias(fieldType.getFieldType(), "t" + (joinTableCount++), fieldType);
+			JoinAlias joinAlias = new JoinAlias(this, parentPrefix, fieldType.getFieldType(), "t" + (joinTableCount++), fieldType);
 			joins.add(joinAlias);
 			return joinAlias;
 		}
@@ -364,7 +374,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 		StringBuilder sb = new StringBuilder();
 		sb.append(generatedTableMapper.getTableConfig().getTableName());
 		sb.append(' ');
-		sb.append(ModelDao.DEFAULT_TABLE_PREFIX);
+		sb.append(defaultJoinAlias.tablePrefix);
 
 		for (JoinAlias join : joins)
 		{
@@ -374,7 +384,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 			sb.append(' ');
 			sb.append(join.tablePrefix);
 			sb.append(" on ");
-			sb.append(ModelDao.DEFAULT_TABLE_PREFIX).append('.').append(join.fieldType.getColumnName());
+			sb.append(join.parentPrefix).append('.').append(join.fieldType.getColumnName());
 			sb.append(" = ");
 			sb.append(join.tablePrefix).append('.').append(joinMapper.getTableConfig().idField.getColumnName());
 		}

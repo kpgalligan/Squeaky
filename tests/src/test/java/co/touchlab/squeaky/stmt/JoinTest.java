@@ -53,6 +53,25 @@ public class JoinTest extends BaseTypeTest
 		Assert.assertEquals(3, dao.query(where).size());
 	}
 
+	@Test
+	public void testSubJoin()throws SQLException
+	{
+		createAsdf(createBar(createFoo("asdf", 123)));
+		createAsdf(createBar(createFoo("asdf", 123)));
+		createAsdf(createBar(createFoo("qwert", 456)));
+		createAsdf(createBar(createFoo("qwert", 456)));
+		createAsdf(createBar(createFoo("qwert", 456)));
+
+		Dao dao = helper.getDao(Asdf.class);
+		Where<Asdf, Integer> where = new Where(dao);
+
+		JoinAlias fooJoin = where.join("bar").join("foo");
+
+		where.eq(fooJoin, "ival", 456);
+
+		Assert.assertEquals(3, dao.query(where).size());
+	}
+
 	private Foo createFoo(String name, int ival) throws SQLException
 	{
 		Foo foo = new Foo();
@@ -72,6 +91,16 @@ public class JoinTest extends BaseTypeTest
 		helper.getDao(Bar.class).create(bar);
 
 		return bar;
+	}
+
+	private Asdf createAsdf(Bar bar)throws SQLException
+	{
+		Asdf asdf = new Asdf();
+		asdf.bar = bar;
+
+		helper.getDao(Asdf.class).create(asdf);
+
+		return asdf;
 	}
 
 	@DatabaseTable
@@ -112,10 +141,20 @@ public class JoinTest extends BaseTypeTest
 		Foo foo;
 	}
 
+	@DatabaseTable
+	protected static class Asdf
+	{
+		@DatabaseField(generatedId = true)
+		int id;
+
+		@DatabaseField(foreign = true, foreignAutoRefresh = true)
+		Bar bar;
+	}
+
 	private BaseTypeTest.SimpleHelper getHelper()
 	{
 		return createHelper(
-				Bar.class, Foo.class
+				Asdf.class, Bar.class, Foo.class
 		);
 	}
 }
