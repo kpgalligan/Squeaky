@@ -376,12 +376,15 @@ fieldConfigs.add(fieldConfig);
 					.addParameter(className, "data")
 					.addParameter(modelDaoType, "modelDao");
 
-//			fillCollectionMethod.addStatement("$T foreignDao = (ModelDao)modelDao.getOpenHelper().getDao($T.class)", ModelDao.class, ClassName.bestGuess(foreignCollectionInfo.foreignTypeName));
-//
-//
-//
+			fillCollectionMethod.addStatement("$T foreignDao = (ModelDao)modelDao.getOpenHelper().getDao($T.class)", ModelDao.class, ClassName.bestGuess(foreignCollectionInfo.foreignTypeName));
+
+
+
 //			fillCollectionMethod.addStatement("$T where = dao.createWhere().eq($S, data)", Where.class, foreignCollectionInfo.foreignCollectionField.foreignFieldName());
-//			fillCollectionMethod.addStatement("data.$N = dao.query(where, $S)", foreignCollectionInfo.variableName, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
+			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$$Configuration");
+			fillCollectionMethod.addStatement("data.$N = foreignDao.queryForEq($L$L, $S, modelDao.extractId(data))",
+					foreignCollectionInfo.variableName,
+					configName, ".Fields."+ foreignCollectionInfo.variableName +".getColumnName()");//, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
 //
 //
 //
@@ -480,18 +483,21 @@ fieldConfigs.add(fieldConfig);
 		{
 			CodeBlock.Builder builder = CodeBlock.builder();
 
+
 			builder.addStatement("config = new $T(" +
 							"$L, " +
 							"$L, " +
 							"$S, " +
 							"$S, " +
-							"$S)",
+							"$S, " +
+							"$L.class)",
 					ForeignCollectionInfo.class,
 					config.foreignCollectionField.eager(),
 					config.foreignCollectionField.maxEagerLevel(),
 					StringUtils.trimToNull(config.foreignCollectionField.orderBy()),
 					StringUtils.trimToNull(config.foreignCollectionField.foreignFieldName()),
-					StringUtils.trimToNull(config.variableName)
+					StringUtils.trimToNull(config.variableName),
+					config.foreignTypeName
 					);
 
 			fieldConfigsMethodBuilder.addCode(builder.build());

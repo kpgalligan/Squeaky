@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import co.touchlab.squeaky.Config;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.field.ForeignCollectionInfo;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TableInfo;
 import co.touchlab.squeaky.table.TableUtils;
@@ -501,6 +502,14 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void fillForeignCollection(T data, String fieldName)throws SQLException
 	{
+		/*ForeignCollectionInfo foreignCollectionInfo = openHelperHelper.findForeignCollectionInfo(generatedTableMapper.getClass(), fieldName);
+
+		Dao dao = openHelperHelper.getDao(foreignCollectionInfo.foreignFieldType);
+		GeneratedTableMapper generatedTableMapper = openHelperHelper.getGeneratedTableMapper(foreignCollectionInfo.foreignFieldType);
+		FieldType fieldType = openHelperHelper.findFieldType(foreignCollectionInfo.foreignFieldType, foreignCollectionInfo.variableName);
+
+		List list = dao.queryForEq(fieldType.getColumnName(), extractId(data));
+		System.out.println(foreignCollectionInfo.foreignFieldName);*/
 		generatedTableMapper.fillForeignCollection(data, this, fieldName);
 	}
 

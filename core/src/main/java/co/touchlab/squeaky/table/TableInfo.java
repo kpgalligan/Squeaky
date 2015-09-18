@@ -71,5 +71,8 @@ public class TableInfo<T>
 		return fieldTypes;
 	}
 
-
+	public ForeignCollectionInfo[] getForeignCollections()
+	{
+		return foreignCollections;
+	}
 }
