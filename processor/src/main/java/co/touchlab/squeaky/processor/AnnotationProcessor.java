@@ -377,17 +377,17 @@ fieldConfigs.add(fieldConfig);
 					.addParameter(modelDaoType, "modelDao");
 
 			fillCollectionMethod.addStatement("$T foreignDao = (ModelDao)modelDao.getOpenHelper().getDao($T.class)", ModelDao.class, ClassName.bestGuess(foreignCollectionInfo.foreignTypeName));
-
-
-
-//			fillCollectionMethod.addStatement("$T where = dao.createWhere().eq($S, data)", Where.class, foreignCollectionInfo.foreignCollectionField.foreignFieldName());
+			fillCollectionMethod.addStatement("ForeignCollectionInfo foreignCollectionInfo = modelDao.findForeignCollectionInfo($S)", foreignCollectionInfo.variableName);
+			fillCollectionMethod.addStatement("data.$L = foreignDao.queryForEq(foreignCollectionInfo.foreignFieldName, data, foreignCollectionInfo.orderBy);", foreignCollectionInfo.variableName);
+/*
 			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$$Configuration");
 			fillCollectionMethod.addStatement("data.$N = foreignDao.queryForEq($L$L, $S, modelDao.extractId(data))",
 					foreignCollectionInfo.variableName,
 					configName, ".Fields."+ foreignCollectionInfo.variableName +".getColumnName()");//, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
-//
-//
-//
+*/
+
+
+//			fillCollectionMethod.addStatement("$T where = dao.createWhere().eq($S, data)", Where.class, foreignCollectionInfo.foreignCollectionField.foreignFieldName());
 //			fillCollectionMethod.addStatement("data.$N = dao.findForeignCollectionValues($T.extractId(data), $S)", configureClassDefinitions.configName, foreignCollectionInfo.variableName, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
 
 			configBuilder.addMethod(fillCollectionMethod.build());

@@ -3,6 +3,7 @@ package co.touchlab.squeaky.field;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.types.BaseTypeTest;
 import co.touchlab.squeaky.table.DatabaseTable;
+import co.touchlab.squeaky.utils.AssertHelper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -142,8 +143,6 @@ public class ForeignCollectionTest extends BaseTypeTest
 
 		ParentOrder parentDb = parentDao.queryForAll().get(0);
 
-		Assert.assertFalse(parentDb.children.equals(children));
-
 		Collections.sort(children, new Comparator<ChildOrder>()
 		{
 			@Override
@@ -153,7 +152,7 @@ public class ForeignCollectionTest extends BaseTypeTest
 			}
 		});
 
-		assertTrue(parentDb.children.equals(children));
+		AssertHelper.assertEquals(parentDb.children, children);
 	}
 
 	@DatabaseTable

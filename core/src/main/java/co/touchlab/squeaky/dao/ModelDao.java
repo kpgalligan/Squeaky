@@ -98,7 +98,53 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> queryForEq(String fieldName, Object value) throws SQLException
 	{
-		return makeCursorResults(createDefaultFrom(), fieldName + " = ?", new String[]{value.toString()}, null);
+		return queryForEq(fieldName, value, null);
+	}
+
+	public List<T> queryForEq(String fieldName, Object value, String orderBy) throws SQLException
+	{
+		List<String> params = new ArrayList<>();
+		Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
+		FieldType fieldType = openHelperHelper.findFieldType(dataClass, fieldName);
+
+		appendArgOrValue(openHelperHelper, fieldType, params, value);
+
+		if(TextUtils.isEmpty(orderBy))
+			orderBy = null;
+
+		return makeCursorResults(createDefaultFrom(), DEFAULT_TABLE_PREFIX + "." + fieldType.getColumnName() + " = ?", params.toArray(new String[params.size()]), orderBy);
+	}
+
+	protected void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, List<String> params, Object argOrValue) throws SQLException {
+		if (argOrValue == null) {
+			throw new SQLException("argument for '" + fieldType.getFieldName() + "' is null");
+		}
+		else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass())) {
+			GeneratedTableMapper generatedTableMapper = ((ModelDao) squeakyContext.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
+			Object idVal = generatedTableMapper.extractId(argOrValue);
+			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
+			appendArgOrValue(squeakyContext, idFieldType, params, idVal);
+			// no need for the space since it was done in the recursion
+		} else if (fieldType.isForeign()) {
+			//TODO  Need to find out if this is even useful
+			/*
+			 * I'm not entirely sure this is correct. This is trying to protect against someone trying to pass an object
+			 * into a comparison with a foreign field. Typically if they pass the same field type, then ORMLite will
+			 * extract the ID of the foreign.
+			 */
+			String value = fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString();
+			/*if (value.length() > 0) {
+				if (NUMBER_CHARACTERS.indexOf(value.charAt(0)) < 0) {
+					throw new SQLException("Foreign field " + fieldType
+							+ " does not seem to be producing a numerical value '" + value
+							+ "'. Maybe you are passing the wrong object to comparison: " + this);
+				}
+			}*/
+			params.add(value);
+		} else {
+			// numbers can't have quotes around them in derby
+			params.add(fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
+		}
 	}
 
 	public List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException
@@ -588,4 +634,16 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		return openHelperHelper;
 	}
+
+	public ForeignCollectionInfo findForeignCollectionInfo(String name) throws SQLException
+	{
+		for (ForeignCollectionInfo foreignCollectionInfo : generatedTableMapper.getTableConfig().getForeignCollections())
+		{
+			if(name.equals(foreignCollectionInfo.variableName))
+				return foreignCollectionInfo;
+		}
+
+		throw new SQLException("Couldn't find foreign collection children");
+	}
+
 }

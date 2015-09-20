@@ -15,6 +15,7 @@ public interface Dao<T, ID>
 	T queryForId(ID id) throws SQLException;
 	List<T> queryForAll() throws SQLException;
 	List<T> queryForEq(String fieldName, Object value) throws SQLException;
+	List<T> queryForEq(String fieldName, Object value, String orderBy) throws SQLException;
 
 	//TODO: generate table config with constants for fields
 	List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
