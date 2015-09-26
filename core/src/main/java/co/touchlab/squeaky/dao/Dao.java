@@ -130,7 +130,7 @@ public interface Dao<T, ID>
 	/**
 	 * Defines a class that can observe changes to entities managed by the DAO.
 	 */
-	public static interface DaoObserver {
+	interface DaoObserver {
 		/**
 		 * Called when entities possibly have changed in the DAO. This can be used to detect changes to the entities
 		 * managed by the DAO so that views can be updated.

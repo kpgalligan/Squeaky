@@ -42,6 +42,8 @@ public class DaoTest extends BaseTypeTest
 		Assert.assertEquals(getDao().queryForId(foo.id).lval, foo.lval);
 	}
 
+
+
 	@Test
 	public void testQueryForAll() throws SQLException
 	{

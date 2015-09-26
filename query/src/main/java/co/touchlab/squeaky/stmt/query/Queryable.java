@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface Queryable<T>
 {
-	String getStatement() throws SQLException;
+	String getWhereStatement() throws SQLException;
 
 	List<T> query() throws SQLException;
 	

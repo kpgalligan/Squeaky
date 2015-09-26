@@ -1,6 +1,5 @@
 package co.touchlab.squeaky.stmt;
 
-import co.touchlab.squeaky.stmt.query.Queryable;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +13,7 @@ public class StmtTestHelper
 	public static void assertWhere(String wherePart, Where w, String[] params)throws Exception
 	{
 		wherePart = cleanWhitespace(wherePart);
-		String whereStatement = cleanWhitespace(w.getStatement());
+		String whereStatement = cleanWhitespace(w.getWhereStatement());
 		Statement l = CCJSqlParserUtil.parse("SELECT * FROM foo where " + whereStatement);
 		Statement r = CCJSqlParserUtil.parse("SELECT * FROM foo WHERE " + wherePart);
 		Assert.assertTrue(StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(l.toString()), StringUtils.trimToEmpty(r.toString())));

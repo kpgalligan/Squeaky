@@ -211,7 +211,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> query(Query where, String orderBy)throws SQLException
 	{
-		return makeCursorResults(where.getFromStatement(), where.getStatement(), where.getParameters(), orderBy);
+		return makeCursorResults(where.getFromStatement(), where.getWhereStatement(), where.getParameters(), orderBy);
 	}
 
 	public List<T> query(Query where)throws SQLException
@@ -445,7 +445,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return delete(new Query()
 		{
 			@Override
-			public String getStatement()
+			public String getWhereStatement()
 			{
 				return sb.toString();
 			}
@@ -468,7 +468,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("delete from ").append(where.getFromStatement());
-		String whereStatement = where.getStatement();
+		String whereStatement = where.getWhereStatement();
 		if(!TextUtils.isEmpty(whereStatement))
 			sb.append(" where ").append(whereStatement);
 
@@ -496,7 +496,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public CloseableIterator<T> iterator(Query where) throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				makeCursor(where.getFromStatement(), where.getStatement(), where.getParameters(), null),
+				makeCursor(where.getFromStatement(), where.getWhereStatement(), where.getParameters(), null),
 				ModelDao.this
 		);
 	}
@@ -546,7 +546,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return query(new Query()
 		{
 			@Override
-			public String getStatement() throws SQLException
+			public String getWhereStatement() throws SQLException
 			{
 				StringBuilder sb = new StringBuilder();
 				sb.append(foreignIdField.getColumnName());
@@ -578,7 +578,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf(Query where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ where.getFromStatement() +" where "+ where.getStatement(), where.getParameters());
+		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ where.getFromStatement() +" where "+ where.getWhereStatement(), where.getParameters());
 	}
 
 	//TODO could be faster

@@ -55,7 +55,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
-	public String getStatement() throws SQLException
+	public String getWhereStatement() throws SQLException
 	{
 		throw new SQLException("Must complete NOT statement");
 	}

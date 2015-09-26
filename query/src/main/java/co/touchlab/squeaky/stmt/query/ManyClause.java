@@ -32,9 +32,9 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
-	public String getStatement() throws SQLException
+	public String getWhereStatement() throws SQLException
 	{
-		return parent.getStatement();
+		return parent.getWhereStatement();
 	}
 
 	@Override

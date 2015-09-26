@@ -414,7 +414,7 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	/**
 	 * Returns the associated SQL WHERE statement.
 	 */
-	public String getStatement() throws SQLException {
+	public String getWhereStatement() throws SQLException {
 		StringBuilder sb = new StringBuilder();
 		appendSql(sb);
 		return sb.toString();
@@ -430,12 +430,12 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 
 	public List<T> query() throws SQLException
 	{
-		return modelDao.query(getStatement(), getParameters());
+		return modelDao.query(getWhereStatement(), getParameters());
 	}
 
 	public List<T> query(String orderBy)throws SQLException
 	{
-		return modelDao.query(getStatement(), getParameters(), orderBy);
+		return modelDao.query(getWhereStatement(), getParameters(), orderBy);
 	}
 
 	/**
