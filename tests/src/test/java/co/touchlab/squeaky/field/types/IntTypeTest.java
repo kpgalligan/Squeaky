@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class IntTypeTest extends BaseTypeTest {
+public class IntTypeTest extends BaseTypeTest
+{
 
 	private static final String INT_COLUMN = "intField";
 	public static final String TABLE_NAME = "com_j256_ormlite_field_types_IntTypeTest_table";
@@ -35,7 +36,8 @@ public class IntTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testInt() throws Exception {
+	public void testInt() throws Exception
+	{
 		Class<LocalInt> clazz = LocalInt.class;
 		Dao<LocalInt, Object> dao = helper.getDao(clazz);
 		int val = 313213123;
@@ -47,7 +49,8 @@ public class IntTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testIntPrimitiveNull() throws Exception {
+	public void testIntPrimitiveNull() throws Exception
+	{
 		Dao<LocalIntObj, Object> objDao = helper.getDao(LocalIntObj.class);
 		LocalIntObj foo = new LocalIntObj();
 		foo.intField = null;
@@ -60,18 +63,21 @@ public class IntTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new IntType(SqlType.INTEGER, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalIntObj {
+	protected static class LocalIntObj
+	{
 		@DatabaseField(columnName = INT_COLUMN)
 		Integer intField;
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalInt {
+	protected static class LocalInt
+	{
 		@DatabaseField(columnName = INT_COLUMN)
 		int intField;
 	}

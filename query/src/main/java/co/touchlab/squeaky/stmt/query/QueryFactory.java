@@ -3,7 +3,6 @@ package co.touchlab.squeaky.stmt.query;
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.stmt.JoinAlias;
-import co.touchlab.squeaky.table.GeneratedTableMapper;
 
 import java.sql.SQLException;
 import java.util.Collection;

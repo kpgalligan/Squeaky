@@ -8,7 +8,8 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.sql.SQLException;
 
-public abstract class BaseTypeTest  {
+public abstract class BaseTypeTest
+{
 
 	public SimpleHelper createHelper(Class... c)
 	{
@@ -41,7 +42,7 @@ public abstract class BaseTypeTest  {
 			try
 			{
 				TableUtils.createTables(sqLiteDatabase, getManagingClasses());
-				if(viewClass != null)
+				if (viewClass != null)
 				{
 					TableUtils.createViews(sqLiteDatabase, viewClass);
 				}
@@ -58,13 +59,13 @@ public abstract class BaseTypeTest  {
 			Class[] managingClasses = getManagingClasses();
 			Class[] reversed = new Class[managingClasses.length];
 
-			for(int i=0; i<managingClasses.length; i++)
+			for (int i = 0; i < managingClasses.length; i++)
 			{
 				reversed[(managingClasses.length - i) - 1] = managingClasses[i];
 			}
 			try
 			{
-				if(viewClass != null)
+				if (viewClass != null)
 				{
 					TableUtils.dropViews(sqLiteDatabase, true, viewClass);
 				}

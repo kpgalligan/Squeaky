@@ -14,7 +14,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class StringBytesTypeTest extends BaseTypeTest {
+public class StringBytesTypeTest extends BaseTypeTest
+{
 
 	private static final String STRING_COLUMN = "string";
 	private static final String TABLE_NAME = "com_j256_ormlite_field_types_StringBytesTypeTest_LocalStringBytes";
@@ -31,9 +32,10 @@ public class StringBytesTypeTest extends BaseTypeTest {
 	{
 		helper.close();
 	}
-	
+
 	@Test
-	public void testStringBytes() throws Exception {
+	public void testStringBytes() throws Exception
+	{
 		Class<LocalStringBytes> clazz = LocalStringBytes.class;
 		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
 		String val = "string with \u0185";
@@ -45,7 +47,8 @@ public class StringBytesTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testStringBytesFormat() throws Exception {
+	public void testStringBytesFormat() throws Exception
+	{
 		Class<LocalStringBytesUtf8> clazz = LocalStringBytesUtf8.class;
 		Dao<LocalStringBytesUtf8, Object> dao = helper.getDao(clazz);
 		String val = "string with \u0185";
@@ -57,7 +60,8 @@ public class StringBytesTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testStringBytesNull() throws Exception {
+	public void testStringBytesNull() throws Exception
+	{
 		Class<LocalStringBytes> clazz = LocalStringBytes.class;
 		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
 		LocalStringBytes foo = new LocalStringBytes();
@@ -66,18 +70,21 @@ public class StringBytesTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new StringBytesType(SqlType.BYTE_ARRAY, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalStringBytes {
+	protected static class LocalStringBytes
+	{
 		@DatabaseField(columnName = STRING_COLUMN, dataType = DataType.STRING_BYTES)
 		String string;
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalStringBytesUtf8 {
+	protected static class LocalStringBytesUtf8
+	{
 		@DatabaseField(columnName = STRING_COLUMN, dataType = DataType.STRING_BYTES, format = "UTF-8")
 		String string;
 	}

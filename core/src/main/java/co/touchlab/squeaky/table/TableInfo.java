@@ -8,9 +8,8 @@ import java.sql.SQLException;
 
 /**
  * Information about a database table including the associated tableName, class, constructor, and the included fields.
- * 
- * @param <T>
- *            The class that the code will be operating on.
+ *
+ * @param <T> The class that the code will be operating on.
  * @author graywatson
  */
 public class TableInfo<T>
@@ -23,7 +22,8 @@ public class TableInfo<T>
 	public final FieldType idField;
 
 	public TableInfo(Class clazz, String name, String viewQuery, FieldsEnum[] fields, ForeignCollectionInfo[] foreignCollections)
-			throws SQLException {
+			throws SQLException
+	{
 		this.dataClass = clazz;
 		this.tableName = name;
 		this.viewQuery = viewQuery;
@@ -38,9 +38,12 @@ public class TableInfo<T>
 		// find the id field
 		FieldType findIdFieldType = null;
 
-		for (FieldType fieldType : fieldTypes) {
-			if (fieldType.isId() || fieldType.isGeneratedId() ) {
-				if (findIdFieldType != null) {
+		for (FieldType fieldType : fieldTypes)
+		{
+			if (fieldType.isId() || fieldType.isGeneratedId())
+			{
+				if (findIdFieldType != null)
+				{
 					throw new SQLException("More than 1 idField configured for class " + dataClass + " ("
 							+ findIdFieldType + "," + fieldType + ")");
 				}
@@ -55,7 +58,8 @@ public class TableInfo<T>
 	/**
 	 * Return the name of the table associated with the object.
 	 */
-	public String getTableName() {
+	public String getTableName()
+	{
 		return tableName;
 	}
 
@@ -67,7 +71,8 @@ public class TableInfo<T>
 	/**
 	 * Return the array of field types associated with the object.
 	 */
-	public FieldType[] getFieldTypes() {
+	public FieldType[] getFieldTypes()
+	{
 		return fieldTypes;
 	}
 

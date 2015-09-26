@@ -1,7 +1,8 @@
 package co.touchlab.squeaky.apptools;
 
 @SuppressWarnings("deprecation")
-public class OrmLiteConfigUtilTest {
+public class OrmLiteConfigUtilTest
+{
 
 	private static final String lineSeparator = System.getProperty("line.separator");
 /*

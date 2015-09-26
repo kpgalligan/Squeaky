@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ShortTypeTest extends BaseTypeTest {
+public class ShortTypeTest extends BaseTypeTest
+{
 
 	private static final String SHORT_COLUMN = "shortField";
 	private static final String TABLE_NAME = "com_j256_ormlite_field_types_ShortTypeTest_LocalShort";
@@ -35,7 +36,8 @@ public class ShortTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testShort() throws Exception {
+	public void testShort() throws Exception
+	{
 		Class<LocalShort> clazz = LocalShort.class;
 		Dao<LocalShort, Object> dao = helper.getDao(clazz);
 		short val = 12312;
@@ -47,7 +49,8 @@ public class ShortTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testShortPrimitiveNull() throws Exception {
+	public void testShortPrimitiveNull() throws Exception
+	{
 		Dao<LocalShortObj, Object> objDao = helper.getDao(LocalShortObj.class);
 		LocalShortObj foo = new LocalShortObj();
 		foo.shortField = null;
@@ -59,18 +62,21 @@ public class ShortTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new ShortType(SqlType.SHORT, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalShort {
+	protected static class LocalShort
+	{
 		@DatabaseField(columnName = SHORT_COLUMN)
 		short shortField;
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalShortObj {
+	protected static class LocalShortObj
+	{
 		@DatabaseField(columnName = SHORT_COLUMN)
 		Short shortField;
 	}

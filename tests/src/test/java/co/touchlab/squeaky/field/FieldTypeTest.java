@@ -1,6 +1,7 @@
 package co.touchlab.squeaky.field;
 
-public class FieldTypeTest /*extends BaseCoreTest */{
+public class FieldTypeTest /*extends BaseCoreTest */
+{
 
 	/*private static final String RANK_DB_COLUMN_NAME = "rank_column";
 	private static final int RANK_WIDTH = 100;

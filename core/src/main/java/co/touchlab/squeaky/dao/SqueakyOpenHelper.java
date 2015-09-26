@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
-import java.sql.SQLException;
-
 /**
  * SQLiteOpenHelper you should extend to manage data access.  Generally works the same as the standard SQLiteOpenHelper.
  *

@@ -29,7 +29,8 @@ public class DatabaseFieldTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testBaseClassAnnotations() throws Exception {
+	public void testBaseClassAnnotations() throws Exception
+	{
 		Sub sub = new Sub();
 		String stuff = "djeqpodjewdopjed";
 		sub.stuff = stuff;
@@ -43,19 +44,25 @@ public class DatabaseFieldTest extends BaseTypeTest
 		assertEquals(sub.stuff, sub2.stuff);
 	}
 
-	private static class Base {
+	private static class Base
+	{
 		@DatabaseField(id = true)
 		int id;
-		public Base() {
+
+		public Base()
+		{
 			// for ormlite
 		}
 	}
 
 	@DatabaseTable
-	static class Sub extends Base {
+	static class Sub extends Base
+	{
 		@DatabaseField
 		String stuff;
-		public Sub() {
+
+		public Sub()
+		{
 			// for ormlite
 		}
 	}

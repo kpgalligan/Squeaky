@@ -16,7 +16,7 @@ public class AssertHelper
 		Iterator secondIter = second.iterator();
 		while (firstIter.hasNext())
 		{
-			Object a =  firstIter.next();
+			Object a = firstIter.next();
 			Object b = secondIter.next();
 
 			Assert.assertEquals(a, b);

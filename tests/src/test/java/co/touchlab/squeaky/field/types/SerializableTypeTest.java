@@ -18,7 +18,8 @@ import java.sql.SQLException;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class SerializableTypeTest extends BaseTypeTest {
+public class SerializableTypeTest extends BaseTypeTest
+{
 
 	private static final String SERIALIZABLE_COLUMN = "serializable";
 	private static final String BYTE_COLUMN = "byteField";
@@ -37,7 +38,8 @@ public class SerializableTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testSerializable() throws Exception {
+	public void testSerializable() throws Exception
+	{
 		Class<LocalSerializable> clazz = LocalSerializable.class;
 		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
 		Integer val = 1331333131;
@@ -53,7 +55,8 @@ public class SerializableTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testSerializableNull() throws Exception {
+	public void testSerializableNull() throws Exception
+	{
 		Class<LocalSerializable> clazz = LocalSerializable.class;
 		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
 		LocalSerializable foo = new LocalSerializable();
@@ -117,7 +120,8 @@ public class SerializableTypeTest extends BaseTypeTest {
 	}*/
 
 	@Test(expected = SQLException.class)
-	public void testSerializableParseDefault() throws Exception {
+	public void testSerializableParseDefault() throws Exception
+	{
 		DataType.SERIALIZABLE.getDataPersister().parseDefaultString(null, null);
 	}
 
@@ -158,7 +162,8 @@ public class SerializableTypeTest extends BaseTypeTest {
 	}*/
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new SerializableType(SqlType.SERIALIZABLE, new Class[0]);
 	}
 
@@ -170,7 +175,8 @@ public class SerializableTypeTest extends BaseTypeTest {
 	/* ------------------------------------------------------------------------------------ */
 
 	@DatabaseTable
-	protected static class LocalSerializable {
+	protected static class LocalSerializable
+	{
 		@DatabaseField(columnName = SERIALIZABLE_COLUMN, dataType = DataType.SERIALIZABLE)
 		Integer serializable;
 	}

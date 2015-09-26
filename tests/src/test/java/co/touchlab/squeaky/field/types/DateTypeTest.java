@@ -15,7 +15,8 @@ import java.text.SimpleDateFormat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class DateTypeTest extends BaseTypeTest {
+public class DateTypeTest extends BaseTypeTest
+{
 
 	private static final String DATE_COLUMN = "date";
 	private SimpleHelper helper;
@@ -33,7 +34,8 @@ public class DateTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDate() throws Exception {
+	public void testDate() throws Exception
+	{
 		Class<LocalDate> clazz = LocalDate.class;
 		Dao<LocalDate, Object> dao = helper.getDao(clazz);
 		// we have to round to 0 millis
@@ -51,7 +53,8 @@ public class DateTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateNull() throws Exception {
+	public void testDateNull() throws Exception
+	{
 		Class<LocalDate> clazz = LocalDate.class;
 		Dao<LocalDate, Object> dao = helper.getDao(clazz);
 		LocalDate foo = new LocalDate();
@@ -60,7 +63,8 @@ public class DateTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalDate {
+	protected static class LocalDate
+	{
 		@DatabaseField(columnName = DATE_COLUMN)
 		java.util.Date date;
 	}

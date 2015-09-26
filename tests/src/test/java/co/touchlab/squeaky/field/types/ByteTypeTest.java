@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ByteTypeTest extends BaseTypeTest {
+public class ByteTypeTest extends BaseTypeTest
+{
 
 	private static final String BYTE_COLUMN = "byteField";
 	public static final String LOCAL_BYTE = "LocalByte";
@@ -35,7 +36,8 @@ public class ByteTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testByte() throws Exception {
+	public void testByte() throws Exception
+	{
 		Class<LocalByte> clazz = LocalByte.class;
 		Dao<LocalByte, Object> dao = helper.getDao(clazz);
 		byte val = 123;
@@ -48,7 +50,8 @@ public class ByteTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testBytePrimitiveNull() throws Exception {
+	public void testBytePrimitiveNull() throws Exception
+	{
 		Dao<LocalByteObj, Object> objDao = helper.getDao(LocalByteObj.class);
 		LocalByteObj foo = new LocalByteObj();
 		foo.byteField = null;
@@ -61,18 +64,21 @@ public class ByteTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new ByteType(SqlType.BYTE, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = LOCAL_BYTE)
-	protected static class LocalByte {
+	protected static class LocalByte
+	{
 		@DatabaseField(columnName = BYTE_COLUMN)
 		byte byteField;
 	}
 
 	@DatabaseTable(tableName = LOCAL_BYTE)
-	protected static class LocalByteObj {
+	protected static class LocalByteObj
+	{
 		@DatabaseField(columnName = BYTE_COLUMN)
 		Byte byteField;
 	}

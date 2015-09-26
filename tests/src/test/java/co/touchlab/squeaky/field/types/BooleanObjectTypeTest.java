@@ -11,12 +11,14 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class BooleanObjectTypeTest extends BaseTypeTest {
+public class BooleanObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String BOOLEAN_COLUMN = "bool";
 
 	@Test
-	public void testBooleanObj() throws Exception {
+	public void testBooleanObj() throws Exception
+	{
 
 		SimpleHelper helper = createHelper(LocalBooleanObj.class);
 		Class<LocalBooleanObj> clazz = LocalBooleanObj.class;
@@ -33,7 +35,8 @@ public class BooleanObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testBooleanObjNull() throws Exception {
+	public void testBooleanObjNull() throws Exception
+	{
 		SimpleHelper helper = createHelper(LocalBooleanObj.class);
 
 		Class<LocalBooleanObj> clazz = LocalBooleanObj.class;
@@ -47,7 +50,8 @@ public class BooleanObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalBooleanObj {
+	protected static class LocalBooleanObj
+	{
 		@DatabaseField(columnName = BOOLEAN_COLUMN)
 		Boolean bool;
 	}

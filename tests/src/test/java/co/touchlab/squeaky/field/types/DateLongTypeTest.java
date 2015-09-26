@@ -16,7 +16,8 @@ import java.util.Date;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class DateLongTypeTest extends BaseTypeTest {
+public class DateLongTypeTest extends BaseTypeTest
+{
 
 	private static final String DATE_COLUMN = "date";
 	private SimpleHelper helper;
@@ -34,7 +35,8 @@ public class DateLongTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateLong() throws Exception {
+	public void testDateLong() throws Exception
+	{
 		Class<LocalDateLong> clazz = LocalDateLong.class;
 		Dao<LocalDateLong, Object> dao = helper.getDao(clazz);
 		Date val = new Date();
@@ -48,7 +50,8 @@ public class DateLongTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateLongNull() throws Exception {
+	public void testDateLongNull() throws Exception
+	{
 		Class<LocalDateLong> clazz = LocalDateLong.class;
 		Dao<LocalDateLong, Object> dao = helper.getDao(clazz);
 		LocalDateLong foo = new LocalDateLong();
@@ -57,12 +60,14 @@ public class DateLongTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new DateLongType(SqlType.LONG, new Class[0]);
 	}
 
 	@DatabaseTable
-	protected static class LocalDateLong {
+	protected static class LocalDateLong
+	{
 		@DatabaseField(columnName = DATE_COLUMN, dataType = DataType.DATE_LONG)
 		Date date;
 	}

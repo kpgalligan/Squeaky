@@ -14,7 +14,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class LongStringTypeTest extends BaseTypeTest {
+public class LongStringTypeTest extends BaseTypeTest
+{
 
 	private static final String STRING_COLUMN = "string";
 	private SimpleHelper helper;
@@ -32,7 +33,8 @@ public class LongStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testLongString() throws Exception {
+	public void testLongString() throws Exception
+	{
 		Class<LocalLongString> clazz = LocalLongString.class;
 		Dao<LocalLongString, Object> dao = helper.getDao(LocalLongString.class);
 		String val = "str";
@@ -45,12 +47,14 @@ public class LongStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new LongStringType(SqlType.LONG_STRING, new Class[0]);
 	}
 
 	@DatabaseTable
-	protected static class LocalLongString {
+	protected static class LocalLongString
+	{
 		@DatabaseField(columnName = STRING_COLUMN, dataType = DataType.LONG_STRING)
 		String string;
 	}

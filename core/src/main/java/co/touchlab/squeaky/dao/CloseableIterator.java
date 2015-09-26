@@ -6,15 +6,16 @@ import java.util.Iterator;
 
 /**
  * Extension to Iterator to provide a close() method. This should be in the JDK.
- * 
+ * <p/>
  * <p>
  * <b>NOTE:</b> You must call {@link CloseableIterator#close()} method when you are done otherwise the underlying SQL
  * statement and connection may be kept open.
  * </p>
- * 
+ *
  * @author graywatson
  */
-public interface CloseableIterator<T> extends Iterator<T>, Closeable {
+public interface CloseableIterator<T> extends Iterator<T>, Closeable
+{
 
 	/**
 	 * Close any underlying SQL statements but swallow any SQLExceptions.
@@ -45,10 +46,9 @@ public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 
 	/**
 	 * Returns the {@link #next()} object in the table or null if none.
-	 * 
-	 * @throws SQLException
-	 *             Throws a SQLException on error since {@link #next()} cannot throw because it is part of the
-	 *             {@link Iterator} definition. It will <i>not</i> throw if there is no next.
+	 *
+	 * @throws SQLException Throws a SQLException on error since {@link #next()} cannot throw because it is part of the
+	 *                      {@link Iterator} definition. It will <i>not</i> throw if there is no next.
 	 */
 	public T nextThrow() throws SQLException;
 
@@ -57,9 +57,8 @@ public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 	 * backwards (negative value) the list of results. moveRelative(1) should be the same as {@link #next()}.
 	 * moveRelative(-1) is the same as {@link #previous} result. This may not work with the default iterator depending
 	 * on your database.
-	 * 
-	 * @param offset
-	 *            Number of rows to move. Positive moves forward in the results. Negative moves backwards.
+	 *
+	 * @param offset Number of rows to move. Positive moves forward in the results. Negative moves backwards.
 	 */
 	public T moveRelative(int offset) throws SQLException;
 }

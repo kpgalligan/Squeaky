@@ -14,32 +14,35 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Fields that are not to be persisted such as transient or other temporary fields probably should be ignored. For
  * example:
  * </p>
- * 
+ * <p/>
  * <pre>
  * &#064;DatabaseField(id = true)
  * private String name;
- * 
+ *
  * &#064;DatabaseField(columnName = &quot;passwd&quot;, canBeNull = false)
  * private String password;
  * </pre>
- * 
+ * <p/>
  * <p>
  * <b> WARNING:</b> If you add any extra fields here, you will need to add them to {@link DatabaseFieldConfig},
  * {@link DatabaseFieldConfigLoader}, DatabaseFieldConfigLoaderTest, and DatabaseTableConfigUtil as well.
  * </p>
- * 
+ *
  * @author graywatson
  */
 @Target(FIELD)
 @Retention(RUNTIME)
-public @interface DatabaseField {
+public @interface DatabaseField
+{
 
-	/** this special string is used as a .equals check to see if no default was specified */
+	/**
+	 * this special string is used as a .equals check to see if no default was specified
+	 */
 	public static final String DEFAULT_STRING = "__ormlite__ no default value string was specified";
 
 	/**
 	 * Default for the maxForeignAutoRefreshLevel.
-	 * 
+	 *
 	 * @see #maxForeignAutoRefreshLevel()
 	 */
 	public static final int DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL = 2;
@@ -58,7 +61,7 @@ public @interface DatabaseField {
 
 	/**
 	 * The default value of the field for creating the table. Default is none.
-	 * 
+	 * <p/>
 	 * <p>
 	 * <b>NOTE:</b> If the field has a null value then this value will be inserted in its place when you call you call
 	 * {@link Dao#create(Object)}. This does not apply to primitive fields so you should just assign them in the class
@@ -83,21 +86,21 @@ public @interface DatabaseField {
 	 * Package should use get...() and set...() to access the field value instead of the default direct field access via
 	 * reflection. This may be necessary if the object you are storing has protections around it.
 	 * </p>
-	 * 
+	 * <p/>
 	 * <p>
 	 * <b>NOTE:</b> The name of the get method <i>must</i> match getXxx() where Xxx is the name of the field with the
 	 * first letter capitalized. The get <i>must</i> return a class which matches the field's. The set method
 	 * <i>must</i> match setXxx(), have a single argument whose class matches the field's, and return void. For example:
 	 * </p>
-	 * 
+	 * <p/>
 	 * <pre>
 	 * &#064;DatabaseField
 	 * private Integer orderCount;
-	 * 
+	 *
 	 * public Integer getOrderCount() {
 	 * 	return orderCount;
 	 * }
-	 * 
+	 *
 	 * public void setOrderCount(Integer orderCount) {
 	 * 	this.orderCount = orderCount;
 	 * }
@@ -181,7 +184,7 @@ public @interface DatabaseField {
 	 * foreign field B which has an foreign field C ..., then querying for A could get expensive. Setting this value to
 	 * 1 will mean that when you query for A, B will be auto-refreshed, but C will just have its id field set. This also
 	 * works if A has an auto-refresh field B which has an auto-refresh field A.
-	 * 
+	 * <p/>
 	 * <p>
 	 * <b>NOTE:</b> Increasing this value will result in more database transactions whenever you query for A, so use
 	 * carefully.
@@ -192,7 +195,7 @@ public @interface DatabaseField {
 	/**
 	 * Allows you to set a custom persister class to handle this field. This class must have a getSingleton() static
 	 * method defined which will return the singleton persister.
-	 * 
+	 *
 	 * @see DataPersister
 	 */
 	Class<? extends DataPersister> persisterClass() default VoidType.class;
@@ -218,7 +221,7 @@ public @interface DatabaseField {
 	 * this set to true will possibly be created via an internal DAO. By default you have to create the object using its
 	 * DAO directly. This only works if {@link #generatedId()} is also set to true.
 	 * </p>
-	 * 
+	 * <p/>
 	 * <pre>
 	 * Order order1 = new Order();
 	 * // account1 has not been created in the db yet and it's id == null
@@ -233,7 +236,7 @@ public @interface DatabaseField {
 	 * Name of the foreign object's field that is tied to this table. This does not need to be specified if you are
 	 * using the ID of the foreign object which is recommended. For example, if you have an Order object with a foreign
 	 * Account then you may want to key off of the Account name instead of the Account ID.
-	 * 
+	 * <p/>
 	 * <p>
 	 * <b>NOTE:</b> Setting this implies {@link #foreignAutoRefresh()} is also set to true because there is no way to
 	 * refresh the object since the id field is not stored in the database. So when this is set, the field will be

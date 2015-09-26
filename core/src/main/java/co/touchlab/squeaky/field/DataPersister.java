@@ -6,15 +6,16 @@ import java.sql.SQLException;
 
 /**
  * Data type that provide Java class to/from database mapping.
- * 
+ * <p/>
  * <p>
  * If you are defining your own custom persister, then chances are you should extend {@link BaseDataType}. See
  * {@link DatabaseField#persisterClass()}.
  * </p>
- * 
+ *
  * @author graywatson
  */
-public interface DataPersister extends FieldConverter {
+public interface DataPersister extends FieldConverter
+{
 
 	/**
 	 * Return the classes that should be associated with this.

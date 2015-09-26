@@ -14,7 +14,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class EnumIntegerTypeTest extends BaseTypeTest {
+public class EnumIntegerTypeTest extends BaseTypeTest
+{
 
 	private static final String ENUM_COLUMN = "ourEnum";
 	private static final String TABLE_NAME = "com_j256_ormlite_field_types_EnumIntegerTypeTest_LocalEnumInt";
@@ -31,9 +32,10 @@ public class EnumIntegerTypeTest extends BaseTypeTest {
 	{
 		helper.close();
 	}
-	
+
 	@Test
-	public void testEnumInt() throws Exception {
+	public void testEnumInt() throws Exception
+	{
 		Class<LocalEnumInt> clazz = LocalEnumInt.class;
 		Dao<LocalEnumInt, Object> dao = helper.getDao(clazz);
 		OurEnum val = OurEnum.SECOND;
@@ -46,7 +48,8 @@ public class EnumIntegerTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testEnumIntNull() throws Exception {
+	public void testEnumIntNull() throws Exception
+	{
 		Class<LocalEnumInt> clazz = LocalEnumInt.class;
 		Dao<LocalEnumInt, Object> dao = helper.getDao(clazz);
 		LocalEnumInt foo = new LocalEnumInt();
@@ -83,19 +86,22 @@ public class EnumIntegerTypeTest extends BaseTypeTest {
 	}*/
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new EnumIntegerType(SqlType.INTEGER, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalEnumInt {
+	protected static class LocalEnumInt
+	{
 		@DatabaseField(columnName = ENUM_COLUMN, dataType = DataType.ENUM_INTEGER)
 		OurEnum ourEnum;
 	}
 
-	enum OurEnum {
+	enum OurEnum
+	{
 		FIRST,
-		SECOND, ;
+		SECOND,;
 	}
 
 	private SimpleHelper getHelper()

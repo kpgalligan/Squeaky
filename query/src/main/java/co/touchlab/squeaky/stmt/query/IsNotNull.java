@@ -10,22 +10,25 @@ import java.util.List;
 
 /**
  * Internal class handling the SQL 'IS NOT NULL' comparison query part. Used by {@link Where#isNull}.
- * 
+ *
  * @author graywatson
  */
 public class IsNotNull extends BaseComparison
 {
-	public IsNotNull(FieldType fieldType, JoinAlias joinAlias) throws SQLException {
+	public IsNotNull(FieldType fieldType, JoinAlias joinAlias) throws SQLException
+	{
 		super(fieldType, null, false, joinAlias);
 	}
 
 	@Override
-	public String getOperation() {
+	public String getOperation()
+	{
 		return "IS NOT NULL";
 	}
 
 	@Override
-	public void appendValue(SqueakyContext squeakyContext, List<String> params) {
+	public void appendValue(SqueakyContext squeakyContext, List<String> params)
+	{
 		// there is no value
 	}
 }

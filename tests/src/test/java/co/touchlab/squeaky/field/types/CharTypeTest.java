@@ -13,7 +13,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class CharTypeTest extends BaseTypeTest {
+public class CharTypeTest extends BaseTypeTest
+{
 
 	private static final String CHAR_COLUMN = "charField";
 	private SimpleHelper helper;
@@ -31,7 +32,8 @@ public class CharTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testChar() throws Exception {
+	public void testChar() throws Exception
+	{
 		Class<LocalChar> clazz = LocalChar.class;
 		Dao<LocalChar, Object> dao = helper.getDao(clazz);
 		char val = 'w';
@@ -43,12 +45,14 @@ public class CharTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new CharType(SqlType.CHAR, new Class[0]);
 	}
 
 	@DatabaseTable
-	protected static class LocalChar {
+	protected static class LocalChar
+	{
 		@DatabaseField(columnName = CHAR_COLUMN)
 		char charField;
 	}

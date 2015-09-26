@@ -5,9 +5,11 @@ package co.touchlab.squeaky.logger;
  */
 public class OLog
 {
-	static {
+	static
+	{
 		log = new AndroidLog();
 	}
+
 	private static OLogImpl log;
 
 	/**

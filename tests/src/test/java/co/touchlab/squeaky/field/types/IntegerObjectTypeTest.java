@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class IntegerObjectTypeTest extends BaseTypeTest {
+public class IntegerObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String INT_COLUMN = "intField";
 	private SimpleHelper helper;
@@ -30,7 +31,8 @@ public class IntegerObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testIntObj() throws Exception {
+	public void testIntObj() throws Exception
+	{
 		Class<LocalIntObj> clazz = LocalIntObj.class;
 		Dao<LocalIntObj, Object> dao = helper.getDao(clazz);
 		Integer val = 313213123;
@@ -42,7 +44,8 @@ public class IntegerObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testIntObjNull() throws Exception {
+	public void testIntObjNull() throws Exception
+	{
 		Class<LocalIntObj> clazz = LocalIntObj.class;
 		Dao<LocalIntObj, Object> dao = helper.getDao(clazz);
 		LocalIntObj foo = new LocalIntObj();
@@ -51,7 +54,8 @@ public class IntegerObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalIntObj {
+	protected static class LocalIntObj
+	{
 		@DatabaseField(columnName = INT_COLUMN)
 		Integer intField;
 	}

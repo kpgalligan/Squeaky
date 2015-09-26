@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ShortObjectTypeTest extends BaseTypeTest {
+public class ShortObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String SHORT_COLUMN = "shortField";
 	private SimpleHelper helper;
@@ -30,7 +31,8 @@ public class ShortObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testShortObj() throws Exception {
+	public void testShortObj() throws Exception
+	{
 		Class<LocalShortObj> clazz = LocalShortObj.class;
 		Dao<LocalShortObj, Object> dao = helper.getDao(clazz);
 		Short val = 12312;
@@ -42,7 +44,8 @@ public class ShortObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testShortObjNull() throws Exception {
+	public void testShortObjNull() throws Exception
+	{
 		Class<LocalShortObj> clazz = LocalShortObj.class;
 		Dao<LocalShortObj, Object> dao = helper.getDao(clazz);
 		LocalShortObj foo = new LocalShortObj();
@@ -51,7 +54,8 @@ public class ShortObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalShortObj {
+	protected static class LocalShortObj
+	{
 		@DatabaseField(columnName = SHORT_COLUMN)
 		Short shortField;
 	}

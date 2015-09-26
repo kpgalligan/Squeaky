@@ -45,7 +45,7 @@ public class BaseTest
 			Class[] managingClasses = getManagingClasses();
 			Class[] reversed = new Class[managingClasses.length];
 
-			for(int i=0; i<managingClasses.length; i++)
+			for (int i = 0; i < managingClasses.length; i++)
 			{
 				reversed[(managingClasses.length - i) - 1] = managingClasses[i];
 			}

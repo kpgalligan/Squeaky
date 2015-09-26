@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class FloatTypeTest extends BaseTypeTest {
+public class FloatTypeTest extends BaseTypeTest
+{
 
 	private static final String FLOAT_COLUMN = "floatField";
 	private SimpleHelper helper;
@@ -35,7 +36,8 @@ public class FloatTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testFloat() throws Exception {
+	public void testFloat() throws Exception
+	{
 		Class<LocalFloat> clazz = LocalFloat.class;
 		Dao<LocalFloat, Object> dao = helper.getDao(clazz);
 		float val = 1331.221F;
@@ -47,7 +49,8 @@ public class FloatTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testFloatPrimitiveNull() throws Exception {
+	public void testFloatPrimitiveNull() throws Exception
+	{
 		Dao<LocalFloatObj, Object> objDao = helper.getDao(LocalFloatObj.class);
 		LocalFloatObj foo = new LocalFloatObj();
 		foo.floatField = null;
@@ -59,18 +62,21 @@ public class FloatTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new FloatType(SqlType.FLOAT, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalFloat {
+	protected static class LocalFloat
+	{
 		@DatabaseField(columnName = FLOAT_COLUMN)
 		float floatField;
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalFloatObj {
+	protected static class LocalFloatObj
+	{
 		@DatabaseField(columnName = FLOAT_COLUMN)
 		Float floatField;
 	}

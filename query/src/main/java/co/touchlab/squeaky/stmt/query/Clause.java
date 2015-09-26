@@ -7,10 +7,11 @@ import java.util.List;
 
 /**
  * Internal marker class for query clauses.
- * 
+ *
  * @author graywatson
  */
-public interface Clause {
+public interface Clause
+{
 
 	/**
 	 * Add to the string-builder the appropriate SQL for this clause.

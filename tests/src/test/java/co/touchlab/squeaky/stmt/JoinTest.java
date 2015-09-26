@@ -54,7 +54,7 @@ public class JoinTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testSubJoin()throws SQLException
+	public void testSubJoin() throws SQLException
 	{
 		createAsdf(createBar(createFoo("asdf", 123)));
 		createAsdf(createBar(createFoo("asdf", 123)));
@@ -93,7 +93,7 @@ public class JoinTest extends BaseTypeTest
 		return bar;
 	}
 
-	private Asdf createAsdf(Bar bar)throws SQLException
+	private Asdf createAsdf(Bar bar) throws SQLException
 	{
 		Asdf asdf = new Asdf();
 		asdf.bar = bar;

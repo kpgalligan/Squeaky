@@ -19,7 +19,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(RobolectricTestRunner.class)
-public class DateStringTypeTest extends BaseTypeTest {
+public class DateStringTypeTest extends BaseTypeTest
+{
 
 	private static final String DATE_COLUMN = "date";
 	private static final String STRING_COLUMN = "string";
@@ -38,7 +39,8 @@ public class DateStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateString() throws Exception {
+	public void testDateString() throws Exception
+	{
 		Class<LocalDateString> clazz = LocalDateString.class;
 		Dao<LocalDateString, Object> dao = helper.getDao(clazz);
 		Date val = new Date();
@@ -54,7 +56,8 @@ public class DateStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateStringNull() throws Exception {
+	public void testDateStringNull() throws Exception
+	{
 		Class<LocalDateString> clazz = LocalDateString.class;
 		Dao<LocalDateString, Object> dao = helper.getDao(clazz);
 		LocalDateString foo = new LocalDateString();
@@ -64,7 +67,8 @@ public class DateStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateStringFormat() throws Exception {
+	public void testDateStringFormat() throws Exception
+	{
 		Dao<DateStringFormat, Object> dao = helper.getDao(DateStringFormat.class);
 		DateStringFormat dateStringFormat = new DateStringFormat();
 		dateStringFormat.date = new SimpleDateFormat("yyyy-MM-dd").parse("2012-09-01");
@@ -76,7 +80,8 @@ public class DateStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDateStringFormatNotDayAlign() throws Exception {
+	public void testDateStringFormatNotDayAlign() throws Exception
+	{
 		Dao<DateStringFormat, Object> dao = helper.getDao(DateStringFormat.class);
 		DateStringFormat dateStringFormat = new DateStringFormat();
 		dateStringFormat.date = new SimpleDateFormat("yyyy-MM-dd HH").parse("2012-09-01 12");
@@ -88,18 +93,21 @@ public class DateStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new DateStringType(SqlType.STRING, new Class[0]);
 	}
 
 	@DatabaseTable/*(tableName = TABLE_NAME)*/
-	protected static class LocalDateString {
+	protected static class LocalDateString
+	{
 		@DatabaseField(columnName = DATE_COLUMN, dataType = DataType.DATE_STRING)
 		Date date;
 	}
 
 	@DatabaseTable/*(tableName = TABLE_NAME)*/
-	protected static class DateStringFormat {
+	protected static class DateStringFormat
+	{
 		@DatabaseField(columnName = DATE_COLUMN, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd")
 		Date date;
 	}

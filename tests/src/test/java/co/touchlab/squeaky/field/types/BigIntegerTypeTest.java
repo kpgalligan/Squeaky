@@ -55,7 +55,8 @@ public class BigIntegerTypeTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testBigIntegerNull() throws Exception {
+	public void testBigIntegerNull() throws Exception
+	{
 		Dao<LocalBigInteger, Object> dao = helper.getDao(LocalBigInteger.class);
 		LocalBigInteger foo = new LocalBigInteger();
 		dao.create(foo);
@@ -66,7 +67,8 @@ public class BigIntegerTypeTest extends BaseTypeTest
 	}
 
 	@Test(expected = SQLException.class)
-	public void testBigIntegerInvalidDbValue() throws Exception {
+	public void testBigIntegerInvalidDbValue() throws Exception
+	{
 		Dao<LocalBigInteger, Object> dao = helper.getDao(LocalBigInteger.class);
 		Dao<NotBigInteger, Object> notDao = helper.getDao(NotBigInteger.class);
 
@@ -78,24 +80,28 @@ public class BigIntegerTypeTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new BigIntegerType(SqlType.BIG_DECIMAL, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = "LocalBigInteger")
-	protected static class LocalBigInteger {
+	protected static class LocalBigInteger
+	{
 		@DatabaseField(columnName = BIGINTEGER_COLUMN)
 		BigInteger bigInteger;
 	}
 
 	@DatabaseTable(tableName = "LocalBigInteger")
-	protected static class NotBigInteger {
+	protected static class NotBigInteger
+	{
 		@DatabaseField(columnName = BIGINTEGER_COLUMN)
 		String bigInteger;
 	}
 
 	@DatabaseTable
-	protected static class BigIntegerBadDefault {
+	protected static class BigIntegerBadDefault
+	{
 		@DatabaseField(defaultValue = "not valid form")
 		BigInteger bigInteger;
 	}

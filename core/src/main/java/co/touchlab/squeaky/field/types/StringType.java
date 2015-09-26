@@ -8,36 +8,43 @@ import java.sql.SQLException;
 
 /**
  * Type that persists a String object.
- * 
+ *
  * @author graywatson
  */
-public class StringType extends BaseDataType {
+public class StringType extends BaseDataType
+{
 
 	private static final StringType singleTon = new StringType();
 
-	public static StringType getSingleton() {
+	public static StringType getSingleton()
+	{
 		return singleTon;
 	}
 
-	private StringType() {
-		super(SqlType.STRING, new Class<?>[] { String.class });
+	private StringType()
+	{
+		super(SqlType.STRING, new Class<?>[]{String.class});
 	}
 
-	protected StringType(SqlType sqlType, Class<?>[] classes) {
+	protected StringType(SqlType sqlType, Class<?>[] classes)
+	{
 		super(sqlType, classes);
 	}
 
-	protected StringType(SqlType sqlType) {
+	protected StringType(SqlType sqlType)
+	{
 		super(sqlType);
 	}
 
 	@Override
-	public Object parseDefaultString(FieldType fieldType, String defaultStr) {
+	public Object parseDefaultString(FieldType fieldType, String defaultStr)
+	{
 		return defaultStr;
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+	{
 		return results.getString(columnPos);
 	}
 }

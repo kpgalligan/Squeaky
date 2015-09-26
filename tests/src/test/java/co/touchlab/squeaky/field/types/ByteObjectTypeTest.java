@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ByteObjectTypeTest extends BaseTypeTest {
+public class ByteObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String BYTE_COLUMN = "byteField";
 	private SimpleHelper helper;
@@ -30,7 +31,8 @@ public class ByteObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testByteObj() throws Exception {
+	public void testByteObj() throws Exception
+	{
 		Class<LocalByteObj> clazz = LocalByteObj.class;
 		Dao<LocalByteObj, Object> dao = helper.getDao(clazz);
 		byte val = 123;
@@ -43,7 +45,8 @@ public class ByteObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testByteObjNull() throws Exception {
+	public void testByteObjNull() throws Exception
+	{
 		Class<LocalByteObj> clazz = LocalByteObj.class;
 		Dao<LocalByteObj, Object> dao = helper.getDao(clazz);
 		LocalByteObj foo = new LocalByteObj();
@@ -52,7 +55,8 @@ public class ByteObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalByteObj {
+	protected static class LocalByteObj
+	{
 		@DatabaseField(columnName = BYTE_COLUMN)
 		Byte byteField;
 	}

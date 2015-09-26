@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class FloatObjectTypeTest extends BaseTypeTest {
+public class FloatObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String FLOAT_COLUMN = "floatField";
 	private SimpleHelper helper;
@@ -30,7 +31,8 @@ public class FloatObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testFloatObj() throws Exception {
+	public void testFloatObj() throws Exception
+	{
 		Class<LocalFloatObj> clazz = LocalFloatObj.class;
 		Dao<LocalFloatObj, Object> dao = helper.getDao(clazz);
 		Float val = 1331.221F;
@@ -43,7 +45,8 @@ public class FloatObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testFloatObjNull() throws Exception {
+	public void testFloatObjNull() throws Exception
+	{
 		Class<LocalFloatObj> clazz = LocalFloatObj.class;
 		Dao<LocalFloatObj, Object> dao = helper.getDao(clazz);
 		LocalFloatObj foo = new LocalFloatObj();
@@ -52,7 +55,8 @@ public class FloatObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalFloatObj {
+	protected static class LocalFloatObj
+	{
 		@DatabaseField(columnName = FLOAT_COLUMN)
 		Float floatField;
 	}

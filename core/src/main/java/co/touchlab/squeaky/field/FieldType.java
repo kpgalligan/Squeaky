@@ -11,9 +11,12 @@ import java.sql.SQLException;
 /**
  * @author graywatson
  */
-public class FieldType {
+public class FieldType
+{
 
-	/** default suffix added to fields that are id fields of foreign objects */
+	/**
+	 * default suffix added to fields that are id fields of foreign objects
+	 */
 	public static final String FOREIGN_ID_FIELD_SUFFIX = "_id";
 
 	/*
@@ -81,7 +84,8 @@ public class FieldType {
 			String uniqueIndexName,
 			String configDefaultValue,
 			boolean throwIfNull,
-			Enum<?> unknownEnumVal){
+			Enum<?> unknownEnumVal)
+	{
 		this.fieldName = fieldName;
 		this.tableName = tableName;
 		this.canBeNull = canBeNull;
@@ -103,48 +107,58 @@ public class FieldType {
 		this.unknownEnumVal = unknownEnumVal;
 
 		//TODO: Move this to annotation processor code
-		if ((this.isId || this.isGeneratedId )&& this.isForeign) {
+		if ((this.isId || this.isGeneratedId) && this.isForeign)
+		{
 			throw new IllegalArgumentException("Id field " + fieldName + " cannot also be a foreign object");
 		}
 
 		try
 		{
 			assignDataType(dataPersister, configDefaultValue);
-		} catch (SQLException e)
+		}
+		catch (SQLException e)
 		{
 			throw new RuntimeException(e);
 		}
 	}
 
-	public String getTableName() {
+	public String getTableName()
+	{
 		return tableName;
 	}
 
-	public String getFieldName() {
+	public String getFieldName()
+	{
 		return fieldName;
 	}
 
-	public String getColumnName() {
+	public String getColumnName()
+	{
 		return columnName;
 	}
 
-	public DataPersister getDataPersister() {
+	public DataPersister getDataPersister()
+	{
 		return dataPersister;
 	}
 
-	public Object getDataTypeConfigObj() {
+	public Object getDataTypeConfigObj()
+	{
 		return dataTypeConfigObj;
 	}
 
-	public SqlType getSqlType() {
+	public SqlType getSqlType()
+	{
 		return fieldConverter.getSqlType();
 	}
 
-	public Object getDefaultValue() {
+	public Object getDefaultValue()
+	{
 		return defaultValue;
 	}
 
-	public boolean isCanBeNull() {
+	public boolean isCanBeNull()
+	{
 		return canBeNull;
 	}
 
@@ -153,25 +167,32 @@ public class FieldType {
 		return fieldType;
 	}
 
-	public boolean isId() {
+	public boolean isId()
+	{
 		return isId;
 	}
 
-	public boolean isGeneratedId() {
+	public boolean isGeneratedId()
+	{
 		return isGeneratedId;
 	}
 
-	public boolean isForeign() {
+	public boolean isForeign()
+	{
 		return isForeign;
 	}
 
 	/**
 	 * Convert a field value to something suitable to be stored in the database.
 	 */
-	public Object convertJavaFieldToSqlArgValue(Object fieldVal) throws SQLException {
-		if (fieldVal == null) {
+	public Object convertJavaFieldToSqlArgValue(Object fieldVal) throws SQLException
+	{
+		if (fieldVal == null)
+		{
 			return null;
-		} else {
+		}
+		else
+		{
 			return fieldConverter.javaToSqlArg(this, fieldVal);
 		}
 	}
@@ -179,57 +200,72 @@ public class FieldType {
 	/**
 	 * Call through to {@link DataPersister#isEscapedValue()}
 	 */
-	public boolean isEscapedValue() {
+	public boolean isEscapedValue()
+	{
 		return dataPersister.isEscapedValue();
 	}
 
 	//Figure out enums
-	public Enum<?> getUnknownEnumVal() {
+	public Enum<?> getUnknownEnumVal()
+	{
 		return unknownEnumVal;
 	}
 
 	/**
 	 * Return the format of the field.
 	 */
-	public String getFormat() {
+	public String getFormat()
+	{
 		return format;
 	}
 
-	public boolean isUnique() {
+	public boolean isUnique()
+	{
 		return unique;
 	}
 
-	public boolean isUniqueCombo() {
+	public boolean isUniqueCombo()
+	{
 		return uniqueCombo;
 	}
 
-	public String getIndexName() {
+	public String getIndexName()
+	{
 		return getIndexName(tableName);
 	}
 
-	public String getIndexName(String tableName) {
-		if (index && (indexName == null || indexName.equals(""))) {
+	public String getIndexName(String tableName)
+	{
+		if (index && (indexName == null || indexName.equals("")))
+		{
 			indexName = findIndexName(tableName);
 		}
 		return indexName;
 	}
 
-	public String getUniqueIndexName(String tableName) {
-		if (uniqueIndex && (uniqueIndexName == null || uniqueIndexName.equals(""))) {
+	public String getUniqueIndexName(String tableName)
+	{
+		if (uniqueIndex && (uniqueIndexName == null || uniqueIndexName.equals("")))
+		{
 			uniqueIndexName = findIndexName(tableName);
 		}
 		return uniqueIndexName;
 	}
 
-	private String findIndexName(String tableName) {
-		if (columnName == null) {
+	private String findIndexName(String tableName)
+	{
+		if (columnName == null)
+		{
 			return tableName + "_" + fieldName + "_idx";
-		} else {
+		}
+		else
+		{
 			return tableName + "_" + columnName + "_idx";
 		}
 	}
 
-	public String getUniqueIndexName() {
+	public String getUniqueIndexName()
+	{
 		return getUniqueIndexName(tableName);
 	}
 
@@ -241,22 +277,27 @@ public class FieldType {
 	/**
 	 * Call through to {@link DataPersister#isEscapedDefaultValue()}
 	 */
-	public boolean isEscapedDefaultValue() {
+	public boolean isEscapedDefaultValue()
+	{
 		return dataPersister.isEscapedDefaultValue();
 	}
 
 	/**
 	 * Call through to {@link DataPersister#isComparable()}
 	 */
-	public boolean isComparable() throws SQLException {
+	public boolean isComparable() throws SQLException
+	{
 		/*
 		 * We've seen dataPersister being null here in some strange cases. Why? It may because someone is searching on
 		 * an improper field. Or maybe a table-config does not match the Java object?
 		 */
-		if (dataPersister == null) {
+		if (dataPersister == null)
+		{
 			throw new SQLException("Internal error.  Data-persister is not configured for field.  "
 					+ "Please post _full_ exception with associated data objects to mailing list: " + this);
-		} else {
+		}
+		else
+		{
 			return dataPersister.isComparable();
 		}
 	}
@@ -265,54 +306,80 @@ public class FieldType {
 	 * Return whether or not the field value passed in is the default value for the type of the field. Null will return
 	 * true.
 	 */
-	public Object getJavaDefaultValueDefault() {
-		if(dataType == null)
+	public Object getJavaDefaultValueDefault()
+	{
+		if (dataType == null)
 			return null;
-		else if (dataType == DataType.BOOLEAN) {
+		else if (dataType == DataType.BOOLEAN)
+		{
 			return DEFAULT_VALUE_BOOLEAN;
-		} else if (dataType == DataType.BYTE || dataType == DataType.CHAR_OBJ) {
+		}
+		else if (dataType == DataType.BYTE || dataType == DataType.CHAR_OBJ)
+		{
 			return DEFAULT_VALUE_BYTE;
-		} else if (dataType == DataType.CHAR || dataType == DataType.CHAR_OBJ) {
+		}
+		else if (dataType == DataType.CHAR || dataType == DataType.CHAR_OBJ)
+		{
 			return DEFAULT_VALUE_CHAR;
-		} else if (dataType == DataType.SHORT || dataType == DataType.SHORT_OBJ) {
+		}
+		else if (dataType == DataType.SHORT || dataType == DataType.SHORT_OBJ)
+		{
 			return DEFAULT_VALUE_SHORT;
-		} else if (dataType == DataType.INTEGER || dataType == DataType.INTEGER_OBJ) {
+		}
+		else if (dataType == DataType.INTEGER || dataType == DataType.INTEGER_OBJ)
+		{
 			return DEFAULT_VALUE_INT;
-		} else if (dataType == DataType.LONG || dataType == DataType.LONG_OBJ) {
+		}
+		else if (dataType == DataType.LONG || dataType == DataType.LONG_OBJ)
+		{
 			return DEFAULT_VALUE_LONG;
-		} else if (dataType == DataType.FLOAT || dataType == DataType.FLOAT_OBJ) {
+		}
+		else if (dataType == DataType.FLOAT || dataType == DataType.FLOAT_OBJ)
+		{
 			return DEFAULT_VALUE_FLOAT;
-		} else if (dataType == DataType.DOUBLE || dataType == DataType.DOUBLE_OBJ) {
+		}
+		else if (dataType == DataType.DOUBLE || dataType == DataType.DOUBLE_OBJ)
+		{
 			return DEFAULT_VALUE_DOUBLE;
-		} else {
+		}
+		else
+		{
 			return null;
 		}
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return getClass().getSimpleName() + ":name=" + fieldName + ",type="
 				+ dataType;
 	}
 
-	private void assignDataType(DataPersister dataPersister, String defaultStr) throws SQLException {
+	private void assignDataType(DataPersister dataPersister, String defaultStr) throws SQLException
+	{
 
 		dataPersister = getDataPersister(dataPersister);
 		this.dataPersister = dataPersister;
 		this.fieldConverter = getFieldConverter(dataPersister);
 
 		this.dataTypeConfigObj = dataPersister.makeConfigObject(this);
-		if (defaultStr == null) {
+		if (defaultStr == null)
+		{
 			this.defaultValue = null;
-		} else if (this.isGeneratedId) {
+		}
+		else if (this.isGeneratedId)
+		{
 			throw new SQLException("Field '" + fieldName + "' cannot be a generatedId and have a default value '"
 					+ defaultStr + "'");
-		} else {
+		}
+		else
+		{
 			this.defaultValue = this.fieldConverter.parseDefaultString(this, defaultStr);
 		}
 	}
 
-	private static class LevelCounters {
+	private static class LevelCounters
+	{
 		// current auto-refresh recursion level
 		int autoRefreshLevel;
 		// maximum auto-refresh recursion level
@@ -324,59 +391,77 @@ public class FieldType {
 		int foreignCollectionLevelMax;
 	}
 
-	public DataPersister getDataPersister(DataPersister defaultPersister) {
-		if (defaultPersister == null) {
+	public DataPersister getDataPersister(DataPersister defaultPersister)
+	{
+		if (defaultPersister == null)
+		{
 			return null;
 		}
 		// we are only overriding certain types
-		switch (defaultPersister.getSqlType()) {
-			case DATE :
-				if (defaultPersister instanceof TimeStampType) {
+		switch (defaultPersister.getSqlType())
+		{
+			case DATE:
+				if (defaultPersister instanceof TimeStampType)
+				{
 					return TimeStampStringType.getSingleton();
-				} else {
+				}
+				else
+				{
 					return DateStringType.getSingleton();
 				}
-			default :
+			default:
 				return defaultPersister;
 		}
 	}
 
 	private final static FieldConverter booleanConverter = new BooleanNumberFieldConverter();
 
-	public FieldConverter getFieldConverter(DataPersister dataPersister) {
+	public FieldConverter getFieldConverter(DataPersister dataPersister)
+	{
 		// we are only overriding certain types
-		switch (dataPersister.getSqlType()) {
-			case BOOLEAN :
+		switch (dataPersister.getSqlType())
+		{
+			case BOOLEAN:
 				return booleanConverter;
-			case BIG_DECIMAL :
+			case BIG_DECIMAL:
 				return BigDecimalStringType.getSingleton();
-			default :
+			default:
 				return dataPersister;
 		}
 	}
 
 	protected static class BooleanNumberFieldConverter extends BaseFieldConverter
 	{
-		public SqlType getSqlType() {
+		public SqlType getSqlType()
+		{
 			return SqlType.BOOLEAN;
 		}
-		public Object parseDefaultString(FieldType fieldType, String defaultStr) {
+
+		public Object parseDefaultString(FieldType fieldType, String defaultStr)
+		{
 			boolean bool = Boolean.parseBoolean(defaultStr);
 			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
 		}
+
 		@Override
-		public Object javaToSqlArg(FieldType fieldType, Object obj) {
+		public Object javaToSqlArg(FieldType fieldType, Object obj)
+		{
 			Boolean bool = (Boolean) obj;
 			return (bool ? Byte.valueOf((byte) 1) : Byte.valueOf((byte) 0));
 		}
-		public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-			return (byte)results.getShort(columnPos);
+
+		public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+		{
+			return (byte) results.getShort(columnPos);
 		}
+
 		@Override
-		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) {
+		public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos)
+		{
 			byte arg = (Byte) sqlArg;
 			return arg == 1;
 		}
+
 		public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException
 		{
 			return sqlArgToJava(fieldType, resultToSqlArg(fieldType, results, columnPos), columnPos);

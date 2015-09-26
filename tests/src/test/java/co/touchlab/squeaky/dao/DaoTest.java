@@ -13,7 +13,6 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -91,7 +90,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testQueryObject()throws SQLException
+	public void testQueryObject() throws SQLException
 	{
 		createFoo("asdf", 123, 23523534234l, new Date());
 		createFoo("asdf", 444, 23523534255l, new Date());
@@ -137,7 +136,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testCreateOrUpdate()throws SQLException
+	public void testCreateOrUpdate() throws SQLException
 	{
 		getBarDao().createOrUpdate(new Bar(13, "aaa"));
 		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").size(), 1);
@@ -147,7 +146,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testUpdate()throws SQLException
+	public void testUpdate() throws SQLException
 	{
 		getBarDao().create(new Bar(13, "aaa"));
 		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").size(), 1);
@@ -157,7 +156,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testUpdateId()throws SQLException
+	public void testUpdateId() throws SQLException
 	{
 		Bar bar = new Bar(13, "aaa");
 		getBarDao().create(bar);
@@ -168,7 +167,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testUpdateQuery()throws SQLException
+	public void testUpdateQuery() throws SQLException
 	{
 		createFoo("asdf", 123, 23523534234l, new Date());
 		createFoo("asdf", 444, 23523534255l, new Date());
@@ -188,7 +187,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testRefresh()throws SQLException
+	public void testRefresh() throws SQLException
 	{
 		Foo foo = createFoo("asdf", 123, 23523534234l, new Date());
 		Foo dbFoo = getFooDao().queryForAll().get(0);
@@ -200,7 +199,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testDelete()throws SQLException
+	public void testDelete() throws SQLException
 	{
 		Bar bar = createBar(123, "gobyebye", false);
 		Assert.assertEquals(1, getBarDao().countOf());
@@ -209,7 +208,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testDeleteById()throws SQLException
+	public void testDeleteById() throws SQLException
 	{
 		Bar bar = createBar(123, "gobyebye", false);
 		Assert.assertEquals(1, getBarDao().countOf());
@@ -218,7 +217,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testDeleteCollection()throws SQLException
+	public void testDeleteCollection() throws SQLException
 	{
 		List<Bar> bars = new ArrayList<>();
 		bars.add(createBar(12, "a", false));
@@ -233,7 +232,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testDeleteQuery()throws SQLException
+	public void testDeleteQuery() throws SQLException
 	{
 		createBar(12, "a", false);
 		createBar(13, "b", false);
@@ -249,7 +248,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testIterator()throws SQLException
+	public void testIterator() throws SQLException
 	{
 		createBar(12, "a", false);
 		createBar(13, "b", false);
@@ -268,7 +267,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testIteratorQuery()throws SQLException
+	public void testIteratorQuery() throws SQLException
 	{
 		createBar(12, "a", false);
 		createBar(13, "b", false);
@@ -290,7 +289,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testQueryRawValue()throws SQLException
+	public void testQueryRawValue() throws SQLException
 	{
 		createBar(12, "a", false);
 		createBar(13, "a", false);
@@ -303,7 +302,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testCountOf()throws SQLException
+	public void testCountOf() throws SQLException
 	{
 		createBar(12, "a", false);
 		createBar(13, "a", false);
@@ -318,7 +317,7 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testObserver()throws SQLException
+	public void testObserver() throws SQLException
 	{
 		final AtomicInteger changeCount = new AtomicInteger();
 		Dao.DaoObserver observer = new Dao.DaoObserver()
@@ -358,11 +357,11 @@ public class DaoTest extends BaseTypeTest
 		return foo;
 	}
 
-	private Bar createBar(int id, String name, boolean ifNotExists)throws SQLException
+	private Bar createBar(int id, String name, boolean ifNotExists) throws SQLException
 	{
 		Bar bar = new Bar(id, name);
 
-		if(ifNotExists)
+		if (ifNotExists)
 			getBarDao().createIfNotExists(bar);
 		else
 			getBarDao().create(bar);

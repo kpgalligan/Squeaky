@@ -4,31 +4,37 @@ import co.touchlab.squeaky.field.SqlType;
 
 /**
  * Type that persists a boolean primitive.
- * 
+ *
  * @author graywatson
  */
-public class BooleanType extends BooleanObjectType {
+public class BooleanType extends BooleanObjectType
+{
 
 	private static final BooleanType singleTon = new BooleanType();
 
-	public static BooleanType getSingleton() {
+	public static BooleanType getSingleton()
+	{
 		return singleTon;
 	}
 
-	private BooleanType() {
-		super(SqlType.BOOLEAN, new Class<?>[] { boolean.class });
+	private BooleanType()
+	{
+		super(SqlType.BOOLEAN, new Class<?>[]{boolean.class});
 	}
 
-	protected BooleanType(SqlType sqlType, Class<?>[] classes) {
+	protected BooleanType(SqlType sqlType, Class<?>[] classes)
+	{
 		super(sqlType, classes);
 	}
 
-	protected BooleanType(SqlType sqlType) {
+	protected BooleanType(SqlType sqlType)
+	{
 		super(sqlType);
 	}
 
 	@Override
-	public boolean isPrimitive() {
+	public boolean isPrimitive()
+	{
 		return true;
 	}
 }

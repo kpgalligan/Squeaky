@@ -17,7 +17,8 @@ import java.util.Arrays;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ByteArrayTypeTest extends BaseTypeTest {
+public class ByteArrayTypeTest extends BaseTypeTest
+{
 
 	private static final String BYTE_COLUMN = "byteField";
 	private SimpleHelper helper;
@@ -35,10 +36,11 @@ public class ByteArrayTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testByteArray() throws Exception {
+	public void testByteArray() throws Exception
+	{
 		Class<LocalByteArray> clazz = LocalByteArray.class;
 		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
-		byte[] val = new byte[] { 123, 4, 124, 1, 0, 72 };
+		byte[] val = new byte[]{123, 4, 124, 1, 0, 72};
 		String valStr = Arrays.toString(val);
 		LocalByteArray foo = new LocalByteArray();
 		foo.byteField = val;
@@ -47,7 +49,8 @@ public class ByteArrayTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testByteArrayNull() throws Exception {
+	public void testByteArrayNull() throws Exception
+	{
 		Class<LocalByteArray> clazz = LocalByteArray.class;
 		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
 		LocalByteArray foo = new LocalByteArray();
@@ -56,17 +59,20 @@ public class ByteArrayTypeTest extends BaseTypeTest {
 	}
 
 	@Test(expected = SQLException.class)
-	public void testByteArrayParseDefault() throws Exception {
+	public void testByteArrayParseDefault() throws Exception
+	{
 		DataType.BYTE_ARRAY.getDataPersister().parseDefaultString(null, null);
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new ByteArrayType(SqlType.BYTE_ARRAY, new Class[0]);
 	}
 
 	@DatabaseTable
-	protected static class LocalByteArray {
+	protected static class LocalByteArray
+	{
 		@DatabaseField(columnName = BYTE_COLUMN, dataType = DataType.BYTE_ARRAY)
 		byte[] byteField;
 	}

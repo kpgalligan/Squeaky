@@ -9,10 +9,11 @@ import java.util.List;
 
 /**
  * For operations with a number of them in a row.
- * 
+ *
  * @author graywatson
  */
-public class ManyClause<T> implements Clause, Queryable<T> {
+public class ManyClause<T> implements Clause, Queryable<T>
+{
 
 	public static final String AND_OPERATION = "AND";
 	public static final String OR_OPERATION = "OR";
@@ -23,7 +24,8 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 	private final Queryable<T> parent;
 	private final JoinAlias joinAlias;
 
-	public ManyClause(Queryable<T> parent, QueryFactory queryFactory, String operation, JoinAlias joinAlias) {
+	public ManyClause(Queryable<T> parent, QueryFactory queryFactory, String operation, JoinAlias joinAlias)
+	{
 		this.parent = parent;
 		this.joinAlias = joinAlias;
 		this.clauses = new ArrayList<>(2);
@@ -81,7 +83,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> ge(String columnFieldName, Object value) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.ge(joinAlias, columnFieldName, value));
 		return this;
 	}
@@ -95,7 +97,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> lt(String columnFieldName, Object value) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.lt(joinAlias, columnFieldName, value));
 		return this;
 	}
@@ -109,7 +111,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> le(String columnFieldName, Object value) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.le(joinAlias, columnFieldName, value));
 		return this;
 	}
@@ -123,7 +125,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> like(String columnFieldName, Object value) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.like(joinAlias, columnFieldName, value));
 		return this;
 	}
@@ -137,7 +139,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> ne(String columnFieldName, Object value) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.ne(joinAlias, columnFieldName, value));
 		return this;
 	}
@@ -207,7 +209,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> between(String columnFieldName, Object low, Object high) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.between(joinAlias, columnFieldName, low, high));
 		return this;
 	}
@@ -221,7 +223,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> isNull(String columnFieldName) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.isNull(joinAlias, columnFieldName));
 		return this;
 	}
@@ -235,7 +237,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 
 	public ManyClause<T> isNotNull(String columnFieldName) throws SQLException
 	{
-		
+
 		clauses.add(queryFactory.isNotNull(joinAlias, columnFieldName));
 		return this;
 	}
@@ -261,7 +263,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 		return manyClause;
 	}
 
-	public Not not()throws SQLException
+	public Not not() throws SQLException
 	{
 		Not<T> not = new Not<T>(this, queryFactory, joinAlias);
 		clauses.add(not);
@@ -269,22 +271,23 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
-	public Queryable<T> end()throws SQLException
+	public Queryable<T> end() throws SQLException
 	{
 		return parent;
 	}
 
 	@Override
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) throws SQLException {
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) throws SQLException
+	{
 
-		if(clauses.size() == 0)
-			throw new SQLException("Clause list can't be empty for "+ operation);
+		if (clauses.size() == 0)
+			throw new SQLException("Clause list can't be empty for " + operation);
 
 		boolean first = true;
 
 		for (Clause clause : clauses)
 		{
-			if(first)
+			if (first)
 			{
 				first = false;
 				sb.append("(");

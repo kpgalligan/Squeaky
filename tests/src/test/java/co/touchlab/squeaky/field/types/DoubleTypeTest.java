@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class DoubleTypeTest extends BaseTypeTest {
+public class DoubleTypeTest extends BaseTypeTest
+{
 
 	private static final String DOUBLE_COLUMN = "doubleField";
 	public static final String LOCAL_DOUBLE = "LocalDouble";
@@ -35,7 +36,8 @@ public class DoubleTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDouble() throws Exception {
+	public void testDouble() throws Exception
+	{
 		Class<LocalDouble> clazz = LocalDouble.class;
 		Dao<LocalDouble, Object> dao = helper.getDao(clazz);
 		double val = 13313323131.221;
@@ -47,7 +49,8 @@ public class DoubleTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDoublePrimitiveNull() throws Exception {
+	public void testDoublePrimitiveNull() throws Exception
+	{
 		Dao<LocalDoubleObj, Object> objDao = helper.getDao(LocalDoubleObj.class);
 		LocalDoubleObj foo = new LocalDoubleObj();
 		foo.doubleField = null;
@@ -60,20 +63,25 @@ public class DoubleTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new DoubleType(SqlType.DOUBLE, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = LOCAL_DOUBLE)
-	protected static class LocalDouble {
+	protected static class LocalDouble
+	{
 		@DatabaseField(columnName = DOUBLE_COLUMN)
-		double doubleField;;
+		double doubleField;
+		;
 	}
 
 	@DatabaseTable(tableName = LOCAL_DOUBLE)
-	protected static class LocalDoubleObj {
+	protected static class LocalDoubleObj
+	{
 		@DatabaseField(columnName = DOUBLE_COLUMN)
-		Double doubleField;;
+		Double doubleField;
+		;
 	}
 
 	private SimpleHelper getHelper()

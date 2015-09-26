@@ -8,45 +8,56 @@ import java.sql.SQLException;
 
 /**
  * Type that persists a Boolean object.
- * 
+ *
  * @author graywatson
  */
-public class BooleanObjectType extends BaseDataType {
+public class BooleanObjectType extends BaseDataType
+{
 
 	private static final BooleanObjectType singleTon = new BooleanObjectType();
 
-	public static BooleanObjectType getSingleton() {
+	public static BooleanObjectType getSingleton()
+	{
 		return singleTon;
 	}
 
-	private BooleanObjectType() {
-		super(SqlType.BOOLEAN, new Class<?>[] { Boolean.class });
+	private BooleanObjectType()
+	{
+		super(SqlType.BOOLEAN, new Class<?>[]{Boolean.class});
 	}
 
-	protected BooleanObjectType(SqlType sqlType, Class<?>[] classes) {
+	protected BooleanObjectType(SqlType sqlType, Class<?>[] classes)
+	{
 		super(sqlType, classes);
 	}
 
-	protected BooleanObjectType(SqlType sqlType) {
+	protected BooleanObjectType(SqlType sqlType)
+	{
 		super(sqlType);
 	}
 
 	@Override
-	public Object parseDefaultString(FieldType fieldType, String defaultStr) {
+	public Object parseDefaultString(FieldType fieldType, String defaultStr)
+	{
 		return Boolean.parseBoolean(defaultStr);
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
-		if (results.isNull(columnPos) || results.getShort(columnPos) == 0) {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+	{
+		if (results.isNull(columnPos) || results.getShort(columnPos) == 0)
+		{
 			return false;
-		} else {
+		}
+		else
+		{
 			return true;
 		}
 	}
 
 	@Override
-	public boolean isEscapedValue() {
+	public boolean isEscapedValue()
+	{
 		return false;
 	}
 }

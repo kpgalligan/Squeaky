@@ -25,10 +25,11 @@ public class TransientCache
 	private Map<Object, Object> primeCache(Class c)
 	{
 		Map<Object, Object> objectObjectMap = cache.get(c);
-		if(objectObjectMap == null)
+		if (objectObjectMap == null)
 		{
 			objectObjectMap = new HashMap<>();
 			cache.put(c, objectObjectMap);
-		} return objectObjectMap;
+		}
+		return objectObjectMap;
 	}
 }

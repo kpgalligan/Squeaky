@@ -7,19 +7,22 @@ import java.util.List;
 
 /**
  * Raw part of the where to just stick in a string in the middle of the WHERE. It is up to the user to do so properly.
- * 
+ *
  * @author graywatson
  */
-public class Raw implements Clause {
+public class Raw implements Clause
+{
 
 	private final String statement;
 
-	public Raw(String statement) {
+	public Raw(String statement)
+	{
 		this.statement = statement;
 	}
 
 	@Override
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) {
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed)
+	{
 		sb.append(statement);
 	}
 

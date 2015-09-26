@@ -16,7 +16,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class LongTypeTest extends BaseTypeTest {
+public class LongTypeTest extends BaseTypeTest
+{
 
 	private static final String LONG_COLUMN = "longField";
 	public static final String TABLE_NAME = "com_j256_ormlite_field_types_LongTypeTest_LocalLong";
@@ -35,7 +36,8 @@ public class LongTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testLong() throws Exception {
+	public void testLong() throws Exception
+	{
 		Class<LocalLong> clazz = LocalLong.class;
 		Dao<LocalLong, Object> dao = helper.getDao(clazz);
 		long val = 13312321312312L;
@@ -47,7 +49,8 @@ public class LongTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testLongPrimitiveNull() throws Exception {
+	public void testLongPrimitiveNull() throws Exception
+	{
 		Dao<LocalLongObj, Object> objDao = helper.getDao(LocalLongObj.class);
 		LocalLongObj foo = new LocalLongObj();
 		foo.longField = null;
@@ -59,18 +62,21 @@ public class LongTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new LongType(SqlType.LONG, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalLong {
+	protected static class LocalLong
+	{
 		@DatabaseField(columnName = LONG_COLUMN)
 		long longField;
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalLongObj {
+	protected static class LocalLongObj
+	{
 		@DatabaseField(columnName = LONG_COLUMN)
 		Long longField;
 	}

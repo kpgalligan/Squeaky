@@ -4,25 +4,29 @@ import co.touchlab.squeaky.field.SqlType;
 
 /**
  * Persists the {@link String} Java class but with more storage in the database.
- * 
+ *
  * @author graywatson
  */
-public class LongStringType extends StringType {
+public class LongStringType extends StringType
+{
 
 	private static final LongStringType singleTon = new LongStringType();
 
-	public static LongStringType getSingleton() {
+	public static LongStringType getSingleton()
+	{
 		return singleTon;
 	}
 
-	private LongStringType() {
+	private LongStringType()
+	{
 		super(SqlType.LONG_STRING);
 	}
 
 	/**
 	 * Here for others to subclass.
 	 */
-	protected LongStringType(SqlType sqlType, Class<?>[] classes) {
+	protected LongStringType(SqlType sqlType, Class<?>[] classes)
+	{
 		super(sqlType, classes);
 	}
 }

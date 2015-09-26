@@ -2,7 +2,6 @@ package co.touchlab.squeaky.dao;
 
 import android.database.sqlite.SQLiteOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
-import co.touchlab.squeaky.field.ForeignCollectionField;
 import co.touchlab.squeaky.field.ForeignCollectionInfo;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
@@ -12,6 +11,7 @@ import java.util.Map;
 
 /**
  * Logic for managing access to Dao instances.  If you don't want to extend SqueakyOpenHelper you can use this directly.
+ *
  * @author kgalligan
  */
 public class SqueakyContext
@@ -31,7 +31,7 @@ public class SqueakyContext
 	public synchronized Dao getDao(Class clazz)
 	{
 		ModelDao dao = daoMap.get(clazz);
-		if(dao == null)
+		if (dao == null)
 		{
 			dao = new ModelDao(this, clazz, getGeneratedTableMapper(clazz));
 			daoMap.put(clazz, dao);
@@ -44,7 +44,7 @@ public class SqueakyContext
 	{
 		for (Dao dao : daoMap.values())
 		{
-			((ModelDao)dao).cleanUp();
+			((ModelDao) dao).cleanUp();
 		}
 		daoMap.clear();
 	}
@@ -52,7 +52,7 @@ public class SqueakyContext
 	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
 	{
 		GeneratedTableMapper generatedTableMapper = generatedTableMapperMap.get(clazz);
-		if(generatedTableMapper == null)
+		if (generatedTableMapper == null)
 		{
 			generatedTableMapper = SqueakyOpenHelper.loadGeneratedTableMapper(clazz);
 			generatedTableMapperMap.put(clazz, generatedTableMapper);
@@ -77,13 +77,13 @@ public class SqueakyContext
 		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
 		for (FieldType fieldType : fieldTypes)
 		{
-			if(fieldType.getFieldName().equalsIgnoreCase(columnFieldName) || fieldType.getColumnName().equalsIgnoreCase(columnFieldName))
+			if (fieldType.getFieldName().equalsIgnoreCase(columnFieldName) || fieldType.getColumnName().equalsIgnoreCase(columnFieldName))
 			{
 				return fieldType;
 			}
 		}
 
-		throw new SQLException("No field type found for "+ columnFieldName);
+		throw new SQLException("No field type found for " + columnFieldName);
 	}
 
 	public ForeignCollectionInfo findForeignCollectionInfo(Class c, String fieldName) throws SQLException
@@ -91,12 +91,12 @@ public class SqueakyContext
 		ForeignCollectionInfo[] foreignCollections = getGeneratedTableMapper(c).getTableConfig().getForeignCollections();
 		for (ForeignCollectionInfo foreignCollection : foreignCollections)
 		{
-			if(foreignCollection.foreignFieldName.equals(fieldName))
+			if (foreignCollection.foreignFieldName.equals(fieldName))
 			{
 				return foreignCollection;
 			}
 		}
 
-		throw new SQLException("ForeignCollectionInfo not found for '"+ fieldName +"'");
+		throw new SQLException("ForeignCollectionInfo not found for '" + fieldName + "'");
 	}
 }

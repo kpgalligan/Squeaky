@@ -13,13 +13,16 @@ public final class OrmLiteHelper
 		if (int.class.equals(type) || Integer.class.equals(type))
 		{
 			return ((Number) arg).intValue();
-		} else if (long.class.equals(type) || Long.class.equals(type))
+		}
+		else if (long.class.equals(type) || Long.class.equals(type))
 		{
 			return ((Number) arg).longValue();
-		} else if (short.class.equals(type) || Short.class.equals(type))
+		}
+		else if (short.class.equals(type) || Short.class.equals(type))
 		{
 			return ((Number) arg).shortValue();
-		} else
+		}
+		else
 		{
 			return arg;
 		}

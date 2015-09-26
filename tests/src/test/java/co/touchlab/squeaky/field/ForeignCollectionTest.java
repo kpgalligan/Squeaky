@@ -4,7 +4,6 @@ import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.types.BaseTypeTest;
 import co.touchlab.squeaky.table.DatabaseTable;
 import co.touchlab.squeaky.utils.AssertHelper;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,14 +42,14 @@ public class ForeignCollectionTest extends BaseTypeTest
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildEager,Integer> childDao = helper.getDao(ChildEager.class);
+		Dao<ChildEager, Integer> childDao = helper.getDao(ChildEager.class);
 		Random random = new Random();
 		List<ChildEager> children = new ArrayList<ChildEager>();
 
-		for(int i=0; i<20; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			ChildEager child = new ChildEager();
-			child.asdf = "Hello "+ random.nextInt(10000);
+			child.asdf = "Hello " + random.nextInt(10000);
 			child.parent = parent;
 			childDao.create(child);
 			children.add(child);
@@ -70,14 +69,14 @@ public class ForeignCollectionTest extends BaseTypeTest
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildLazy,Integer> childDao = helper.getDao(ChildLazy.class);
+		Dao<ChildLazy, Integer> childDao = helper.getDao(ChildLazy.class);
 		Random random = new Random();
 		List<ChildLazy> children = new ArrayList<ChildLazy>();
 
-		for(int i=0; i<20; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			ChildLazy child = new ChildLazy();
-			child.asdf = "Hello "+ random.nextInt(10000);
+			child.asdf = "Hello " + random.nextInt(10000);
 			child.parent = parent;
 			childDao.create(child);
 			children.add(child);
@@ -99,15 +98,15 @@ public class ForeignCollectionTest extends BaseTypeTest
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildString,Integer> childDao = helper.getDao(ChildString.class);
+		Dao<ChildString, Integer> childDao = helper.getDao(ChildString.class);
 		Random random = new Random();
 		List<ChildString> children = new ArrayList<ChildString>();
 
-		for(int i=0; i<20; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			ChildString child = new ChildString();
-			child.id = "childid_"+ i;
-			child.asdf = "Hello "+ random.nextInt(10000);
+			child.id = "childid_" + i;
+			child.asdf = "Hello " + random.nextInt(10000);
 			child.parent = parent;
 			childDao.create(child);
 			children.add(child);
@@ -128,14 +127,14 @@ public class ForeignCollectionTest extends BaseTypeTest
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildOrder,Integer> childDao = helper.getDao(ChildOrder.class);
+		Dao<ChildOrder, Integer> childDao = helper.getDao(ChildOrder.class);
 		Random random = new Random();
 		List<ChildOrder> children = new ArrayList<ChildOrder>();
 
-		for(int i=0; i<20; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			ChildOrder child = new ChildOrder();
-			child.asdf = "Hello "+ (100-i);
+			child.asdf = "Hello " + (100 - i);
 			child.parent = parent;
 			childDao.create(child);
 			children.add(child);
@@ -169,7 +168,8 @@ public class ForeignCollectionTest extends BaseTypeTest
 	}
 
 	@DatabaseTable
-	protected static class ChildEager {
+	protected static class ChildEager
+	{
 		@DatabaseField(generatedId = true)
 		int id;
 
@@ -217,7 +217,8 @@ public class ForeignCollectionTest extends BaseTypeTest
 	}
 
 	@DatabaseTable
-	protected static class ChildLazy {
+	protected static class ChildLazy
+	{
 		@DatabaseField(generatedId = true)
 		int id;
 
@@ -265,7 +266,8 @@ public class ForeignCollectionTest extends BaseTypeTest
 	}
 
 	@DatabaseTable
-	protected static class ChildString {
+	protected static class ChildString
+	{
 		@DatabaseField(id = true)
 		String id;
 
@@ -313,7 +315,8 @@ public class ForeignCollectionTest extends BaseTypeTest
 	}
 
 	@DatabaseTable
-	protected static class ChildOrder {
+	protected static class ChildOrder
+	{
 		@DatabaseField(generatedId = true)
 		int id;
 

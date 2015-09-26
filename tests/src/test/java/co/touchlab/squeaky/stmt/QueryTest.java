@@ -65,7 +65,7 @@ public class QueryTest extends BaseTypeTest
 				new Where<Foo, Object>(dao).eq("lDate", now), new String[]{Long.toString(now.getTime())});
 
 		StmtTestHelper.assertWhere("(NOT t.`lDate` = ?)",
-				(Where<Foo, Object>)(new Where<Foo, Object>(dao).not().eq("lDate", now)), new String[]{Long.toString(now.getTime())});
+				(Where<Foo, Object>) (new Where<Foo, Object>(dao).not().eq("lDate", now)), new String[]{Long.toString(now.getTime())});
 
 		Where<Foo, Object> makeAnd = new Where<>(dao);
 		makeAnd.and().eq("name", "asdf").eq("ival", 123);
@@ -74,11 +74,11 @@ public class QueryTest extends BaseTypeTest
 		Queryable bigWhere =
 				new Where<Foo, Object>(dao)
 						.or()
-							.and()
-								.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)
-								.between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456)
-							.end()
-							.eq("ival", 123)
+						.and()
+						.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)
+						.between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456)
+						.end()
+						.eq("ival", 123)
 						.end();
 
 		/*Where<Foo, Object> complexWhere = dao.createWhere();
@@ -91,7 +91,7 @@ public class QueryTest extends BaseTypeTest
 		or.eq("ival", 123);*/
 
 		StmtTestHelper.assertWhere("((t.`lval` = ? AND t.`dval` BETWEEN ? AND ? ) OR t.`ival` = ? ) ",
-				(Where<Foo, Object>)bigWhere,
+				(Where<Foo, Object>) bigWhere,
 				new String[]{"2223424", "123", "456", "123"});
 //		dao.createWhere().and()
 	}

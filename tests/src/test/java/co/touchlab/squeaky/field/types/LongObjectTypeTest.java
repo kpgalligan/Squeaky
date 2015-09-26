@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class LongObjectTypeTest extends BaseTypeTest {
+public class LongObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String LONG_COLUMN = "longField";
 	public static final String TABLE_NAME = "com_j256_ormlite_field_types_LongObjectTypeTest_table";
@@ -31,7 +32,8 @@ public class LongObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testLongObj() throws Exception {
+	public void testLongObj() throws Exception
+	{
 		Class<LocalLongObj> clazz = LocalLongObj.class;
 		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
 		Long val = 13312321312312L;
@@ -43,7 +45,8 @@ public class LongObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testLongObjNull() throws Exception {
+	public void testLongObjNull() throws Exception
+	{
 		Class<LocalLongObj> clazz = LocalLongObj.class;
 		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
 		LocalLongObj foo = new LocalLongObj();
@@ -52,7 +55,8 @@ public class LongObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalLongObj {
+	protected static class LocalLongObj
+	{
 		@DatabaseField(columnName = LONG_COLUMN)
 		Long longField;
 	}

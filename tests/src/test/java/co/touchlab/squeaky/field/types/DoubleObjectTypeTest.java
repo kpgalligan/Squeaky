@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class DoubleObjectTypeTest extends BaseTypeTest {
+public class DoubleObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String DOUBLE_COLUMN = "doubleField";
 	private SimpleHelper helper;
@@ -30,7 +31,8 @@ public class DoubleObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDoubleObj() throws Exception {
+	public void testDoubleObj() throws Exception
+	{
 		Class<LocalDoubleObj> clazz = LocalDoubleObj.class;
 		Dao<LocalDoubleObj, Object> dao = helper.getDao(clazz);
 		Double val = 13313323131.221;
@@ -42,7 +44,8 @@ public class DoubleObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testDoubleObjNull() throws Exception {
+	public void testDoubleObjNull() throws Exception
+	{
 		Class<LocalDoubleObj> clazz = LocalDoubleObj.class;
 		Dao<LocalDoubleObj, Object> dao = helper.getDao(clazz);
 		LocalDoubleObj foo = new LocalDoubleObj();
@@ -51,9 +54,11 @@ public class DoubleObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalDoubleObj {
+	protected static class LocalDoubleObj
+	{
 		@DatabaseField(columnName = DOUBLE_COLUMN)
-		Double doubleField;;
+		Double doubleField;
+		;
 	}
 
 	private SimpleHelper getHelper()

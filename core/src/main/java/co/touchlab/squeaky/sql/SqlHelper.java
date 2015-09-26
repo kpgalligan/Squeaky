@@ -16,7 +16,7 @@ public class SqlHelper
 {
 	public static void appendWhereClauseBody(StringBuilder sb, String tablePrefix, String operation, FieldType fieldType)
 	{
-		if(tablePrefix != null)
+		if (tablePrefix != null)
 			sb.append(tablePrefix).append('.');
 		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ').append(operation);
@@ -32,13 +32,15 @@ public class SqlHelper
 		if (argOrValue == null)
 		{
 			throw new SQLException("argument for '" + fieldType.getFieldName() + "' is null");
-		} else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass()))
+		}
+		else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass()))
 		{
 			GeneratedTableMapper generatedTableMapper = ((ModelDao) squeakyContext.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
 			Object idVal = generatedTableMapper.extractId(argOrValue);
 			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
 			return pullArgOrValue(squeakyContext, idFieldType, idVal);
-		} else
+		}
+		else
 		{
 			return fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString();
 		}

@@ -52,7 +52,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
 			for (FieldType fieldType : fieldTypes)
 			{
-				if(fieldType.isId() || fieldType.isGeneratedId())
+				if (fieldType.isId() || fieldType.isGeneratedId())
 				{
 					idField = fieldType;
 					break;
@@ -62,7 +62,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			idFieldType = idField;
 
 			tableCols = buildSelect();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			throw new RuntimeException(e);
 		}
@@ -70,9 +71,9 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void cleanUp()
 	{
-		if(createStatement != null)
+		if (createStatement != null)
 			createStatement.close();
-		if(updateStatement != null)
+		if (updateStatement != null)
 			updateStatement.close();
 	}
 
@@ -81,7 +82,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		FieldType[] fieldTypes = generatedTableMapper.getTableConfig().getFieldTypes();
 		String[] selectList = new String[fieldTypes.length];
 
-		for (int i=0; i<fieldTypes.length; i++)
+		for (int i = 0; i < fieldTypes.length; i++)
 		{
 			selectList[i] = DEFAULT_TABLE_PREFIX + "." + fieldTypes[i].getColumnName();
 		}
@@ -112,7 +113,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		SqlHelper.appendArgOrValue(openHelperHelper, fieldType, params, value);
 
-		if(TextUtils.isEmpty(orderBy))
+		if (TextUtils.isEmpty(orderBy))
 			orderBy = null;
 
 		StringBuilder sb = new StringBuilder();
@@ -132,7 +133,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		for (String field : fieldValues.keySet())
 		{
-			if(query.length() > 0)
+			if (query.length() > 0)
 				query.append(" and ");
 
 			Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
@@ -142,7 +143,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			SqlHelper.appendArgOrValue(openHelperHelper, fieldType, params, fieldValues.get(field));
 		}
 
-		if(TextUtils.isEmpty(orderBy))
+		if (TextUtils.isEmpty(orderBy))
 			orderBy = null;
 
 		return makeCursorResults(createDefaultFrom(), query.toString(), params.toArray(new String[params.size()]), orderBy);
@@ -189,10 +190,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ").append(TextUtils.join(",", tableCols)).append(" from ").append(from);
-		if(!TextUtils.isEmpty(where))
+		if (!TextUtils.isEmpty(where))
 			sb.append(" where ").append(where);
 
-		if(!TextUtils.isEmpty(orderBy))
+		if (!TextUtils.isEmpty(orderBy))
 			sb.append(" order by ").append(orderBy);
 
 		String sql = sb.toString();
@@ -205,17 +206,17 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return makeCursorResults(createDefaultFrom(), where, args, orderBy);
 	}
 
-	public List<T> query(String where, String[] args)throws SQLException
+	public List<T> query(String where, String[] args) throws SQLException
 	{
 		return query(where, args, null);
 	}
 
-	public List<T> query(Query where, String orderBy)throws SQLException
+	public List<T> query(Query where, String orderBy) throws SQLException
 	{
 		return makeCursorResults(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), orderBy);
 	}
 
-	public List<T> query(Query where)throws SQLException
+	public List<T> query(Query where) throws SQLException
 	{
 		return query(where, null);
 	}
@@ -230,7 +231,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		{
 			long newRowId = sqLiteStatement.executeInsert();
 
-			if(idFieldType != null && idFieldType.isGeneratedId())
+			if (idFieldType != null && idFieldType.isGeneratedId())
 			{
 				generatedTableMapper.assignId(data, newRowId);
 			}
@@ -245,7 +246,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	private synchronized SQLiteStatement makeCreateStatement() throws SQLException
 	{
-		if(createStatement == null)
+		if (createStatement == null)
 		{
 			SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
@@ -254,12 +255,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			sb.append(tableConfig.getTableName());
 			sb.append("(");
 			boolean first = true;
-			StringBuilder args= new StringBuilder();
+			StringBuilder args = new StringBuilder();
 			for (FieldType fieldType : generatedTableMapper.getTableConfig().getFieldTypes())
 			{
-				if(!fieldType.isGeneratedId())
+				if (!fieldType.isGeneratedId())
 				{
-					if(!first)
+					if (!first)
 					{
 						sb.append(",");
 						args.append(",");
@@ -279,38 +280,42 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	private void fillContentVal(ContentValues values, FieldType fieldType, Object val)
 	{
-		if(val instanceof String)
-			values.put(fieldType.getColumnName(), (String)val);
-		else if(val instanceof Integer)
-			values.put(fieldType.getColumnName(), (Integer)val);
-		else if(val instanceof Long)
-			values.put(fieldType.getColumnName(), (Long)val);
-		else if(val instanceof Byte)
-			values.put(fieldType.getColumnName(), (Byte)val);
-		else if(val instanceof Short)
-			values.put(fieldType.getColumnName(), (Short)val);
-		else if(val instanceof Float)
-			values.put(fieldType.getColumnName(), (Float)val);
-		else if(val instanceof Double)
-			values.put(fieldType.getColumnName(), (Double)val);
-		else if(val instanceof Boolean)
-			values.put(fieldType.getColumnName(), (Boolean)val);
-		else if(val instanceof byte[])
-			values.put(fieldType.getColumnName(), (byte[])val);
+		if (val instanceof String)
+			values.put(fieldType.getColumnName(), (String) val);
+		else if (val instanceof Integer)
+			values.put(fieldType.getColumnName(), (Integer) val);
+		else if (val instanceof Long)
+			values.put(fieldType.getColumnName(), (Long) val);
+		else if (val instanceof Byte)
+			values.put(fieldType.getColumnName(), (Byte) val);
+		else if (val instanceof Short)
+			values.put(fieldType.getColumnName(), (Short) val);
+		else if (val instanceof Float)
+			values.put(fieldType.getColumnName(), (Float) val);
+		else if (val instanceof Double)
+			values.put(fieldType.getColumnName(), (Double) val);
+		else if (val instanceof Boolean)
+			values.put(fieldType.getColumnName(), (Boolean) val);
+		else if (val instanceof byte[])
+			values.put(fieldType.getColumnName(), (byte[]) val);
 		else
-			throw new IllegalArgumentException("Don't recognize type for: "+ val);
+			throw new IllegalArgumentException("Don't recognize type for: " + val);
 	}
 
 	public T createIfNotExists(T data) throws SQLException
 	{
-		if (data == null) {
+		if (data == null)
+		{
 			return null;
 		}
 		T existing = queryForId(generatedTableMapper.extractId(data));
-		if (existing == null) {
+		if (existing == null)
+		{
 			create(data);
 			return data;
-		} else {
+		}
+		else
+		{
 			return existing;
 		}
 	}
@@ -319,9 +324,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		ID id = extractId(data);
 		// assume we need to create it if there is no id
-		if (id == null || !idExists(id)) {
+		if (id == null || !idExists(id))
+		{
 			create(data);
-		} else {
+		}
+		else
+		{
 			update(data);
 		}
 	}
@@ -339,7 +347,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	private synchronized SQLiteStatement makeUpdateStatement() throws SQLException
 	{
-		if(updateStatement == null)
+		if (updateStatement == null)
 		{
 			SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
@@ -349,9 +357,9 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 			for (FieldType fieldType : generatedTableMapper.getTableConfig().getFieldTypes())
 			{
-				if(!fieldType.isGeneratedId() && !fieldType.isId())
+				if (!fieldType.isGeneratedId() && !fieldType.isId())
 				{
-					if(!first)
+					if (!first)
 					{
 						sb.append(",");
 					}
@@ -400,7 +408,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				values,
 				where.getWhereStatement(false),
 				where.getParameters()
-				);
+		);
 
 		notifyChanges();
 
@@ -456,7 +464,6 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return deleteIds(ids);
 	}
 
-	//TODO: Delete with in statement
 	public int deleteIds(Collection<ID> ids) throws SQLException
 	{
 		final StringBuilder sb = new StringBuilder();
@@ -465,11 +472,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		boolean first = true;
 		for (ID id : ids)
 		{
-			if(first)
+			if (first)
 				first = false;
 			else
 				sb.append(',');
-			if(idFieldType.isEscapedValue())
+			if (idFieldType.isEscapedValue())
 				TableUtils.appendEscapedWord(sb, id.toString());
 			else
 				sb.append(id.toString());
@@ -503,14 +510,14 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		StringBuilder sb = new StringBuilder();
 		sb.append("delete from ").append(where.getFromStatement(false));
 		String whereStatement = where.getWhereStatement(false);
-		if(!TextUtils.isEmpty(whereStatement))
+		if (!TextUtils.isEmpty(whereStatement))
 			sb.append(" where ").append(whereStatement);
 
 		String queryString = sb.toString();
 		SQLiteStatement sqLiteStatement = openHelperHelper.getHelper().getWritableDatabase().compileStatement(queryString);
 		String[] parameters = where.getParameters();
 
-		if(parameters != null && parameters.length > 0)
+		if (parameters != null && parameters.length > 0)
 			sqLiteStatement.bindAllArgsAsStrings(parameters);
 
 		int result = sqLiteStatement.executeUpdateDelete();
@@ -541,14 +548,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), query, arguments);
 	}
 
-	/*private void assignStatementArguments(CompiledStatement compiledStatement, String[] arguments) throws SQLException {
-		for (int i = 0; i < arguments.length; i++) {
-			compiledStatement.setObject(i, arguments[i], SqlType.STRING);
-		}
-	}*/
-
-
-	public String objectToString(T data)throws SQLException
+	public String objectToString(T data) throws SQLException
 	{
 		return generatedTableMapper.objectToString(data);
 	}
@@ -563,38 +563,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return generatedTableMapper.extractId(data);
 	}
 
-	public void fillForeignCollection(T data, String fieldName)throws SQLException
+	public void fillForeignCollection(T data, String fieldName) throws SQLException
 	{
-		/*ForeignCollectionInfo foreignCollectionInfo = openHelperHelper.findForeignCollectionInfo(generatedTableMapper.getClass(), fieldName);
-
-		Dao dao = openHelperHelper.getDao(foreignCollectionInfo.foreignFieldType);
-		GeneratedTableMapper generatedTableMapper = openHelperHelper.getGeneratedTableMapper(foreignCollectionInfo.foreignFieldType);
-		FieldType fieldType = openHelperHelper.findFieldType(foreignCollectionInfo.foreignFieldType, foreignCollectionInfo.variableName);
-
-		List list = dao.queryForEq(fieldType.getColumnName(), extractId(data));
-		System.out.println(foreignCollectionInfo.foreignFieldName);*/
 		generatedTableMapper.fillForeignCollection(data, this, fieldName);
 	}
-
-	/*public List findForeignCollectionValues(final Object sourceId, final FieldType foreignIdField)throws SQLException
-	{
-		return query(new Query()
-		{
-			@Override
-			public String getWhereStatement() throws SQLException
-			{
-				StringBuilder sb = new StringBuilder();
-				sb.append(foreignIdField.getColumnName());
-				sb.append(" = ");
-
-				if(foreignIdField.getDataPersister().isEscapedValue())
-					TableUtils.appendEscapedWord(sb, sourceId.toString());
-				else
-					sb.append(sourceId.toString());
-				return sb.toString();
-			}
-		});
-	}*/
 
 	public Class<T> getDataClass()
 	{
@@ -613,7 +585,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf(Query where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ where.getFromStatement(true) +" where "+ where.getWhereStatement(true), where.getParameters());
+		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from " + where.getFromStatement(true) + " where " + where.getWhereStatement(true), where.getParameters());
 	}
 
 	//TODO could be faster
@@ -634,10 +606,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void notifyChanges()
 	{
-		Iterator<DaoObserver> iterator = daoObserverSet.iterator();
-		while (iterator.hasNext())
+		for (DaoObserver next : daoObserverSet)
 		{
-			DaoObserver next = iterator.next();
 			next.onChange();
 		}
 	}
@@ -656,11 +626,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		for (ForeignCollectionInfo foreignCollectionInfo : generatedTableMapper.getTableConfig().getForeignCollections())
 		{
-			if(name.equals(foreignCollectionInfo.variableName))
+			if (name.equals(foreignCollectionInfo.variableName))
 				return foreignCollectionInfo;
 		}
 
 		throw new SQLException("Couldn't find foreign collection children");
 	}
-
 }

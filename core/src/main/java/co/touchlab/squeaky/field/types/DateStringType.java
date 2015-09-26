@@ -12,72 +12,91 @@ import java.util.Date;
 
 /**
  * Type that persists a {@link Date} object as a String.
- * 
+ *
  * @author graywatson
  */
-public class DateStringType extends BaseDateType {
+public class DateStringType extends BaseDateType
+{
 
 	public static int DEFAULT_WIDTH = 50;
 
 	private static final DateStringType singleTon = new DateStringType();
 
-	public static DateStringType getSingleton() {
+	public static DateStringType getSingleton()
+	{
 		return singleTon;
 	}
 
-	private DateStringType() {
+	private DateStringType()
+	{
 		super(SqlType.STRING);
 	}
 
-	protected DateStringType(SqlType sqlType, Class<?>[] classes) {
+	protected DateStringType(SqlType sqlType, Class<?>[] classes)
+	{
 		super(sqlType, classes);
 	}
 
-	protected DateStringType(SqlType sqlType) {
+	protected DateStringType(SqlType sqlType)
+	{
 		super(sqlType);
 	}
 
 	@Override
-	public Object parseDefaultString(FieldType fieldType, String defaultStr) throws SQLException {
+	public Object parseDefaultString(FieldType fieldType, String defaultStr) throws SQLException
+	{
 		DateStringFormatConfig formatConfig = convertDateStringConfig(fieldType, defaultDateFormatConfig);
-		try {
+		try
+		{
 			// we parse to make sure it works and then format it again
 			return normalizeDateString(formatConfig, defaultStr);
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 			throw SqlExceptionUtil.create("Problems with field " + fieldType + " parsing default date-string '"
 					+ defaultStr + "' using '" + formatConfig + "'", e);
 		}
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+	{
 		return results.getString(columnPos);
 	}
 
 	@Override
-	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException {
+	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException
+	{
 		String value = (String) sqlArg;
 		DateStringFormatConfig formatConfig = convertDateStringConfig(fieldType, defaultDateFormatConfig);
-		try {
+		try
+		{
 			return parseDateString(formatConfig, value);
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 			throw SqlExceptionUtil.create("Problems with column " + columnPos + " parsing date-string '" + value
 					+ "' using '" + formatConfig + "'", e);
 		}
 	}
 
 	@Override
-	public Object javaToSqlArg(FieldType fieldType, Object obj) {
+	public Object javaToSqlArg(FieldType fieldType, Object obj)
+	{
 		DateFormat dateFormat = convertDateStringConfig(fieldType, defaultDateFormatConfig).getDateFormat();
 		return dateFormat.format((Date) obj);
 	}
 
 	@Override
-	public Object makeConfigObject(FieldType fieldType) {
+	public Object makeConfigObject(FieldType fieldType)
+	{
 		String format = fieldType.getFormat();
-		if (format == null) {
+		if (format == null)
+		{
 			return defaultDateFormatConfig;
-		} else {
+		}
+		else
+		{
 			return new DateStringFormatConfig(format);
 		}
 	}

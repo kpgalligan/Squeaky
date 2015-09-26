@@ -1,7 +1,5 @@
 package co.touchlab.squeaky.dao;
 
-import co.touchlab.squeaky.field.FieldsEnum;
-
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -15,15 +13,20 @@ import java.util.Map;
 public interface Dao<T, ID>
 {
 	T queryForId(ID id) throws SQLException;
+
 	List<T> queryForAll() throws SQLException;
+
 	List<T> queryForEq(String fieldName, Object value) throws SQLException;
+
 	List<T> queryForEq(String fieldName, Object value, String orderBy) throws SQLException;
 
 	//TODO: generate table config with constants for fields
 	List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
+
 	List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException;
 
 	List<T> query(Query where) throws SQLException;
+
 	List<T> query(Query where, String orderBy) throws SQLException;
 
 	void create(T data) throws SQLException;
@@ -36,9 +39,10 @@ public interface Dao<T, ID>
 
 	int updateId(T data, ID newId) throws SQLException;
 
-	int update(Query where,Map<String, Object> valueMap) throws SQLException;
+	int update(Query where, Map<String, Object> valueMap) throws SQLException;
 
 	void refresh(T data) throws SQLException;
+
 	void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException;
 
 	int delete(T data) throws SQLException;
@@ -65,19 +69,16 @@ public interface Dao<T, ID>
 	 * Return the string version of the object with each of the known field values shown. Useful for testing and
 	 * debugging.
 	 *
-	 * @param data
-	 *            The data item for which we are returning the toString information.
+	 * @param data The data item for which we are returning the toString information.
 	 */
-	String objectToString(T data)throws SQLException;
+	String objectToString(T data) throws SQLException;
 
 	/**
 	 * Return true if the two parameters are equal. This checks each of the fields defined in the database to see if
 	 * they are equal. Useful for testing and debugging.
 	 *
-	 * @param data1
-	 *            One of the data items that we are checking for equality.
-	 * @param data2
-	 *            The other data item that we are checking for equality.
+	 * @param data1 One of the data items that we are checking for equality.
+	 * @param data2 The other data item that we are checking for equality.
 	 */
 	boolean objectsEqual(T data1, T data2) throws SQLException;
 
@@ -87,7 +88,7 @@ public interface Dao<T, ID>
 	 */
 	ID extractId(T data) throws SQLException;
 
-	void fillForeignCollection(T data, String fieldName)throws SQLException;
+	void fillForeignCollection(T data, String fieldName) throws SQLException;
 
 	/**
 	 * Returns the class of the DAO. This is used by internal query operators.
@@ -117,16 +118,14 @@ public interface Dao<T, ID>
 	 * Notify any registered {@link DaoObserver}s that the underlying data may have changed. This is done automatically
 	 * when using {@link #create(Object)}, {@link #update(Object)}, or {@link #delete(Object)} type methods. Batch
 	 * methods will be notified once at the end of the batch, not for every statement in the batch.
-	 *
-	 * NOTE: The {@link #updateRaw(String, String...)} and other raw methods will _not_ call notify automatically. You
-	 * will have to call this method yourself after you use the raw methods to change the entities.
 	 */
 	void notifyChanges();
 
 	/**
 	 * Defines a class that can observe changes to entities managed by the DAO.
 	 */
-	interface DaoObserver {
+	interface DaoObserver
+	{
 		/**
 		 * Called when entities possibly have changed in the DAO. This can be used to detect changes to the entities
 		 * managed by the DAO so that views can be updated.

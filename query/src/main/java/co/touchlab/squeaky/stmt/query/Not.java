@@ -9,10 +9,11 @@ import java.util.List;
 
 /**
  * Internal class handling the SQL 'NOT' boolean comparison operation. Used by {@link Where#not}.
- * 
+ *
  * @author graywatson
  */
-public class Not<T> implements Clause, Queryable<T> {
+public class Not<T> implements Clause, Queryable<T>
+{
 
 	private final QueryFactory queryFactory;
 	private Clause comparison = null;
@@ -22,15 +23,18 @@ public class Not<T> implements Clause, Queryable<T> {
 	/**
 	 * In this case we will consume a future clause.
 	 */
-	public Not(Queryable<T> parent, QueryFactory queryFactory, JoinAlias joinAlias) {
+	public Not(Queryable<T> parent, QueryFactory queryFactory, JoinAlias joinAlias)
+	{
 		this.queryFactory = queryFactory;
 		this.parent = parent;
 		this.joinAlias = joinAlias;
 	}
 
 	@Override
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) throws SQLException {
-		if (comparison == null) {
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) throws SQLException
+	{
+		if (comparison == null)
+		{
 			throw new IllegalStateException("Clause has not been set in NOT operation");
 		}
 		// this generates: (NOT 'x' = 123 )
@@ -47,10 +51,14 @@ public class Not<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
-	public String toString() {
-		if (comparison == null) {
+	public String toString()
+	{
+		if (comparison == null)
+		{
 			return "NOT without comparison";
-		} else {
+		}
+		else
+		{
 			return "NOT comparison " + comparison;
 		}
 	}
@@ -335,7 +343,7 @@ public class Not<T> implements Clause, Queryable<T> {
 
 	private void checkClause() throws SQLException
 	{
-		if(comparison != null)
+		if (comparison != null)
 			throw new SQLException("Clause already defined. Must use and/or for multiple conditions");
 	}
 }

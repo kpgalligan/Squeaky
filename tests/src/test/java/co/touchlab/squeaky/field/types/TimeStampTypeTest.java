@@ -17,7 +17,8 @@ import java.util.GregorianCalendar;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class TimeStampTypeTest extends BaseTypeTest {
+public class TimeStampTypeTest extends BaseTypeTest
+{
 
 	private static final String TIME_STAMP_COLUMN = "timestamp";
 	private DataType dataType = DataType.TIME_STAMP;
@@ -36,7 +37,8 @@ public class TimeStampTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testTimeStamp() throws Exception {
+	public void testTimeStamp() throws Exception
+	{
 		Class<LocalTimeStamp> clazz = LocalTimeStamp.class;
 		Dao<LocalTimeStamp, Object> dao = helper.getDao(clazz);
 		GregorianCalendar c = new GregorianCalendar();
@@ -53,7 +55,8 @@ public class TimeStampTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testTimeStampNull() throws Exception {
+	public void testTimeStampNull() throws Exception
+	{
 		Class<LocalTimeStamp> clazz = LocalTimeStamp.class;
 		Dao<LocalTimeStamp, Object> dao = helper.getDao(clazz);
 		LocalTimeStamp foo = new LocalTimeStamp();
@@ -77,7 +80,8 @@ public class TimeStampTypeTest extends BaseTypeTest {
 	}*/
 
 	@DatabaseTable
-	protected static class LocalTimeStamp {
+	protected static class LocalTimeStamp
+	{
 		@DatabaseField(columnName = TIME_STAMP_COLUMN)
 		java.sql.Timestamp timestamp;
 	}

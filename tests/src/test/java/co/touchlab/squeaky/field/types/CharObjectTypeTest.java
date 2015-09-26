@@ -12,7 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class CharObjectTypeTest extends BaseTypeTest {
+public class CharObjectTypeTest extends BaseTypeTest
+{
 
 	private static final String CHAR_COLUMN = "charField";
 	private SimpleHelper helper;
@@ -30,7 +31,8 @@ public class CharObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCharObj() throws Exception {
+	public void testCharObj() throws Exception
+	{
 		Class<LocalCharObj> clazz = LocalCharObj.class;
 		Dao<LocalCharObj, Object> dao = helper.getDao(clazz);
 		Character val = 'w';
@@ -43,7 +45,8 @@ public class CharObjectTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCharObjNull() throws Exception {
+	public void testCharObjNull() throws Exception
+	{
 		Class<LocalCharObj> clazz = LocalCharObj.class;
 		Dao<LocalCharObj, Object> dao = helper.getDao(clazz);
 		LocalCharObj foo = new LocalCharObj();
@@ -53,7 +56,8 @@ public class CharObjectTypeTest extends BaseTypeTest {
 	}
 
 	@DatabaseTable
-	protected static class LocalCharObj {
+	protected static class LocalCharObj
+	{
 		@DatabaseField(columnName = CHAR_COLUMN)
 		Character charField;
 	}

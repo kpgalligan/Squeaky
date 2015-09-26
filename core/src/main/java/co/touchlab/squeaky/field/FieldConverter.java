@@ -9,10 +9,11 @@ import java.sql.SQLException;
  * object. This allows databases to configure per-type conversion. This is used by the
  * {@link BaseDatabaseType#getFieldConverter(DataPersister, FieldType)} method to find the converter for a particular
  * database type. Databases can then override the default data conversion mechanisms as necessary.
- * 
+ *
  * @author graywatson
  */
-public interface FieldConverter {
+public interface FieldConverter
+{
 
 	/**
 	 * Convert a default string object and return the appropriate argument to a SQL insert or update statement.
@@ -27,26 +28,22 @@ public interface FieldConverter {
 	/**
 	 * Return the SQL argument object extracted from the results associated with column in position columnPos. For
 	 * example, if the type is a date-long then this will return a long value or null.
-	 * 
-	 * @throws SQLException
-	 *             If there is a problem accessing the results data.
-	 * @param fieldType
-	 *            Associated FieldType which may be null.
+	 *
+	 * @param fieldType Associated FieldType which may be null.
+	 * @throws SQLException If there is a problem accessing the results data.
 	 */
 	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
-	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos)throws SQLException;
+	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
 	/**
 	 * Return the object converted from the SQL arg to java. This takes the database representation and converts it into
 	 * a Java object. For example, if the type is a date-long then this will take a long which is stored in the database
 	 * and return a Date.
-	 * 
-	 * @param fieldType
-	 *            Associated FieldType which may be null.
-	 * @param sqlArg
-	 *            SQL argument converted with {@link #resultToSqlArg(FieldType, DatabaseResults, int)} which will not be
-	 *            null.
+	 *
+	 * @param fieldType Associated FieldType which may be null.
+	 * @param sqlArg    SQL argument converted with {@link #resultToSqlArg(FieldType, DatabaseResults, int)} which will not be
+	 *                  null.
 	 */
 	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException;
 

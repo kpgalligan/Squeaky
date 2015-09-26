@@ -44,14 +44,14 @@ public class ForeignFieldTest extends BaseTypeTest
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<Child,Integer> childDao = helper.getDao(Child.class);
+		Dao<Child, Integer> childDao = helper.getDao(Child.class);
 		Random random = new Random();
 		List<Child> children = new ArrayList<Child>();
 
-		for(int i=0; i<20; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			Child child = new Child();
-			child.asdf = "Hello "+ random.nextInt(10000);
+			child.asdf = "Hello " + random.nextInt(10000);
 			child.parent = parent;
 			childDao.create(child);
 			children.add(child);
@@ -94,7 +94,7 @@ public class ForeignFieldTest extends BaseTypeTest
 		String check = null;
 		for (String statement : statements)
 		{
-			if(check == null)
+			if (check == null)
 			{
 				check = statement == null ? "whoops" : statement;
 			}
@@ -116,7 +116,8 @@ public class ForeignFieldTest extends BaseTypeTest
 	}
 
 	@DatabaseTable
-	protected static class Child {
+	protected static class Child
+	{
 		@DatabaseField(generatedId = true)
 		int id;
 

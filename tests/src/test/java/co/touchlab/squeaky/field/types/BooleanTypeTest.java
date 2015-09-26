@@ -15,7 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(RobolectricTestRunner.class)
-public class BooleanTypeTest extends BaseTypeTest {
+public class BooleanTypeTest extends BaseTypeTest
+{
 
 	private static final String BOOLEAN_COLUMN = "bool";
 	public static final String LOCAL_BOOLEAN = "LocalBoolean";
@@ -35,7 +36,8 @@ public class BooleanTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testBoolean() throws Exception {
+	public void testBoolean() throws Exception
+	{
 		Class<LocalBoolean> clazz = LocalBoolean.class;
 		Dao<LocalBoolean, Object> dao = helper.getDao(clazz);
 		boolean val = true;
@@ -48,7 +50,8 @@ public class BooleanTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testBooleanPrimitiveNull() throws Exception {
+	public void testBooleanPrimitiveNull() throws Exception
+	{
 		Dao<LocalBooleanObj, Object> objDao = helper.getDao(LocalBooleanObj.class);
 		LocalBooleanObj foo = new LocalBooleanObj();
 		foo.bool = null;
@@ -62,18 +65,21 @@ public class BooleanTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new BooleanType(SqlType.BOOLEAN, new Class[0]);
 	}
 
 	@DatabaseTable(tableName = LOCAL_BOOLEAN)
-	protected static class LocalBoolean {
+	protected static class LocalBoolean
+	{
 		@DatabaseField(columnName = BOOLEAN_COLUMN)
 		boolean bool;
 	}
 
 	@DatabaseTable(tableName = LOCAL_BOOLEAN)
-	protected static class LocalBooleanObj {
+	protected static class LocalBooleanObj
+	{
 		@DatabaseField(columnName = BOOLEAN_COLUMN)
 		Boolean bool;
 	}

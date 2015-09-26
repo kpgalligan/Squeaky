@@ -17,7 +17,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class EnumStringTypeTest extends BaseTypeTest {
+public class EnumStringTypeTest extends BaseTypeTest
+{
 
 	private static final String ENUM_COLUMN = "ourEnum";
 	private static final String TABLE_NAME = "com_j256_ormlite_field_types_EnumStringTypeTest_LocalEnumString";
@@ -36,7 +37,8 @@ public class EnumStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testEnumString() throws Exception {
+	public void testEnumString() throws Exception
+	{
 		Class<LocalEnumString> clazz = LocalEnumString.class;
 		Dao<LocalEnumString, Object> dao = helper.getDao(clazz);
 		OurEnum val = OurEnum.SECOND;
@@ -49,7 +51,8 @@ public class EnumStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testEnumStringNull() throws Exception {
+	public void testEnumStringNull() throws Exception
+	{
 		Class<LocalEnumString> clazz = LocalEnumString.class;
 		Dao<LocalEnumString, Object> dao = helper.getDao(clazz);
 		LocalEnumString foo = new LocalEnumString();
@@ -84,7 +87,8 @@ public class EnumStringTypeTest extends BaseTypeTest {
 	}*/
 
 	@Test(expected = SQLException.class)
-	public void testUnknownEnumValue() throws Exception {
+	public void testUnknownEnumValue() throws Exception
+	{
 		Dao<LocalEnumString, Object> dao = helper.getDao(LocalEnumString.class);
 		LocalEnumString localEnumString = new LocalEnumString();
 		localEnumString.ourEnum = OurEnum.FIRST;
@@ -95,7 +99,8 @@ public class EnumStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testUnknownValueAnnotation() throws Exception {
+	public void testUnknownValueAnnotation() throws Exception
+	{
 		Dao<LocalUnknownEnum, Object> dao = helper.getDao(LocalUnknownEnum.class);
 		LocalUnknownEnum localUnknownEnum = new LocalUnknownEnum();
 		localUnknownEnum.ourEnum = OurEnum.SECOND;
@@ -107,27 +112,31 @@ public class EnumStringTypeTest extends BaseTypeTest {
 	}
 
 	@Test
-	public void testCoverage() {
+	public void testCoverage()
+	{
 		new EnumStringType(SqlType.STRING, new Class[0]);
 	}
 
 	/* ================================================================================ */
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalEnumString {
+	protected static class LocalEnumString
+	{
 		@DatabaseField(columnName = ENUM_COLUMN)
 		OurEnum ourEnum;
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalUnknownEnum {
+	protected static class LocalUnknownEnum
+	{
 		@DatabaseField(columnName = ENUM_COLUMN, unknownEnumName = "FIRST")
 		OurEnum ourEnum;
 	}
 
-	enum OurEnum {
+	enum OurEnum
+	{
 		FIRST,
-		SECOND, ;
+		SECOND,;
 	}
 
 	private SimpleHelper getHelper()

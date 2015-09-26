@@ -8,37 +8,44 @@ import java.sql.SQLException;
 
 /**
  * Type that persists a Long object.
- * 
+ *
  * @author graywatson
  */
-public class LongObjectType extends BaseDataType {
+public class LongObjectType extends BaseDataType
+{
 
 	private static final LongObjectType singleTon = new LongObjectType();
 
-	public static LongObjectType getSingleton() {
+	public static LongObjectType getSingleton()
+	{
 		return singleTon;
 	}
 
-	private LongObjectType() {
-		super(SqlType.LONG, new Class<?>[] { Long.class });
+	private LongObjectType()
+	{
+		super(SqlType.LONG, new Class<?>[]{Long.class});
 	}
 
-	protected LongObjectType(SqlType sqlType, Class<?>[] classes) {
+	protected LongObjectType(SqlType sqlType, Class<?>[] classes)
+	{
 		super(sqlType, classes);
 	}
 
 	@Override
-	public Object parseDefaultString(FieldType fieldType, String defaultStr) {
+	public Object parseDefaultString(FieldType fieldType, String defaultStr)
+	{
 		return Long.parseLong(defaultStr);
 	}
 
 	@Override
-	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException {
+	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException
+	{
 		return results.getLong(columnPos);
 	}
 
 	@Override
-	public boolean isEscapedValue() {
+	public boolean isEscapedValue()
+	{
 		return false;
 	}
 }

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 /**
  * Internal class handling a simple comparison query part where the operation is passed in.
- * 
+ *
  * @author graywatson
  */
 public class SimpleComparison extends BaseComparison
@@ -22,13 +22,15 @@ public class SimpleComparison extends BaseComparison
 
 	private final String operation;
 
-	public SimpleComparison(FieldType fieldType, Object value, String operation, JoinAlias joinAlias) throws SQLException {
+	public SimpleComparison(FieldType fieldType, Object value, String operation, JoinAlias joinAlias) throws SQLException
+	{
 		super(fieldType, value, true, joinAlias);
 		this.operation = operation;
 	}
 
 	@Override
-	public String getOperation() {
+	public String getOperation()
+	{
 		return operation + " ?";
 	}
 }
