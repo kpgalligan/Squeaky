@@ -20,8 +20,8 @@ public class IsNotNull extends BaseComparison
 	}
 
 	@Override
-	public void appendOperation(StringBuilder sb) {
-		sb.append("IS NOT NULL ");
+	public String getOperation() {
+		return "IS NOT NULL";
 	}
 
 	@Override

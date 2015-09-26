@@ -12,6 +12,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by kgalligan on 9/14/15.
@@ -71,15 +73,21 @@ public class DaoTest extends BaseTypeTest
 	{
 		createFoo("asdf", 123, 23523534234l, new Date());
 		createFoo("asdf", 444, 23523534255l, new Date());
-		createFoo("asdf", 123, 23523534234l, new Date());
-		Assert.assertEquals(getDao().queryForEq(
-				DaoTest$Foo$$Configuration.Fields.ival.name(),
-				123
+		createFoo("asdf", 123, 23523534255l, new Date());
+		Map<String, Object> fieldValues = new HashMap<>();
+		fieldValues.put("name", "asdf");
+		fieldValues.put("ival", 444);
+		Assert.assertEquals(getDao().queryForFieldValues(
+				fieldValues
+		).size(), 1);
+
+		fieldValues.remove("ival");
+		fieldValues.put("lval", 23523534255l);
+
+		Assert.assertEquals(getDao().queryForFieldValues(
+				fieldValues
 		).size(), 2);
 
-		Assert.assertEquals(getDao().queryForEq(
-				DaoTest$Foo$$Configuration.Fields.ival.name(),
-				444).get(0).lval, 23523534255l);
 	}
 
 	private Foo createFoo(String name, int ival, long lval, Date aDate) throws SQLException

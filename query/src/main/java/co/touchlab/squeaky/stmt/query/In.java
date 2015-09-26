@@ -2,6 +2,7 @@ package co.touchlab.squeaky.stmt.query;
 
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.field.FieldType;
+import co.touchlab.squeaky.sql.SqlHelper;
 import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.stmt.Where;
 
@@ -34,7 +35,8 @@ public class In extends BaseComparison
 	}
 
 	@Override
-	public void appendOperation(StringBuilder sb) {
+	public String getOperation() {
+		StringBuilder sb = new StringBuilder();
 		if (in) {
 			sb.append("IN (");
 		} else {
@@ -48,6 +50,8 @@ public class In extends BaseComparison
 			sb.append('?');
 		}
 		sb.append(')');
+
+		return sb.toString();
 	}
 
 	@Override
@@ -57,7 +61,7 @@ public class In extends BaseComparison
 			if (value == null) {
 				throw new IllegalArgumentException("one of the IN values for '" + fieldType.getColumnName() + "' is null");
 			}
-			super.appendArgOrValue(squeakyContext, fieldType, params, value);
+			SqlHelper.appendArgOrValue(squeakyContext, fieldType, params, value);
 		}
 	}
 }

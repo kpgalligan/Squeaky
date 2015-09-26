@@ -13,12 +13,7 @@ import java.util.List;
 interface Comparison extends Clause {
 
 	/**
-	 * Return the column-name associated with the comparison.
+	 * Get the operation and param placeholder(s) for this comparison
 	 */
-	String getColumnName();
-
-	/**
-	 * Add the operation used in this comparison to the string builder.
-	 */
-	void appendOperation(StringBuilder sb);
+	String getOperation();
 }

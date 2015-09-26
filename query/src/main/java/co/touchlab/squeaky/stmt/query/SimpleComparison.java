@@ -28,8 +28,7 @@ public class SimpleComparison extends BaseComparison
 	}
 
 	@Override
-	public void appendOperation(StringBuilder sb) {
-		sb.append(operation);
-		sb.append(' ');
+	public String getOperation() {
+		return operation + " ?";
 	}
 }

@@ -19,6 +19,7 @@ public interface Dao<T, ID>
 
 	//TODO: generate table config with constants for fields
 	List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
+	List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException;
 
 //	QueryBuilder<T, ID> queryBuilder();
 //

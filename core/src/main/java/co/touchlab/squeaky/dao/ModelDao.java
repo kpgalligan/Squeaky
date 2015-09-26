@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import co.touchlab.squeaky.Config;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.field.ForeignCollectionInfo;
+import co.touchlab.squeaky.sql.SqlHelper;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TableInfo;
 import co.touchlab.squeaky.table.TableUtils;
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ModelDao<T, ID> implements Dao<T, ID>
 {
 	public static final String DEFAULT_TABLE_PREFIX = "t";
+	public static final String EQ_OPERATION = "= ?";
 
 	private final Class<T> entityClass;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
@@ -107,62 +109,42 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
 		FieldType fieldType = openHelperHelper.findFieldType(dataClass, fieldName);
 
-		appendArgOrValue(openHelperHelper, fieldType, params, value);
+		SqlHelper.appendArgOrValue(openHelperHelper, fieldType, params, value);
 
 		if(TextUtils.isEmpty(orderBy))
 			orderBy = null;
 
-		return makeCursorResults(createDefaultFrom(), DEFAULT_TABLE_PREFIX + "." + fieldType.getColumnName() + " = ?", params.toArray(new String[params.size()]), orderBy);
-	}
-
-	protected void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, List<String> params, Object argOrValue) throws SQLException {
-		if (argOrValue == null) {
-			throw new SQLException("argument for '" + fieldType.getFieldName() + "' is null");
-		}
-		else if (fieldType.isForeign() && fieldType.getFieldType().isAssignableFrom(argOrValue.getClass())) {
-			GeneratedTableMapper generatedTableMapper = ((ModelDao) squeakyContext.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
-			Object idVal = generatedTableMapper.extractId(argOrValue);
-			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
-			appendArgOrValue(squeakyContext, idFieldType, params, idVal);
-			// no need for the space since it was done in the recursion
-		} else if (fieldType.isForeign()) {
-			//TODO  Need to find out if this is even useful
-			/*
-			 * I'm not entirely sure this is correct. This is trying to protect against someone trying to pass an object
-			 * into a comparison with a foreign field. Typically if they pass the same field type, then ORMLite will
-			 * extract the ID of the foreign.
-			 */
-			String value = fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString();
-			/*if (value.length() > 0) {
-				if (NUMBER_CHARACTERS.indexOf(value.charAt(0)) < 0) {
-					throw new SQLException("Foreign field " + fieldType
-							+ " does not seem to be producing a numerical value '" + value
-							+ "'. Maybe you are passing the wrong object to comparison: " + this);
-				}
-			}*/
-			params.add(value);
-		} else {
-			// numbers can't have quotes around them in derby
-			params.add(fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
-		}
+		StringBuilder sb = new StringBuilder();
+		SqlHelper.appendWhereClauseBody(sb, DEFAULT_TABLE_PREFIX, EQ_OPERATION, fieldType);
+		return makeCursorResults(createDefaultFrom(), sb.toString(), params.toArray(new String[params.size()]), orderBy);
 	}
 
 	public List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException
 	{
-		StringBuilder query = new StringBuilder();
-		String[] args = new String[fieldValues.size()];
+		return queryForFieldValues(fieldValues, null);
+	}
 
-		int count =0;
+	public List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException
+	{
+		StringBuilder query = new StringBuilder();
+		List<String> params = new ArrayList<>();
+
 		for (String field : fieldValues.keySet())
 		{
 			if(query.length() > 0)
 				query.append(" and ");
-			query.append(field).append(" = ?");
-			Object val = fieldValues.get(field);
-			args[count++] = val == null ? null : val.toString();
+
+			Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
+			FieldType fieldType = openHelperHelper.findFieldType(dataClass, field);
+
+			SqlHelper.appendWhereClauseBody(query, DEFAULT_TABLE_PREFIX, EQ_OPERATION, fieldType);
+			SqlHelper.appendArgOrValue(openHelperHelper, fieldType, params, fieldValues.get(field));
 		}
 
-		return makeCursorResults(createDefaultFrom(), query.toString(), args, null);
+		if(TextUtils.isEmpty(orderBy))
+			orderBy = null;
+
+		return makeCursorResults(createDefaultFrom(), query.toString(), params.toArray(new String[params.size()]), orderBy);
 	}
 
 	private String createDefaultFrom() throws SQLException
