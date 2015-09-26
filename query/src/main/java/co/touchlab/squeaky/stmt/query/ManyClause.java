@@ -32,9 +32,9 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
-	public String getWhereStatement() throws SQLException
+	public String getWhereStatement(boolean joinsAllowed) throws SQLException
 	{
-		return parent.getWhereStatement();
+		return parent.getWhereStatement(joinsAllowed);
 	}
 
 	@Override
@@ -274,7 +274,8 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 		return parent;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb) throws SQLException {
+	@Override
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) throws SQLException {
 
 		if(clauses.size() == 0)
 			throw new SQLException("Clause list can't be empty for "+ operation);
@@ -295,7 +296,7 @@ public class ManyClause<T> implements Clause, Queryable<T> {
 				sb.append(' ');
 			}
 
-			clause.appendSql(squeakyContext, sb);
+			clause.appendSql(squeakyContext, sb, joinsAllowed);
 		}
 
 		sb.append(") ");

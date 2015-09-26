@@ -16,12 +16,18 @@ public class SqlHelper
 {
 	public static void appendWhereClauseBody(StringBuilder sb, String tablePrefix, String operation, FieldType fieldType)
 	{
-		sb.append(tablePrefix).append('.');
+		if(tablePrefix != null)
+			sb.append(tablePrefix).append('.');
 		TableUtils.appendEscapedEntityName(sb, fieldType.getColumnName());
 		sb.append(' ').append(operation);
 	}
 
 	public static void appendArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, List<String> params, Object argOrValue) throws SQLException
+	{
+		params.add(pullArgOrValue(squeakyContext, fieldType, argOrValue));
+	}
+
+	public static String pullArgOrValue(SqueakyContext squeakyContext, FieldType fieldType, Object argOrValue) throws SQLException
 	{
 		if (argOrValue == null)
 		{
@@ -31,10 +37,10 @@ public class SqlHelper
 			GeneratedTableMapper generatedTableMapper = ((ModelDao) squeakyContext.getDao(fieldType.getFieldType())).getGeneratedTableMapper();
 			Object idVal = generatedTableMapper.extractId(argOrValue);
 			FieldType idFieldType = generatedTableMapper.getTableConfig().idField;
-			appendArgOrValue(squeakyContext, idFieldType, params, idVal);
+			return pullArgOrValue(squeakyContext, idFieldType, idVal);
 		} else
 		{
-			params.add(fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString());
+			return fieldType.convertJavaFieldToSqlArgValue(argOrValue).toString();
 		}
 	}
 }

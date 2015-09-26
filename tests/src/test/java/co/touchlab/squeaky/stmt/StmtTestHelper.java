@@ -13,7 +13,7 @@ public class StmtTestHelper
 	public static void assertWhere(String wherePart, Where w, String[] params)throws Exception
 	{
 		wherePart = cleanWhitespace(wherePart);
-		String whereStatement = cleanWhitespace(w.getWhereStatement());
+		String whereStatement = cleanWhitespace(w.getWhereStatement(true));
 		Statement l = CCJSqlParserUtil.parse("SELECT * FROM foo where " + whereStatement);
 		Statement r = CCJSqlParserUtil.parse("SELECT * FROM foo WHERE " + wherePart);
 		Assert.assertTrue(StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(l.toString()), StringUtils.trimToEmpty(r.toString())));

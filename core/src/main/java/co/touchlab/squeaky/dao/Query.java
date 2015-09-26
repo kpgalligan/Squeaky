@@ -7,7 +7,7 @@ import java.sql.SQLException;
  */
 public interface Query
 {
-	String getFromStatement()throws SQLException;
-	String getWhereStatement()throws SQLException;
+	String getFromStatement(boolean joinsAllowed)throws SQLException;
+	String getWhereStatement(boolean joinsAllowed)throws SQLException;
 	String[] getParameters()throws SQLException;
 }

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface Queryable<T>
 {
-	String getWhereStatement() throws SQLException;
+	String getWhereStatement(boolean joinsAllowed) throws SQLException;
 
 	List<T> query() throws SQLException;
 	

@@ -369,12 +369,18 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 		return null;
 	}
 
-	public String getFromStatement()throws SQLException
+	@Override
+	public String getFromStatement(boolean joinsAllowed)throws SQLException
 	{
+		if(!joinsAllowed && joins.size() > 0)
+			throw new SQLException("Joins not allowed for this operation");
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(generatedTableMapper.getTableConfig().getTableName());
 		sb.append(' ');
-		sb.append(defaultJoinAlias.tablePrefix);
+		if(joinsAllowed)
+			sb.append(defaultJoinAlias.tablePrefix);
+
 
 		for (JoinAlias join : joins)
 		{
@@ -414,9 +420,10 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 	/**
 	 * Returns the associated SQL WHERE statement.
 	 */
-	public String getWhereStatement() throws SQLException {
+	@Override
+	public String getWhereStatement(boolean joinsAllowed) throws SQLException {
 		StringBuilder sb = new StringBuilder();
-		appendSql(sb);
+		appendSql(sb, joinsAllowed);
 		return sb.toString();
 	}
 
@@ -430,19 +437,19 @@ public Where<T, ID> ge(JoinAlias joinAlias, String columnFieldName, Object value
 
 	public List<T> query() throws SQLException
 	{
-		return modelDao.query(getWhereStatement(), getParameters());
+		return modelDao.query(getWhereStatement(true), getParameters());
 	}
 
 	public List<T> query(String orderBy)throws SQLException
 	{
-		return modelDao.query(getWhereStatement(), getParameters(), orderBy);
+		return modelDao.query(getWhereStatement(true), getParameters(), orderBy);
 	}
 
 	/**
 	 * Used by the internal classes to add the where SQL to the {@link StringBuilder}.
 	 */
-	void appendSql(StringBuilder sb) throws SQLException {
-		clause.appendSql(openHelperHelper, sb);
+	void appendSql(StringBuilder sb, boolean joinsAllowed) throws SQLException {
+		clause.appendSql(openHelperHelper, sb, joinsAllowed);
 	}
 
 	@Override

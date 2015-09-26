@@ -18,7 +18,8 @@ public class Raw implements Clause {
 		this.statement = statement;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb) {
+	@Override
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) {
 		sb.append(statement);
 	}
 

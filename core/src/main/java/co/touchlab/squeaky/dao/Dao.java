@@ -1,5 +1,7 @@
 package co.touchlab.squeaky.dao;
 
+import co.touchlab.squeaky.field.FieldsEnum;
+
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -21,12 +23,6 @@ public interface Dao<T, ID>
 	List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
 	List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException;
 
-//	QueryBuilder<T, ID> queryBuilder();
-//
-//	UpdateBuilder<T, ID> updateBuilder();
-//
-//	DeleteBuilder<T, ID> deleteBuilder();
-
 	List<T> query(Query where) throws SQLException;
 	List<T> query(Query where, String orderBy) throws SQLException;
 
@@ -40,7 +36,7 @@ public interface Dao<T, ID>
 
 	int updateId(T data, ID newId) throws SQLException;
 
-//	int update(PreparedUpdate<T> preparedUpdate) throws SQLException;
+	int update(Query where,Map<String, Object> valueMap) throws SQLException;
 
 	void refresh(T data) throws SQLException;
 	void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException;

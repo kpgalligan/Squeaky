@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import co.touchlab.squeaky.Config;
@@ -211,7 +212,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public List<T> query(Query where, String orderBy)throws SQLException
 	{
-		return makeCursorResults(where.getFromStatement(), where.getWhereStatement(), where.getParameters(), orderBy);
+		return makeCursorResults(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), orderBy);
 	}
 
 	public List<T> query(Query where)throws SQLException
@@ -225,14 +226,21 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		generatedTableMapper.bindCreateVals(sqLiteStatement, data);
 
-		long newRowId = sqLiteStatement.executeInsert();
-
-		if(idFieldType != null && idFieldType.isGeneratedId())
+		try
 		{
-			generatedTableMapper.assignId(data, newRowId);
-		}
+			long newRowId = sqLiteStatement.executeInsert();
 
-		notifyChanges();
+			if(idFieldType != null && idFieldType.isGeneratedId())
+			{
+				generatedTableMapper.assignId(data, newRowId);
+			}
+
+			notifyChanges();
+		}
+		catch (SQLiteException e)
+		{
+			throw new SQLException("create failed", e);
+		}
 	}
 
 	private synchronized SQLiteStatement makeCreateStatement() throws SQLException
@@ -375,6 +383,30 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return result;
 	}
 
+	public int update(Query where, Map<String, Object> valueMap) throws SQLException
+	{
+		SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
+		ContentValues values = new ContentValues();
+
+		for (String fieldKey : valueMap.keySet())
+		{
+			FieldType fieldType = openHelperHelper.findFieldType(generatedTableMapper.getTableConfig().dataClass, fieldKey);
+			fillContentVal(values, fieldType,
+					SqlHelper.pullArgOrValue(openHelperHelper, fieldType, valueMap.get(fieldKey)));
+		}
+
+		int result = db.update(
+				generatedTableMapper.getTableConfig().getTableName(),
+				values,
+				where.getWhereStatement(false),
+				where.getParameters()
+				);
+
+		notifyChanges();
+
+		return result;
+	}
+
 	public void refresh(T data) throws SQLException
 	{
 		refresh(data, Config.MAX_AUTO_REFRESH);
@@ -429,6 +461,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		final StringBuilder sb = new StringBuilder();
 		sb.append(idFieldType.getColumnName()).append(" in (");
+
 		boolean first = true;
 		for (ID id : ids)
 		{
@@ -442,10 +475,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				sb.append(id.toString());
 		}
 		sb.append(")");
+
 		return delete(new Query()
 		{
 			@Override
-			public String getWhereStatement()
+			public String getWhereStatement(boolean joinsAllowed)
 			{
 				return sb.toString();
 			}
@@ -457,9 +491,9 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			}
 
 			@Override
-			public String getFromStatement() throws SQLException
+			public String getFromStatement(boolean joinsAllowed) throws SQLException
 			{
-				return createDefaultFrom();
+				return generatedTableMapper.getTableConfig().getTableName();
 			}
 		});
 	}
@@ -467,12 +501,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public int delete(Query where) throws SQLException
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("delete from ").append(where.getFromStatement());
-		String whereStatement = where.getWhereStatement();
+		sb.append("delete from ").append(where.getFromStatement(false));
+		String whereStatement = where.getWhereStatement(false);
 		if(!TextUtils.isEmpty(whereStatement))
 			sb.append(" where ").append(whereStatement);
 
-		SQLiteStatement sqLiteStatement = openHelperHelper.getHelper().getWritableDatabase().compileStatement(sb.toString());
+		String queryString = sb.toString();
+		SQLiteStatement sqLiteStatement = openHelperHelper.getHelper().getWritableDatabase().compileStatement(queryString);
 		String[] parameters = where.getParameters();
 
 		if(parameters != null && parameters.length > 0)
@@ -496,7 +531,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	public CloseableIterator<T> iterator(Query where) throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				makeCursor(where.getFromStatement(), where.getWhereStatement(), where.getParameters(), null),
+				makeCursor(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), null),
 				ModelDao.this
 		);
 	}
@@ -578,7 +613,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf(Query where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ where.getFromStatement() +" where "+ where.getWhereStatement(), where.getParameters());
+		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from "+ where.getFromStatement(true) +" where "+ where.getWhereStatement(true), where.getParameters());
 	}
 
 	//TODO could be faster
@@ -602,7 +637,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		Iterator<DaoObserver> iterator = daoObserverSet.iterator();
 		while (iterator.hasNext())
 		{
-			DaoObserver next =  daoObserverSet.iterator().next();
+			DaoObserver next = iterator.next();
 			next.onChange();
 		}
 	}

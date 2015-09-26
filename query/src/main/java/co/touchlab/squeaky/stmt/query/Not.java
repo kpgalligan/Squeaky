@@ -28,13 +28,14 @@ public class Not<T> implements Clause, Queryable<T> {
 		this.joinAlias = joinAlias;
 	}
 
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb) throws SQLException {
+	@Override
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed) throws SQLException {
 		if (comparison == null) {
 			throw new IllegalStateException("Clause has not been set in NOT operation");
 		}
 		// this generates: (NOT 'x' = 123 )
 		sb.append("(NOT ");
-		comparison.appendSql(squeakyContext, sb);
+		comparison.appendSql(squeakyContext, sb, joinsAllowed);
 
 		sb.append(") ");
 	}
@@ -55,7 +56,7 @@ public class Not<T> implements Clause, Queryable<T> {
 	}
 
 	@Override
-	public String getWhereStatement() throws SQLException
+	public String getWhereStatement(boolean joinsAllowed) throws SQLException
 	{
 		throw new SQLException("Must complete NOT statement");
 	}

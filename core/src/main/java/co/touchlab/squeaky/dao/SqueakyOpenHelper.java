@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
+import java.sql.SQLException;
+
 /**
  * SQLiteOpenHelper you should extend to manage data access.  Generally works the same as the standard SQLiteOpenHelper.
  *
@@ -27,9 +29,13 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 		helperHelper = new SqueakyContext(this, managingClasses);
 	}
 
-	public Dao getDao(Class clazz)
+	public <D extends Dao<T, ?>, T> D getDao(Class<T> clazz)
 	{
-		return helperHelper.getDao(clazz);
+		// special reflection fu is now handled internally by create dao calling the database type
+		Dao<T, ?> dao = helperHelper.getDao(clazz);
+		@SuppressWarnings("unchecked")
+		D castDao = (D) dao;
+		return castDao;
 	}
 
 	@Override

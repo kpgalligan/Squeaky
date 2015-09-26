@@ -37,10 +37,10 @@ abstract class BaseComparison implements Comparison {
 	@Override
 	public abstract String getOperation();
 
-	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb)
+	public void appendSql(SqueakyContext squeakyContext, StringBuilder sb, boolean joinsAllowed)
 			throws SQLException {
 
-		SqlHelper.appendWhereClauseBody(sb, joinAlias.tablePrefix, getOperation(), fieldType);
+		SqlHelper.appendWhereClauseBody(sb, joinsAllowed ? joinAlias.tablePrefix : null, getOperation(), fieldType);
 	}
 
 	public void appendValue(SqueakyContext squeakyContext, List<String> params)
