@@ -20,7 +20,6 @@ public interface Dao<T, ID>
 
 	List<T> queryForEq(String fieldName, Object value, String orderBy) throws SQLException;
 
-	//TODO: generate table config with constants for fields
 	List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
 
 	List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException;

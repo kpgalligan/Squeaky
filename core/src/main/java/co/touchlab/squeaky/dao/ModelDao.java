@@ -34,7 +34,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
 	private final String[] tableCols;
-	private final SqueakyContext openHelperHelper;
+	private final SqueakyContext squeakyContext;
 	private final FieldType idFieldType;
 
 	private SQLiteStatement createStatement;
@@ -42,7 +42,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	protected ModelDao(SqueakyContext openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
 	{
-		this.openHelperHelper = openHelper;
+		this.squeakyContext = openHelper;
 		this.entityClass = entityClass;
 		try
 		{
@@ -109,9 +109,9 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		List<String> params = new ArrayList<>();
 		Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
-		FieldType fieldType = openHelperHelper.findFieldType(dataClass, fieldName);
+		FieldType fieldType = squeakyContext.findFieldType(dataClass, fieldName);
 
-		SqlHelper.appendArgOrValue(openHelperHelper, fieldType, params, value);
+		SqlHelper.appendArgOrValue(squeakyContext, fieldType, params, value);
 
 		if (TextUtils.isEmpty(orderBy))
 			orderBy = null;
@@ -137,10 +137,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				query.append(" and ");
 
 			Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
-			FieldType fieldType = openHelperHelper.findFieldType(dataClass, field);
+			FieldType fieldType = squeakyContext.findFieldType(dataClass, field);
 
 			SqlHelper.appendWhereClauseBody(query, DEFAULT_TABLE_PREFIX, EQ_OPERATION, fieldType);
-			SqlHelper.appendArgOrValue(openHelperHelper, fieldType, params, fieldValues.get(field));
+			SqlHelper.appendArgOrValue(squeakyContext, fieldType, params, fieldValues.get(field));
 		}
 
 		if (TextUtils.isEmpty(orderBy))
@@ -197,7 +197,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			sb.append(" order by ").append(orderBy);
 
 		String sql = sb.toString();
-		return openHelperHelper.getHelper().getWritableDatabase()
+		return squeakyContext.getHelper().getWritableDatabase()
 				.rawQuery(sql, args);
 	}
 
@@ -248,7 +248,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		if (createStatement == null)
 		{
-			SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
+			SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into ");
@@ -349,7 +349,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		if (updateStatement == null)
 		{
-			SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
+			SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("update ").append(tableConfig.getTableName()).append(" set ");
@@ -378,7 +378,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int updateId(T data, ID newId) throws SQLException
 	{
-		SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
+		SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
 
 		ContentValues values = new ContentValues();
 
@@ -393,14 +393,14 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int update(Query where, Map<String, Object> valueMap) throws SQLException
 	{
-		SQLiteDatabase db = openHelperHelper.getHelper().getWritableDatabase();
+		SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
 		ContentValues values = new ContentValues();
 
 		for (String fieldKey : valueMap.keySet())
 		{
-			FieldType fieldType = openHelperHelper.findFieldType(generatedTableMapper.getTableConfig().dataClass, fieldKey);
+			FieldType fieldType = squeakyContext.findFieldType(generatedTableMapper.getTableConfig().dataClass, fieldKey);
 			fillContentVal(values, fieldType,
-					SqlHelper.pullArgOrValue(openHelperHelper, fieldType, valueMap.get(fieldKey)));
+					SqlHelper.pullArgOrValue(squeakyContext, fieldType, valueMap.get(fieldKey)));
 		}
 
 		int result = db.update(
@@ -446,7 +446,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public int deleteById(ID id) throws SQLException
 	{
-		int result = openHelperHelper.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
+		int result = squeakyContext.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
 
 		notifyChanges();
 
@@ -514,7 +514,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			sb.append(" where ").append(whereStatement);
 
 		String queryString = sb.toString();
-		SQLiteStatement sqLiteStatement = openHelperHelper.getHelper().getWritableDatabase().compileStatement(queryString);
+		SQLiteStatement sqLiteStatement = squeakyContext.getHelper().getWritableDatabase().compileStatement(queryString);
 		String[] parameters = where.getParameters();
 
 		if (parameters != null && parameters.length > 0)
@@ -545,7 +545,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long queryRawValue(String query, String... arguments) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), query, arguments);
+		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), query, arguments);
 	}
 
 	public String objectToString(T data) throws SQLException
@@ -580,12 +580,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public long countOf() throws SQLException
 	{
-		return DatabaseUtils.queryNumEntries(openHelperHelper.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
+		return DatabaseUtils.queryNumEntries(squeakyContext.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
 	}
 
 	public long countOf(Query where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(openHelperHelper.getHelper().getWritableDatabase(), "select count(*) from " + where.getFromStatement(true) + " where " + where.getWhereStatement(true), where.getParameters());
+		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), "select count(*) from " + where.getFromStatement(true) + " where " + where.getWhereStatement(true), where.getParameters());
 	}
 
 	//TODO could be faster
@@ -619,7 +619,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public SqueakyContext getOpenHelper()
 	{
-		return openHelperHelper;
+		return squeakyContext;
 	}
 
 	public ForeignCollectionInfo findForeignCollectionInfo(String name) throws SQLException
