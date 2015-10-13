@@ -45,7 +45,7 @@ public class ShortTypeTest extends BaseTypeTest
 		LocalShort foo = new LocalShort();
 		foo.shortField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class ShortTypeTest extends BaseTypeTest
 		foo.shortField = null;
 		objDao.create(foo);
 		Dao<LocalShort, Object> dao = helper.getDao(LocalShort.class);
-		List<LocalShort> all = dao.queryForAll();
+		List<LocalShort> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).shortField);
 	}

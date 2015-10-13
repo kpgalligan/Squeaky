@@ -55,7 +55,7 @@ public class ForeignCollectionTest extends BaseTypeTest
 			children.add(child);
 		}
 
-		ParentEager parentDb = parentDao.queryForAll().get(0);
+		ParentEager parentDb = parentDao.queryForAll().list().get(0);
 
 		assertTrue(parentDb.children.equals(children));
 	}
@@ -82,7 +82,7 @@ public class ForeignCollectionTest extends BaseTypeTest
 			children.add(child);
 		}
 
-		ParentLazy parentDb = parentDao.queryForAll().get(0);
+		ParentLazy parentDb = parentDao.queryForAll().list().get(0);
 		parentDao.fillForeignCollection(parentDb, "children");
 
 		assertTrue(parentDb.children.equals(children));
@@ -112,7 +112,7 @@ public class ForeignCollectionTest extends BaseTypeTest
 			children.add(child);
 		}
 
-		ParentString parentDb = parentDao.queryForAll().get(0);
+		ParentString parentDb = parentDao.queryForAll().list().get(0);
 //		parentDao.fillForeignCollection(parentDb, "children");
 
 		assertTrue(parentDb.children.equals(children));
@@ -140,7 +140,7 @@ public class ForeignCollectionTest extends BaseTypeTest
 			children.add(child);
 		}
 
-		ParentOrder parentDb = parentDao.queryForAll().get(0);
+		ParentOrder parentDb = parentDao.queryForAll().list().get(0);
 
 		Collections.sort(children, new Comparator<ChildOrder>()
 		{

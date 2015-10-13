@@ -46,7 +46,7 @@ public class ByteTypeTest extends BaseTypeTest
 		foo.byteField = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class ByteTypeTest extends BaseTypeTest
 		objDao.create(foo);
 
 		Dao<LocalByte, Object> dao = helper.getDao(LocalByte.class);
-		List<LocalByte> all = dao.queryForAll();
+		List<LocalByte> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).byteField);
 	}

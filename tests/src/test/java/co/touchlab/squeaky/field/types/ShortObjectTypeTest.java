@@ -40,7 +40,7 @@ public class ShortObjectTypeTest extends BaseTypeTest
 		LocalShortObj foo = new LocalShortObj();
 		foo.shortField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class ShortObjectTypeTest extends BaseTypeTest
 		Dao<LocalShortObj, Object> dao = helper.getDao(clazz);
 		LocalShortObj foo = new LocalShortObj();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable

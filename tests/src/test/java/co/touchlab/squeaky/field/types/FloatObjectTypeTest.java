@@ -41,7 +41,7 @@ public class FloatObjectTypeTest extends BaseTypeTest
 		foo.floatField = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class FloatObjectTypeTest extends BaseTypeTest
 		Dao<LocalFloatObj, Object> dao = helper.getDao(clazz);
 		LocalFloatObj foo = new LocalFloatObj();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable

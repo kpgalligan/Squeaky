@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.JoinAlias;
 
@@ -40,15 +41,9 @@ public class ManyClause<T> implements Clause, Queryable<T>
 	}
 
 	@Override
-	public List<T> query() throws SQLException
+	public Dao.QueryModifiers<T> query() throws SQLException
 	{
 		return parent.query();
-	}
-
-	@Override
-	public List<T> query(String orderBy) throws SQLException
-	{
-		return parent.query(orderBy);
 	}
 
 	@Override

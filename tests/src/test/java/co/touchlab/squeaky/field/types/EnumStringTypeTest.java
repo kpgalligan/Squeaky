@@ -47,7 +47,7 @@ public class EnumStringTypeTest extends BaseTypeTest
 		LocalEnumString foo = new LocalEnumString();
 		foo.ourEnum = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class EnumStringTypeTest extends BaseTypeTest
 		Dao<LocalEnumString, Object> dao = helper.getDao(clazz);
 		LocalEnumString foo = new LocalEnumString();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	/*@Test
@@ -95,7 +95,7 @@ public class EnumStringTypeTest extends BaseTypeTest
 		dao.create(localEnumString);
 		helper.getWritableDatabase().execSQL("UPDATE " + TABLE_NAME + " set ourEnum = 'THIRD'");
 
-		dao.queryForAll();
+		dao.queryForAll().list();
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class EnumStringTypeTest extends BaseTypeTest
 		localUnknownEnum.ourEnum = OurEnum.SECOND;
 		dao.create(localUnknownEnum);
 		helper.getWritableDatabase().execSQL("UPDATE " + TABLE_NAME + " set ourEnum = 'THIRD'");
-		List<LocalUnknownEnum> unknowns = dao.queryForAll();
+		List<LocalUnknownEnum> unknowns = dao.queryForAll().list();
 		assertEquals(1, unknowns.size());
 		assertEquals(OurEnum.FIRST, unknowns.get(0).ourEnum);
 	}

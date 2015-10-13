@@ -12,21 +12,42 @@ import java.util.Map;
  */
 public interface Dao<T, ID>
 {
+	public class ForeignRefresh
+	{
+		public final String field;
+		public final ForeignRefresh[] refreshFields;
+
+		public ForeignRefresh(String field)
+		{
+			this(field, null);
+		}
+
+		public ForeignRefresh(String field, ForeignRefresh[] refreshFields)
+		{
+			this.field = field;
+			this.refreshFields = refreshFields;
+		}
+	}
+
+	interface QueryModifiers<T>
+	{
+		QueryModifiers orderBy(String s);
+		QueryModifiers limit(Integer i);
+		QueryModifiers offset(Integer i);
+		List<T> list() throws SQLException;
+	}
+
 	T queryForId(ID id) throws SQLException;
 
-	List<T> queryForAll() throws SQLException;
+	QueryModifiers<T> queryForAll() throws SQLException;
 
-	List<T> queryForEq(String fieldName, Object value) throws SQLException;
+	QueryModifiers<T> queryForEq(String fieldName, Object value) throws SQLException;
 
-	List<T> queryForEq(String fieldName, Object value, String orderBy) throws SQLException;
+	QueryModifiers<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
 
-	List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException;
+	QueryModifiers<T> query(Query where) throws SQLException;
 
-	List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException;
-
-	List<T> query(Query where) throws SQLException;
-
-	List<T> query(Query where, String orderBy) throws SQLException;
+	QueryModifiers<T> query(String where, String[] args) throws SQLException;
 
 	void create(T data) throws SQLException;
 

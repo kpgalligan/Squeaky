@@ -41,7 +41,7 @@ public class LongObjectTypeTest extends BaseTypeTest
 		LocalLongObj foo = new LocalLongObj();
 		foo.longField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class LongObjectTypeTest extends BaseTypeTest
 		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
 		LocalLongObj foo = new LocalLongObj();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)

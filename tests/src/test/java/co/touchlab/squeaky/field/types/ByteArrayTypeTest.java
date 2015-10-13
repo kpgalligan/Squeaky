@@ -45,7 +45,7 @@ public class ByteArrayTypeTest extends BaseTypeTest
 		LocalByteArray foo = new LocalByteArray();
 		foo.byteField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class ByteArrayTypeTest extends BaseTypeTest
 		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
 		LocalByteArray foo = new LocalByteArray();
 		dao.create(new LocalByteArray());
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test(expected = SQLException.class)

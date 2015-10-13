@@ -49,7 +49,7 @@ public class DateTypeTest extends BaseTypeTest
 		foo.date = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class DateTypeTest extends BaseTypeTest
 		Dao<LocalDate, Object> dao = helper.getDao(clazz);
 		LocalDate foo = new LocalDate();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable

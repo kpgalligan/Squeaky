@@ -47,7 +47,7 @@ public class BigDecimalTypeTest extends BaseTypeTest
 		LocalBigDecimal foo = new LocalBigDecimal();
 		foo.bigDecimal = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 
 	}
 
@@ -58,7 +58,7 @@ public class BigDecimalTypeTest extends BaseTypeTest
 		LocalBigDecimal foo = new LocalBigDecimal();
 		dao.create(foo);
 
-		List<LocalBigDecimal> results = dao.queryForAll();
+		List<LocalBigDecimal> results = dao.queryForAll().list();
 		assertEquals(1, results.size());
 		assertNull(results.get(0).bigDecimal);
 	}
@@ -73,7 +73,7 @@ public class BigDecimalTypeTest extends BaseTypeTest
 		notFoo.bigDecimal = "not valid form";
 		notDao.create(notFoo);
 
-		dao.queryForAll();
+		dao.queryForAll().list();
 	}
 
 	@DatabaseTable(tableName = LOCAL_BIG_DECIMAL)

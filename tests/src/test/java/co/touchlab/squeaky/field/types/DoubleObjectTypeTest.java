@@ -40,7 +40,7 @@ public class DoubleObjectTypeTest extends BaseTypeTest
 		LocalDoubleObj foo = new LocalDoubleObj();
 		foo.doubleField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class DoubleObjectTypeTest extends BaseTypeTest
 		Dao<LocalDoubleObj, Object> dao = helper.getDao(clazz);
 		LocalDoubleObj foo = new LocalDoubleObj();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable

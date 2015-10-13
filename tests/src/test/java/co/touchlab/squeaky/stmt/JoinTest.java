@@ -50,7 +50,7 @@ public class JoinTest extends BaseTypeTest
 
 		where.eq(foo, "ival", 456);
 
-		Assert.assertEquals(3, dao.query(where).size());
+		Assert.assertEquals(3, dao.query(where).list().size());
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class JoinTest extends BaseTypeTest
 
 		where.eq(fooJoin, "ival", 456);
 
-		Assert.assertEquals(3, dao.query(where).size());
+		Assert.assertEquals(3, dao.query(where).list().size());
 	}
 
 	private Foo createFoo(String name, int ival) throws SQLException

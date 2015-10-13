@@ -41,7 +41,7 @@ public class CharTypeTest extends BaseTypeTest
 		LocalChar foo = new LocalChar();
 		foo.charField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test

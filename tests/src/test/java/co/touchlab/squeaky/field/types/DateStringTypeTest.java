@@ -52,7 +52,7 @@ public class DateStringTypeTest extends BaseTypeTest
 		foo.date = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class DateStringTypeTest extends BaseTypeTest
 		LocalDateString foo = new LocalDateString();
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class DateStringTypeTest extends BaseTypeTest
 		dateStringFormat.date = new SimpleDateFormat("yyyy-MM-dd").parse("2012-09-01");
 		dao.create(dateStringFormat);
 
-		List<DateStringFormat> results = dao.queryForAll();
+		List<DateStringFormat> results = dao.queryForAll().list();
 		assertEquals(1, results.size());
 		assertEquals(dateStringFormat.date, results.get(0).date);
 	}
@@ -87,7 +87,7 @@ public class DateStringTypeTest extends BaseTypeTest
 		dateStringFormat.date = new SimpleDateFormat("yyyy-MM-dd HH").parse("2012-09-01 12");
 		dao.create(dateStringFormat);
 
-		List<DateStringFormat> results = dao.queryForAll();
+		List<DateStringFormat> results = dao.queryForAll().list();
 		assertEquals(1, results.size());
 		assertFalse(dateStringFormat.date.equals(results.get(0).date));
 	}

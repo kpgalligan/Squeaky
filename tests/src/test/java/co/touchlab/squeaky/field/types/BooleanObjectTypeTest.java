@@ -29,7 +29,7 @@ public class BooleanObjectTypeTest extends BaseTypeTest
 		foo.bool = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 
 		helper.close();
 	}
@@ -44,7 +44,7 @@ public class BooleanObjectTypeTest extends BaseTypeTest
 		LocalBooleanObj foo = new LocalBooleanObj();
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 
 		helper.close();
 	}

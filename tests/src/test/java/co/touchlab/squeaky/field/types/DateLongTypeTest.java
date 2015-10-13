@@ -46,7 +46,7 @@ public class DateLongTypeTest extends BaseTypeTest
 		foo.date = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class DateLongTypeTest extends BaseTypeTest
 		Dao<LocalDateLong, Object> dao = helper.getDao(clazz);
 		LocalDateLong foo = new LocalDateLong();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test

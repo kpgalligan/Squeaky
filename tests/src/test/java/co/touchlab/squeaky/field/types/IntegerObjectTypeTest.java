@@ -40,7 +40,7 @@ public class IntegerObjectTypeTest extends BaseTypeTest
 		LocalIntObj foo = new LocalIntObj();
 		foo.intField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class IntegerObjectTypeTest extends BaseTypeTest
 		Dao<LocalIntObj, Object> dao = helper.getDao(clazz);
 		LocalIntObj foo = new LocalIntObj();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable

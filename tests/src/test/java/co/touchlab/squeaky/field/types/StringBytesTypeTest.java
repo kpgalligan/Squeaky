@@ -43,7 +43,7 @@ public class StringBytesTypeTest extends BaseTypeTest
 		foo.string = val;
 		dao.create(foo);
 		byte[] valBytes = val.getBytes("Unicode");
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class StringBytesTypeTest extends BaseTypeTest
 		foo.string = val;
 		dao.create(foo);
 		byte[] valBytes = val.getBytes("UTF-8");
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class StringBytesTypeTest extends BaseTypeTest
 		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
 		LocalStringBytes foo = new LocalStringBytes();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test

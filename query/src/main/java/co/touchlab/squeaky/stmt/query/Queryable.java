@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.stmt.JoinAlias;
 
 import java.sql.SQLException;
@@ -12,9 +13,7 @@ public interface Queryable<T>
 {
 	String getWhereStatement(boolean joinsAllowed) throws SQLException;
 
-	List<T> query() throws SQLException;
-
-	List<T> query(String orderBy) throws SQLException;
+	Dao.QueryModifiers<T> query() throws SQLException;
 
 	Queryable<T> reset();
 

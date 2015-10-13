@@ -44,7 +44,7 @@ public class EnumIntegerTypeTest extends BaseTypeTest
 		LocalEnumInt foo = new LocalEnumInt();
 		foo.ourEnum = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class EnumIntegerTypeTest extends BaseTypeTest
 		Dao<LocalEnumInt, Object> dao = helper.getDao(clazz);
 		LocalEnumInt foo = new LocalEnumInt();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	/*@Test

@@ -89,23 +89,21 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return selectList;
 	}
 
+	@Override
 	public T queryForId(ID id) throws SQLException
 	{
-		List<T> tList = queryForEq(idFieldType.getColumnName(), id);
+		List<T> tList = queryForEq(idFieldType.getColumnName(), id).list();
 		return tList.size() == 0 ? null : tList.get(0);
 	}
 
-	public List<T> queryForAll() throws SQLException
+	@Override
+	public QueryModifiers<T> queryForAll() throws SQLException
 	{
-		return makeCursorResults(createDefaultFrom(), null, null, null);
+		return new QueryModifiersImpl(createDefaultFrom(), null, null);
 	}
 
-	public List<T> queryForEq(String fieldName, Object value) throws SQLException
-	{
-		return queryForEq(fieldName, value, null);
-	}
-
-	public List<T> queryForEq(String fieldName, Object value, String orderBy) throws SQLException
+	@Override
+	public QueryModifiers<T> queryForEq(String fieldName, Object value) throws SQLException
 	{
 		List<String> params = new ArrayList<>();
 		Class<T> dataClass = generatedTableMapper.getTableConfig().dataClass;
@@ -113,20 +111,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 		SqlHelper.appendArgOrValue(squeakyContext, fieldType, params, value);
 
-		if (TextUtils.isEmpty(orderBy))
-			orderBy = null;
-
 		StringBuilder sb = new StringBuilder();
 		SqlHelper.appendWhereClauseBody(sb, DEFAULT_TABLE_PREFIX, EQ_OPERATION, fieldType);
-		return makeCursorResults(createDefaultFrom(), sb.toString(), params.toArray(new String[params.size()]), orderBy);
+		return new QueryModifiersImpl(createDefaultFrom(), sb.toString(), params.toArray(new String[params.size()]));
 	}
 
-	public List<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException
-	{
-		return queryForFieldValues(fieldValues, null);
-	}
-
-	public List<T> queryForFieldValues(Map<String, Object> fieldValues, String orderBy) throws SQLException
+	@Override
+	public QueryModifiers<T> queryForFieldValues(Map<String, Object> fieldValues) throws SQLException
 	{
 		StringBuilder query = new StringBuilder();
 		List<String> params = new ArrayList<>();
@@ -143,10 +134,51 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			SqlHelper.appendArgOrValue(squeakyContext, fieldType, params, fieldValues.get(field));
 		}
 
-		if (TextUtils.isEmpty(orderBy))
-			orderBy = null;
+		return new QueryModifiersImpl(createDefaultFrom(), query.toString(), params.toArray(new String[params.size()]));
+	}
 
-		return makeCursorResults(createDefaultFrom(), query.toString(), params.toArray(new String[params.size()]), orderBy);
+	class QueryModifiersImpl implements QueryModifiers<T>
+	{
+		private final String from;
+		private final String where;
+		private final String[] args;
+		private String orderBy;
+		private Integer limit;
+		private Integer offset;
+
+		public QueryModifiersImpl(String from, String where, String[] args)
+		{
+			this.from = from;
+			this.where = where;
+			this.args = args;
+		}
+
+		@Override
+		public QueryModifiers orderBy(String s)
+		{
+			orderBy = s;
+			return this;
+		}
+
+		@Override
+		public QueryModifiers limit(Integer i)
+		{
+			limit = i;
+			return this;
+		}
+
+		@Override
+		public QueryModifiers offset(Integer i)
+		{
+			offset = i;
+			return this;
+		}
+
+		@Override
+		public List<T> list() throws SQLException
+		{
+			return makeCursorResults(from, where, args, orderBy, limit, offset);
+		}
 	}
 
 	private String createDefaultFrom() throws SQLException
@@ -160,11 +192,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return sb.toString();
 	}
 
-	private List<T> makeCursorResults(String from, String where, String[] args, String orderBy) throws SQLException
+	private List<T> makeCursorResults(String from, String where, String[] args, String orderBy, Integer limit, Integer offset) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
 		TransientCache objectCache = new TransientCache();
-		Cursor cursor = makeCursor(from, where, args, orderBy);
+		Cursor cursor = makeCursor(from, where, args, orderBy, limit, offset);
 
 		try
 		{
@@ -186,7 +218,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return results;
 	}
 
-	private Cursor makeCursor(String from, String where, String[] args, String orderBy)
+	private Cursor makeCursor(String from, String where, String[] args, String orderBy, Integer limit, Integer offset)
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ").append(TextUtils.join(",", tableCols)).append(" from ").append(from);
@@ -196,31 +228,30 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		if (!TextUtils.isEmpty(orderBy))
 			sb.append(" order by ").append(orderBy);
 
+		if (limit != null)
+			sb.append(" limit ").append(limit);
+
+		if (offset != null)
+			sb.append(" offset ").append(offset);
+
 		String sql = sb.toString();
 		return squeakyContext.getHelper().getWritableDatabase()
 				.rawQuery(sql, args);
 	}
 
-	public List<T> query(String where, String[] args, String orderBy) throws SQLException
+	@Override
+	public QueryModifiers<T> query(String where, String[] args) throws SQLException
 	{
-		return makeCursorResults(createDefaultFrom(), where, args, orderBy);
+		return new QueryModifiersImpl(createDefaultFrom(), where, args);
 	}
 
-	public List<T> query(String where, String[] args) throws SQLException
+	@Override
+	public QueryModifiers<T> query(Query where) throws SQLException
 	{
-		return query(where, args, null);
+		return new QueryModifiersImpl(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters());
 	}
 
-	public List<T> query(Query where, String orderBy) throws SQLException
-	{
-		return makeCursorResults(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), orderBy);
-	}
-
-	public List<T> query(Query where) throws SQLException
-	{
-		return query(where, null);
-	}
-
+	@Override
 	public void create(T data) throws SQLException
 	{
 		SQLiteStatement sqLiteStatement = makeCreateStatement();
@@ -302,6 +333,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			throw new IllegalArgumentException("Don't recognize type for: " + val);
 	}
 
+	@Override
 	public T createIfNotExists(T data) throws SQLException
 	{
 		if (data == null)
@@ -320,6 +352,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
+	@Override
 	public void createOrUpdate(T data) throws SQLException
 	{
 		ID id = extractId(data);
@@ -334,6 +367,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
+	@Override
 	public void update(T data) throws SQLException
 	{
 		SQLiteStatement sqLiteStatement = makeUpdateStatement();
@@ -376,6 +410,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return updateStatement;
 	}
 
+	@Override
 	public int updateId(T data, ID newId) throws SQLException
 	{
 		SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
@@ -391,6 +426,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return result;
 	}
 
+	@Override
 	public int update(Query where, Map<String, Object> valueMap) throws SQLException
 	{
 		SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
@@ -415,14 +451,16 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return result;
 	}
 
+	@Override
 	public void refresh(T data) throws SQLException
 	{
 		refresh(data, Config.MAX_AUTO_REFRESH);
 	}
 
+	@Override
 	public void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException
 	{
-		Cursor cursor = makeCursor(createDefaultFrom(), idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null);
+		Cursor cursor = makeCursor(createDefaultFrom(), idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
 		try
 		{
 			if (cursor.moveToFirst())
@@ -439,11 +477,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
+	@Override
 	public int delete(T data) throws SQLException
 	{
 		return data == null ? 0 : deleteById(generatedTableMapper.extractId(data));
 	}
 
+	@Override
 	public int deleteById(ID id) throws SQLException
 	{
 		int result = squeakyContext.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
@@ -453,6 +493,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return result;
 	}
 
+	@Override
 	public int delete(Collection<T> datas) throws SQLException
 	{
 		List<ID> ids = new ArrayList<ID>(datas.size());
@@ -464,6 +505,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return deleteIds(ids);
 	}
 
+	@Override
 	public int deleteIds(Collection<ID> ids) throws SQLException
 	{
 		final StringBuilder sb = new StringBuilder();
@@ -505,6 +547,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		});
 	}
 
+	@Override
 	public int delete(Query where) throws SQLException
 	{
 		StringBuilder sb = new StringBuilder();
@@ -527,83 +570,98 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return result;
 	}
 
+	@Override
 	public CloseableIterator<T> iterator() throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				makeCursor(createDefaultFrom(), null, null, null),
+				makeCursor(createDefaultFrom(), null, null, null, null, null),
 				ModelDao.this
 		);
 	}
 
+	@Override
 	public CloseableIterator<T> iterator(Query where) throws SQLException
 	{
 		return new SelectIterator<T, ID>(
-				makeCursor(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), null),
+				makeCursor(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), null, null, null),
 				ModelDao.this
 		);
 	}
 
+	@Override
 	public long queryRawValue(String query, String... arguments) throws SQLException
 	{
 		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), query, arguments);
 	}
 
+	@Override
 	public String objectToString(T data) throws SQLException
 	{
 		return generatedTableMapper.objectToString(data);
 	}
 
+	@Override
 	public boolean objectsEqual(T data1, T data2) throws SQLException
 	{
 		return generatedTableMapper.objectsEqual(data1, data2);
 	}
 
+	@Override
 	public ID extractId(T data) throws SQLException
 	{
 		return generatedTableMapper.extractId(data);
 	}
 
+	@Override
 	public void fillForeignCollection(T data, String fieldName) throws SQLException
 	{
 		generatedTableMapper.fillForeignCollection(data, this, fieldName);
 	}
 
+	@Override
 	public Class<T> getDataClass()
 	{
 		return entityClass;
 	}
 
+	@Override
 	public boolean isUpdatable()
 	{
 		return true;
 	}
 
+	@Override
 	public long countOf() throws SQLException
 	{
 		return DatabaseUtils.queryNumEntries(squeakyContext.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
 	}
 
+	@Override
 	public long countOf(Query where) throws SQLException
 	{
 		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), "select count(*) from " + where.getFromStatement(true) + " where " + where.getWhereStatement(true), where.getParameters());
 	}
 
+	@Override
 	//TODO could be faster
 	public boolean idExists(ID id) throws SQLException
 	{
 		return queryForId(id) != null;
 	}
 
+	@Override
 	public void registerObserver(DaoObserver observer)
 	{
 		daoObserverSet.add(observer);
 	}
 
+	@Override
 	public void unregisterObserver(DaoObserver observer)
 	{
 		daoObserverSet.remove(observer);
 	}
 
+	@Override
 	public void notifyChanges()
 	{
 		for (DaoObserver next : daoObserverSet)

@@ -48,7 +48,7 @@ public class DaoTest extends BaseTypeTest
 		createFoo("asdf", 123, 23523534234l, new Date());
 		createFoo("asdf", 123, 23523534234l, new Date());
 		createFoo("asdf", 123, 23523534234l, new Date());
-		Assert.assertEquals(getFooDao().queryForAll().size(), 3);
+		Assert.assertEquals(getFooDao().queryForAll().list().size(), 3);
 	}
 
 	@Test
@@ -60,11 +60,11 @@ public class DaoTest extends BaseTypeTest
 		Assert.assertEquals(getFooDao().queryForEq(
 				DaoTest$Foo$$Configuration.Fields.ival.name(),
 				123
-		).size(), 2);
+		).list().size(), 2);
 
 		Assert.assertEquals(getFooDao().queryForEq(
 				DaoTest$Foo$$Configuration.Fields.ival.name(),
-				444).get(0).lval, 23523534255l);
+				444).list().get(0).lval, 23523534255l);
 	}
 
 	@Test
@@ -78,14 +78,14 @@ public class DaoTest extends BaseTypeTest
 		fieldValues.put("ival", 444);
 		Assert.assertEquals(getFooDao().queryForFieldValues(
 				fieldValues
-		).size(), 1);
+		).list().size(), 1);
 
 		fieldValues.remove("ival");
 		fieldValues.put("lval", 23523534255l);
 
 		Assert.assertEquals(getFooDao().queryForFieldValues(
 				fieldValues
-		).size(), 2);
+		).list().size(), 2);
 
 	}
 
@@ -114,7 +114,7 @@ public class DaoTest extends BaseTypeTest
 			{
 				return new String[]{"123"};
 			}
-		});
+		}).list();
 
 		Assert.assertEquals(results.size(), 2);
 	}
@@ -139,20 +139,20 @@ public class DaoTest extends BaseTypeTest
 	public void testCreateOrUpdate() throws SQLException
 	{
 		getBarDao().createOrUpdate(new Bar(13, "aaa"));
-		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").size(), 1);
+		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").list().size(), 1);
 		getBarDao().createOrUpdate(new Bar(13, "bbb"));
-		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").size(), 0);
-		Assert.assertEquals(getBarDao().queryForEq("name", "bbb").size(), 1);
+		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").list().size(), 0);
+		Assert.assertEquals(getBarDao().queryForEq("name", "bbb").list().size(), 1);
 	}
 
 	@Test
 	public void testUpdate() throws SQLException
 	{
 		getBarDao().create(new Bar(13, "aaa"));
-		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").size(), 1);
+		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").list().size(), 1);
 		getBarDao().update(new Bar(13, "bbb"));
-		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").size(), 0);
-		Assert.assertEquals(getBarDao().queryForEq("name", "bbb").size(), 1);
+		Assert.assertEquals(getBarDao().queryForEq("name", "aaa").list().size(), 0);
+		Assert.assertEquals(getBarDao().queryForEq("name", "bbb").list().size(), 1);
 	}
 
 	@Test
@@ -160,10 +160,10 @@ public class DaoTest extends BaseTypeTest
 	{
 		Bar bar = new Bar(13, "aaa");
 		getBarDao().create(bar);
-		Assert.assertEquals(getBarDao().queryForEq("id", "13").size(), 1);
+		Assert.assertEquals(getBarDao().queryForEq("id", "13").list().size(), 1);
 		getBarDao().updateId(bar, 14);
-		Assert.assertEquals(getBarDao().queryForEq("id", "13").size(), 0);
-		Assert.assertEquals(getBarDao().queryForEq("id", "14").size(), 1);
+		Assert.assertEquals(getBarDao().queryForEq("id", "13").list().size(), 0);
+		Assert.assertEquals(getBarDao().queryForEq("id", "14").list().size(), 1);
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class DaoTest extends BaseTypeTest
 	public void testRefresh() throws SQLException
 	{
 		Foo foo = createFoo("asdf", 123, 23523534234l, new Date());
-		Foo dbFoo = getFooDao().queryForAll().get(0);
+		Foo dbFoo = getFooDao().queryForAll().list().get(0);
 		dbFoo.ival = 222;
 		getFooDao().update(dbFoo);
 

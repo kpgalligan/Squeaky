@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.stmt.query;
 
+import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.stmt.JoinAlias;
 import co.touchlab.squeaky.stmt.Where;
@@ -70,13 +71,7 @@ public class Not<T> implements Clause, Queryable<T>
 	}
 
 	@Override
-	public List<T> query() throws SQLException
-	{
-		throw new SQLException("Must complete NOT statement");
-	}
-
-	@Override
-	public List<T> query(String orderBy) throws SQLException
+	public Dao.QueryModifiers<T> query() throws SQLException
 	{
 		throw new SQLException("Must complete NOT statement");
 	}

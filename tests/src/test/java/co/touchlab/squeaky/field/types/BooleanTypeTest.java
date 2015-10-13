@@ -58,7 +58,7 @@ public class BooleanTypeTest extends BaseTypeTest
 		objDao.create(foo);
 
 		Dao<LocalBoolean, Object> dao = helper.getDao(LocalBoolean.class);
-		List<LocalBoolean> all = dao.queryForAll();
+		List<LocalBoolean> all = dao.queryForAll().list();
 
 		assertEquals(1, all.size());
 		assertFalse(all.get(0).bool);

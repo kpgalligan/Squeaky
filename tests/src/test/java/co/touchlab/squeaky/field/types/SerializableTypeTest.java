@@ -51,7 +51,7 @@ public class SerializableTypeTest extends BaseTypeTest
 		LocalSerializable foo = new LocalSerializable();
 		foo.serializable = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class SerializableTypeTest extends BaseTypeTest
 		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
 		LocalSerializable foo = new LocalSerializable();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	/*@Test

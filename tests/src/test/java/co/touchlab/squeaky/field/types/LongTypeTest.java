@@ -45,7 +45,7 @@ public class LongTypeTest extends BaseTypeTest
 		LocalLong foo = new LocalLong();
 		foo.longField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class LongTypeTest extends BaseTypeTest
 		foo.longField = null;
 		objDao.create(foo);
 		Dao<LocalLong, Object> dao = helper.getDao(LocalLong.class);
-		List<LocalLong> all = dao.queryForAll();
+		List<LocalLong> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).longField);
 	}

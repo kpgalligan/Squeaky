@@ -50,7 +50,7 @@ public class TypesTest extends BaseTest
 		manyTypes.st1 = "Heyo lots of stuff";
 		dao.create(manyTypes);
 
-		List<ManyTypes> bs = dao.queryForAll();
+		List<ManyTypes> bs = dao.queryForAll().list();
 
 		Assert.assertEquals(manyTypes, bs.get(0));
 

@@ -141,7 +141,7 @@ public abstract class BaseTypeTest
 			} else {
 				assertNull(dataPersister.convertIdNumber(10));
 			}
-			List<T> list = dao.queryForAll();
+			List<T> list = dao.queryForAll().list();
 			assertEquals(1, list.size());
 			assertTrue(dao.objectsEqual(foo, list.get(0)));
 			// if we have a value then look for it, floats don't find any results because of rounding issues

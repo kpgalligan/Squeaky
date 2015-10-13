@@ -51,7 +51,7 @@ public class TimeStampTypeTest extends BaseTypeTest
 		LocalTimeStamp foo = new LocalTimeStamp();
 		foo.timestamp = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class TimeStampTypeTest extends BaseTypeTest
 		Dao<LocalTimeStamp, Object> dao = helper.getDao(clazz);
 		LocalTimeStamp foo = new LocalTimeStamp();
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	/*@Test

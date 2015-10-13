@@ -441,14 +441,9 @@ public class Where<T, ID> implements Queryable<T>, Query
 		return params.toArray(new String[params.size()]);
 	}
 
-	public List<T> query() throws SQLException
+	public Dao.QueryModifiers<T> query() throws SQLException
 	{
 		return modelDao.query(getWhereStatement(true), getParameters());
-	}
-
-	public List<T> query(String orderBy) throws SQLException
-	{
-		return modelDao.query(getWhereStatement(true), getParameters(), orderBy);
 	}
 
 	/**

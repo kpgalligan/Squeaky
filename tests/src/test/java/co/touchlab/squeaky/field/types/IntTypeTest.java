@@ -45,7 +45,7 @@ public class IntTypeTest extends BaseTypeTest
 		LocalInt foo = new LocalInt();
 		foo.intField = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class IntTypeTest extends BaseTypeTest
 		objDao.create(foo);
 		// overlapping table
 		Dao<LocalInt, Object> dao = helper.getDao(LocalInt.class);
-		List<LocalInt> all = dao.queryForAll();
+		List<LocalInt> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).intField);
 	}

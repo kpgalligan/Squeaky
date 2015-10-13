@@ -41,7 +41,7 @@ public class InheritanceTest extends BaseTypeTest
 
 		dao.create(foo);
 
-		Foo dbVal = dao.queryForAll().get(0);
+		Foo dbVal = dao.queryForAll().list().get(0);
 		Assert.assertTrue(EqualsBuilder.reflectionEquals(foo, dbVal));
 	}
 

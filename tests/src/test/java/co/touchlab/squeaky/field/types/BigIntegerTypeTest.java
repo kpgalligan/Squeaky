@@ -47,7 +47,7 @@ public class BigIntegerTypeTest extends BaseTypeTest
 		LocalBigInteger foo = new LocalBigInteger();
 		foo.bigInteger = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 
 
 //		testType(dao, foo, clazz, val, valStr, valStr, valStr, DataType.BIG_INTEGER, BIGINTEGER_COLUMN, false, false,
@@ -61,7 +61,7 @@ public class BigIntegerTypeTest extends BaseTypeTest
 		LocalBigInteger foo = new LocalBigInteger();
 		dao.create(foo);
 
-		List<LocalBigInteger> results = dao.queryForAll();
+		List<LocalBigInteger> results = dao.queryForAll().list();
 		assertEquals(1, results.size());
 		assertNull(results.get(0).bigInteger);
 	}
@@ -76,7 +76,7 @@ public class BigIntegerTypeTest extends BaseTypeTest
 		notFoo.bigInteger = "not valid form";
 		notDao.create(notFoo);
 
-		dao.queryForAll();
+		dao.queryForAll().list();
 	}
 
 	@Test

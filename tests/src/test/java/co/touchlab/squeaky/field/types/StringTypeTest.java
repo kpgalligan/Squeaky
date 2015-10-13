@@ -41,7 +41,7 @@ public class StringTypeTest extends BaseTypeTest
 		LocalString foo = new LocalString();
 		foo.string = val;
 		dao.create(foo);
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 	}
 
 	@DatabaseTable(tableName = TABLE_NAME)

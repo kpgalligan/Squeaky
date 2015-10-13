@@ -30,7 +30,7 @@ public class BooleanIntegerTypeTest extends BaseTypeTest
 		foo.bool = val;
 		dao.create(foo);
 
-		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().get(0)));
+		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
 
 		helper.close();
 	}

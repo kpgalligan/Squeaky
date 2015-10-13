@@ -61,11 +61,11 @@ public class ViewTest extends BaseTypeTest
 
 		Dao<ParentChildView, Integer> parentChildViewDao = helper.getDao(ParentChildView.class);
 
-		List<ParentChildView> parentChildViews = parentChildViewDao.queryForAll();
+		List<ParentChildView> parentChildViews = parentChildViewDao.queryForAll().list();
 
 		Assert.assertEquals("Not enough view results", parentChildViews.size(), 60);
 
-		/*Parent parentDb = parentDao.queryForAll().get(0);
+		/*Parent parentDb = parentdao.queryForAll().list().get(0);
 		parentDao.fillForeignCollection(parentDb, "children");
 
 		assertTrue(parentDb.children.equals(children));*/

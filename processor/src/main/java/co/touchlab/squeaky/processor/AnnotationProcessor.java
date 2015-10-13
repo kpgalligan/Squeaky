@@ -378,7 +378,7 @@ fieldConfigs.add(fieldConfig);
 
 			fillCollectionMethod.addStatement("$T foreignDao = (ModelDao)modelDao.getOpenHelper().getDao($T.class)", ModelDao.class, ClassName.bestGuess(foreignCollectionInfo.foreignTypeName));
 			fillCollectionMethod.addStatement("ForeignCollectionInfo foreignCollectionInfo = modelDao.findForeignCollectionInfo($S)", foreignCollectionInfo.variableName);
-			fillCollectionMethod.addStatement("data.$L = foreignDao.queryForEq(foreignCollectionInfo.foreignFieldName, data, foreignCollectionInfo.orderBy);", foreignCollectionInfo.variableName);
+			fillCollectionMethod.addStatement("data.$L = foreignDao.queryForEq(foreignCollectionInfo.foreignFieldName, data).orderBy(foreignCollectionInfo.orderBy).list()", foreignCollectionInfo.variableName);
 /*
 			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$$Configuration");
 			fillCollectionMethod.addStatement("data.$N = foreignDao.queryForEq($L$L, $S, modelDao.extractId(data))",

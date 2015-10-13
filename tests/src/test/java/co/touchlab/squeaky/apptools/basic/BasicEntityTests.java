@@ -34,7 +34,7 @@ public class BasicEntityTests
 			A a = new A();
 			a.name = "A test";
 			dao.create(a);
-			List<A> as = dao.queryForAll();
+			List<A> as = dao.queryForAll().list();
 
 			Assert.assertEquals(a, as.get(0));
 		}
@@ -46,7 +46,7 @@ public class BasicEntityTests
 			b.name = "B test";
 			bDao.create(b);
 
-			List<BPackage> bs = bDao.queryForAll();
+			List<BPackage> bs = bDao.queryForAll().list();
 
 			Assert.assertEquals(b, bs.get(0));
 		}
@@ -58,7 +58,7 @@ public class BasicEntityTests
 			c.name = "C test";
 			cDao.create(c);
 
-			List<CProtected> bs = cDao.queryForAll();
+			List<CProtected> bs = cDao.queryForAll().list();
 
 			Assert.assertEquals(c, bs.get(0));
 		}
@@ -70,7 +70,7 @@ public class BasicEntityTests
 
 			dao.create(c);
 
-			List<DFinal> bs = dao.queryForAll();
+			List<DFinal> bs = dao.queryForAll().list();
 
 			Assert.assertEquals(c, bs.get(0));
 		}
