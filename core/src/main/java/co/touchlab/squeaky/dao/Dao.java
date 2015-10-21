@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface Dao<T, ID>
 {
-	public class ForeignRefresh
+	class ForeignRefresh
 	{
 		public final String field;
 		public final ForeignRefresh[] refreshFields;
@@ -31,9 +31,10 @@ public interface Dao<T, ID>
 
 	interface QueryModifiers<T>
 	{
-		QueryModifiers orderBy(String s);
-		QueryModifiers limit(Integer i);
-		QueryModifiers offset(Integer i);
+		QueryModifiers<T> orderBy(String s);
+		QueryModifiers<T> limit(Integer i);
+		QueryModifiers<T> offset(Integer i);
+		QueryModifiers<T> foreignRefreshMap(ForeignRefresh[] foreignRefreshMap);
 		List<T> list() throws SQLException;
 	}
 
@@ -63,7 +64,7 @@ public interface Dao<T, ID>
 
 	void refresh(T data) throws SQLException;
 
-	void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException;
+	void refresh(T data, ForeignRefresh[] foreignRefreshMap) throws SQLException;
 
 	int delete(T data) throws SQLException;
 

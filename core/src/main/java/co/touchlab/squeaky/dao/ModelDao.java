@@ -145,6 +145,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		private String orderBy;
 		private Integer limit;
 		private Integer offset;
+		private ForeignRefresh[] foreignRefreshMap;
 
 		public QueryModifiersImpl(String from, String where, String[] args)
 		{
@@ -154,30 +155,37 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 
 		@Override
-		public QueryModifiers orderBy(String s)
+		public QueryModifiers<T> orderBy(String s)
 		{
 			orderBy = s;
 			return this;
 		}
 
 		@Override
-		public QueryModifiers limit(Integer i)
+		public QueryModifiers<T> limit(Integer i)
 		{
 			limit = i;
 			return this;
 		}
 
 		@Override
-		public QueryModifiers offset(Integer i)
+		public QueryModifiers<T> offset(Integer i)
 		{
 			offset = i;
 			return this;
 		}
 
 		@Override
+		public QueryModifiers<T> foreignRefreshMap(ForeignRefresh[] foreignRefreshMap)
+		{
+			this.foreignRefreshMap = foreignRefreshMap;
+			return this;
+		}
+
+		@Override
 		public List<T> list() throws SQLException
 		{
-			return makeCursorResults(from, where, args, orderBy, limit, offset);
+			return makeCursorResults(from, where, args, orderBy, limit, offset, foreignRefreshMap == null ? generateDefaultForeignRefreshMap() : foreignRefreshMap);
 		}
 	}
 
@@ -192,7 +200,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return sb.toString();
 	}
 
-	private List<T> makeCursorResults(String from, String where, String[] args, String orderBy, Integer limit, Integer offset) throws SQLException
+	private List<T> makeCursorResults(String from, String where, String[] args, String orderBy, Integer limit, Integer offset, ForeignRefresh[] foreignRefreshMap) throws SQLException
 	{
 		List<T> results = new ArrayList<T>();
 		TransientCache objectCache = new TransientCache();
@@ -205,7 +213,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 				do
 				{
 					T object = generatedTableMapper.createObject(cursor);
-					generatedTableMapper.fillRow(object, cursor, this, Config.MAX_AUTO_REFRESH, objectCache);
+					generatedTableMapper.fillRow(object, cursor, this, foreignRefreshMap, objectCache);
 					results.add(object);
 				} while (cursor.moveToNext());
 			}
@@ -216,6 +224,30 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 
 		return results;
+	}
+
+	private ForeignRefresh[] fillForeignRefreshMap(FieldType parentType, int count) throws SQLException
+	{
+		if(count == 0)
+			return null;
+
+		FieldType[] fieldTypes = squeakyContext.getGeneratedTableMapper(parentType.getFieldType()).getTableConfig().getFieldTypes();
+		return fillForeignRefreshMap(fieldTypes, count);
+	}
+
+	private ForeignRefresh[] fillForeignRefreshMap(FieldType[] fieldTypes, int count) throws SQLException
+	{
+		List<ForeignRefresh> foreignRefreshs = new ArrayList<>();
+
+		for (FieldType fieldType : fieldTypes)
+		{
+			if(fieldType.isForeign() && fieldType.isForeignAutoRefresh())
+			{
+				foreignRefreshs.add(new ForeignRefresh(fieldType.getFieldName(), fillForeignRefreshMap(fieldType, count-1)));
+			}
+		}
+
+		return foreignRefreshs.size() == 0 ? null : foreignRefreshs.toArray(new ForeignRefresh[foreignRefreshs.size()]);
 	}
 
 	private Cursor makeCursor(String from, String where, String[] args, String orderBy, Integer limit, Integer offset)
@@ -454,11 +486,11 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public void refresh(T data) throws SQLException
 	{
-		refresh(data, Config.MAX_AUTO_REFRESH);
+		refresh(data, generateDefaultForeignRefreshMap());
 	}
 
 	@Override
-	public void refresh(T data, Integer recursiveAutorefreshCountdown) throws SQLException
+	public void refresh(T data, Dao.ForeignRefresh[] foreignRefreshMap) throws SQLException
 	{
 		Cursor cursor = makeCursor(createDefaultFrom(), idFieldType.getColumnName() + " = ?", new String[]{generatedTableMapper.extractId(data).toString()}, null, null, null);
 		try
@@ -467,7 +499,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			{
 				do
 				{
-					generatedTableMapper.fillRow(data, cursor, this, recursiveAutorefreshCountdown, null);
+					generatedTableMapper.fillRow(data, cursor, this, foreignRefreshMap, null);
 				} while (cursor.moveToNext());
 			}
 		}
@@ -575,8 +607,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		return new SelectIterator<T, ID>(
 				makeCursor(createDefaultFrom(), null, null, null, null, null),
-				ModelDao.this
-		);
+				ModelDao.this,
+				generateDefaultForeignRefreshMap());
+	}
+
+	private ForeignRefresh[] generateDefaultForeignRefreshMap() throws SQLException
+	{
+		return fillForeignRefreshMap(generatedTableMapper.getTableConfig().getFieldTypes(), Config.MAX_AUTO_REFRESH);
 	}
 
 	@Override
@@ -584,8 +621,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		return new SelectIterator<T, ID>(
 				makeCursor(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), null, null, null),
-				ModelDao.this
-		);
+				ModelDao.this,
+				generateDefaultForeignRefreshMap());
 	}
 
 	@Override

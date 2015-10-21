@@ -25,10 +25,8 @@ package co.touchlab.squeaky.processor;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import co.touchlab.squeaky.dao.Dao;
-import co.touchlab.squeaky.dao.ModelDao;
+import co.touchlab.squeaky.dao.*;
 import co.touchlab.squeaky.field.*;
-import co.touchlab.squeaky.dao.Query;
 import co.touchlab.squeaky.table.*;
 import com.google.common.base.Joiner;
 import com.squareup.javapoet.*;
@@ -39,6 +37,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -520,6 +519,7 @@ fieldConfigs.add(fieldConfig);
 				.addAnnotation(Override.class)
 				.addException(SQLException.class)
 				.addParameter(Cursor.class, "results")
+//				.addParameter(SqueakyContext.class, "squeakyContext")
 				.returns(className);
 
 		if(tableHolder.finalConstructor != null)
@@ -561,10 +561,32 @@ fieldConfigs.add(fieldConfig);
 		{
 			javaFillMethodBuilder.addStatement("$T data = new $T()", className, className);
 		}
+		messager.printMessage(Diagnostic.Kind.ERROR, "balls: start");
+		/*List<TypeMirror> mirrors = new ArrayList<>();
+		listTypes(tableHolder.typeElement.asType(), mirrors);
+
+		for (TypeMirror typeMirror : mirrors)
+		{
+			messager.printMessage(Diagnostic.Kind.ERROR, "balls: "+ typeMirror.toString());
+		}*/
+		/*javaFillMethodBuilder.beginControlFlow("if(data instanceof $T)", BaseTable.class)
+				.addStatement("((BaseTable)data).setContext(squeakyContext)")
+				.endControlFlow();*/
 		javaFillMethodBuilder.addStatement("return data");
 
 		configBuilder.addMethod(javaFillMethodBuilder.build());
 	}
+
+/*	private void listTypes(TypeMirror typeMirror, List<TypeMirror> mirrors)
+	{
+		typeUtils.
+		List<? extends TypeMirror> typeMirrors = typeUtils.directSupertypes(typeMirror);
+		mirrors.addAll(typeMirrors);
+		for (TypeMirror mirror : typeMirrors)
+		{
+			listTypes(mirror, mirrors);
+		}
+	}*/
 
 	private void fillRow(List<DatabaseTableHolder> databaseTableHolders, List<ForeignCollectionHolder> foreignCollectionInfos,  TypeElement element, List<FieldTypeGen> fieldTypeGens, String tableName, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
 	{
@@ -574,7 +596,7 @@ fieldConfigs.add(fieldConfig);
 				.addParameter(className, "data")
 				.addParameter(Cursor.class, "results")
 				.addParameter(modelDaoType, "modelDao")
-				.addParameter(Integer.class, "recursiveAutorefreshCountdown")
+				.addParameter(Dao.ForeignRefresh[].class, "foreignRefreshMap")
 				.addParameter(TransientCache.class, "objectCache")
 				.addException(SQLException.class)
 				.addAnnotation(Override.class);
@@ -968,8 +990,8 @@ fieldConfigs.add(fieldConfig);
 
 					if(config.foreignAutoRefresh)
 					{
-						foreignBuilder.beginControlFlow("if(recursiveAutorefreshCountdown == null || recursiveAutorefreshCountdown > 0)");
-						foreignBuilder.addStatement("modelDao.getOpenHelper().getDao($T.class).refresh(__$N, recursiveAutorefreshCountdown == null ? $L : recursiveAutorefreshCountdown-1)", configureClassDefinitions.className, config.fieldName, config.databaseField.maxForeignAutoRefreshLevel());
+						foreignBuilder.beginControlFlow("if(foreignRefreshMap == null || $T.findRefresh(foreignRefreshMap, $S) != null)", DaoHelper.class, config.fieldName);
+						foreignBuilder.addStatement("modelDao.getOpenHelper().getDao($T.class).refresh(__$N, $T.findRefresh(foreignRefreshMap, $S).refreshFields)", configureClassDefinitions.className, config.fieldName, DaoHelper.class, config.fieldName);
 						foreignBuilder.endControlFlow();
 					}
 
@@ -1065,7 +1087,9 @@ fieldConfigs.add(fieldConfig);
 							"$S," +
 							"$S," +
 							"$L," +
-							"$T.$L)",
+							"$T.$L,"+
+							"$L" +
+							")",
 					FieldType.class,
 					tableName,
 					config.fieldName,
@@ -1087,7 +1111,8 @@ fieldConfigs.add(fieldConfig);
 					config.defaultValue,
 					databaseField.throwIfNull(),
 					hasDefualtEnumValue ? ClassName.get(config.dataTypeMirror) : null,
-					hasDefualtEnumValue ? databaseField.unknownEnumName() : null
+					hasDefualtEnumValue ? databaseField.unknownEnumName() : null,
+					config.foreignAutoRefresh
 			);
 		} else
 		{
@@ -1110,7 +1135,7 @@ fieldConfigs.add(fieldConfig);
 							"$S," +
 							"$S," +
 							"$L," +
-							"null)",
+							"null, $L)",
 					FieldType.class,
 					tableName,
 					config.fieldName,
@@ -1130,7 +1155,8 @@ fieldConfigs.add(fieldConfig);
 					StringUtils.trimToNull(databaseField.indexName()),
 					StringUtils.trimToNull(databaseField.uniqueIndexName()),
 					config.defaultValue,
-					databaseField.throwIfNull()
+					databaseField.throwIfNull(),
+					config.foreignAutoRefresh
 			);
 		}
 

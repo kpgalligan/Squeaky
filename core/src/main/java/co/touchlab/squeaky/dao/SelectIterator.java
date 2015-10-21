@@ -17,11 +17,13 @@ public class SelectIterator<T, ID> implements CloseableIterator<T>
 	private final ModelDao<T, ID> modelDao;
 	private final GeneratedTableMapper<T, ID> generatedTableMapper;
 	private final TransientCache objectCache = new TransientCache();
+	private final Dao.ForeignRefresh[] foreignRefreshMap;
 
-	public SelectIterator(Cursor cursor, ModelDao<T, ID> modelDao)
+	public SelectIterator(Cursor cursor, ModelDao<T, ID> modelDao, Dao.ForeignRefresh[] foreignRefreshMap)
 	{
 		this.cursor = cursor;
 		this.modelDao = modelDao;
+		this.foreignRefreshMap = foreignRefreshMap;
 		this.generatedTableMapper = modelDao.getGeneratedTableMapper();
 	}
 
@@ -101,7 +103,7 @@ public class SelectIterator<T, ID> implements CloseableIterator<T>
 	private T makeData() throws SQLException
 	{
 		T data = generatedTableMapper.createObject(cursor);
-		generatedTableMapper.fillRow(data, cursor, modelDao, Config.MAX_AUTO_REFRESH, objectCache);
+		generatedTableMapper.fillRow(data, cursor, modelDao, foreignRefreshMap, objectCache);
 		return data;
 	}
 

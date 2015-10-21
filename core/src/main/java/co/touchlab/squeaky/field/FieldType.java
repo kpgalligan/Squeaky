@@ -49,6 +49,7 @@ public class FieldType
 	private final boolean uniqueIndex;
 	private final boolean throwIfNull;
 	private final Enum<?> unknownEnumVal;
+	private final boolean foreignAutoRefresh;
 	private String indexName;
 	private String uniqueIndexName;
 
@@ -84,7 +85,8 @@ public class FieldType
 			String uniqueIndexName,
 			String configDefaultValue,
 			boolean throwIfNull,
-			Enum<?> unknownEnumVal)
+			Enum<?> unknownEnumVal,
+			boolean foreignAutoRefresh)
 	{
 		this.fieldName = fieldName;
 		this.tableName = tableName;
@@ -97,6 +99,7 @@ public class FieldType
 		this.indexName = indexName;
 		this.uniqueIndexName = uniqueIndexName;
 		this.throwIfNull = throwIfNull;
+		this.foreignAutoRefresh = foreignAutoRefresh;
 		this.dataPersister = dataType.getDataPersister();
 		this.isForeign = isForeign;
 		this.dataType = dataType;
@@ -209,6 +212,11 @@ public class FieldType
 	public Enum<?> getUnknownEnumVal()
 	{
 		return unknownEnumVal;
+	}
+
+	public boolean isForeignAutoRefresh()
+	{
+		return foreignAutoRefresh;
 	}
 
 	/**

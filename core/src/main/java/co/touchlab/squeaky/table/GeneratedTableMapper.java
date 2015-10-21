@@ -2,6 +2,7 @@ package co.touchlab.squeaky.table;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.ModelDao;
 
 import java.sql.SQLException;
@@ -13,7 +14,7 @@ public interface GeneratedTableMapper<T, ID>
 {
 	T createObject(Cursor results) throws SQLException;
 
-	void fillRow(T data, Cursor results, ModelDao<T, ID> modelDao, Integer recursiveAutorefreshCountdown, TransientCache objectCache) throws SQLException;
+	void fillRow(T data, Cursor results, ModelDao<T, ID> modelDao, Dao.ForeignRefresh[] foreignRefreshMap, TransientCache objectCache) throws SQLException;
 
 	void assignId(T data, Object val);
 

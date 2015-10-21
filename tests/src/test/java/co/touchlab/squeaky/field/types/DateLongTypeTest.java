@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.field.types;
 
+import co.touchlab.squeaky.dao.BaseTable;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.DataType;
 import co.touchlab.squeaky.field.DatabaseField;
@@ -66,7 +67,7 @@ public class DateLongTypeTest extends BaseTypeTest
 	}
 
 	@DatabaseTable
-	protected static class LocalDateLong
+	protected static class LocalDateLong// extends BaseTablee
 	{
 		@DatabaseField(columnName = DATE_COLUMN, dataType = DataType.DATE_LONG)
 		Date date;
