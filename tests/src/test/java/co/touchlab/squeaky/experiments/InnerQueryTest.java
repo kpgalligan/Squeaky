@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Random;
 
 /**
+ * This should be removed.  Just playing around with ideas.
+ *
  * Created by kgalligan on 10/24/15.
  */
 @RunWith(RobolectricTestRunner.class)
@@ -44,7 +46,7 @@ public class InnerQueryTest extends BaseTypeTest
 			Dao<Parent, ?> parentDao = helper.getDao(Parent.class);
 			Dao<Child, ?> childDao = helper.getDao(Child.class);
 			Random random = new Random();
-			for(int i=0; i<100000; i++)
+			for(int i=0; i<1000; i++)
 			{
 				Parent parent = new Parent();
 				parent.name = "parent "+ i;

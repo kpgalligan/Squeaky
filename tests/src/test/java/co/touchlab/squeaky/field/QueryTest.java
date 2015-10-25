@@ -2,6 +2,7 @@ package co.touchlab.squeaky.field;
 
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.types.BaseTypeTest;
+import co.touchlab.squeaky.table.DatabaseQuery;
 import co.touchlab.squeaky.table.DatabaseTable;
 import co.touchlab.squeaky.table.DatabaseView;
 import org.junit.Assert;
@@ -18,7 +19,7 @@ import java.util.Random;
  * Created by kgalligan on 7/26/15.
  */
 @RunWith(RobolectricTestRunner.class)
-public class ViewTest extends BaseTypeTest
+public class QueryTest extends BaseTypeTest
 {
 	private SimpleHelper helper;
 
@@ -35,7 +36,7 @@ public class ViewTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testView() throws Exception
+	public void testQuery() throws Exception
 	{
 		Dao<Parent, Integer> parentDao = helper.getDao(Parent.class);
 		Dao<Child, Integer> childDao = helper.getDao(Child.class);
@@ -59,18 +60,18 @@ public class ViewTest extends BaseTypeTest
 			}
 		}
 
-		Dao<ParentChildView, Integer> parentChildViewDao = helper.getDao(ParentChildView.class);
+		Dao<ParentChildQuery, Integer> parentChildViewDao = helper.getDao(ParentChildQuery.class);
 
-		List<ParentChildView> parentChildViews = parentChildViewDao.queryForAll().list();
+		List<ParentChildQuery> parentChildViews = parentChildViewDao.queryForAll().list();
 
 		Assert.assertEquals("Not enough view results", parentChildViews.size(), 60);
 
-		for (ParentChildView parentChildView : parentChildViews)
+		for (ParentChildQuery parentChildView : parentChildViews)
 		{
 			Assert.assertTrue(parentChildView.childId > 0);
 			Assert.assertTrue(parentChildView.parentName.startsWith("p "));
 		}
-		
+
 		/*Parent parentDb = parentdao.queryForAll().list().get(0);
 		parentDao.fillForeignCollection(parentDb, "children");
 
@@ -103,8 +104,8 @@ public class ViewTest extends BaseTypeTest
 		Parent parent;
 	}
 
-	@DatabaseView
-	protected static class ParentChildView
+	@DatabaseQuery(fromQuery = "select p.id parentId, p.name parentName, c.id childId, c.asdf from Parent p join Child c on p.id = c.parent_id")
+	protected static class ParentChildQuery
 	{
 		@DatabaseField
 		public final int parentId;
@@ -118,7 +119,7 @@ public class ViewTest extends BaseTypeTest
 		@DatabaseField
 		public final String asdf;
 
-		public ParentChildView(int parentId, String parentName, int childId, String asdf)
+		public ParentChildQuery(int parentId, String parentName, int childId, String asdf)
 		{
 			this.parentId = parentId;
 			this.parentName = parentName;
@@ -129,7 +130,7 @@ public class ViewTest extends BaseTypeTest
 
 	private SimpleHelper getHelper()
 	{
-		return createViewHelper("create view ParentChildView as select p.id parentId, p.name parentName, c.id childId, c.asdf from Parent p join Child c on p.id = c.parent_id",
+		return createHelper(
 				Child.class,
 				Parent.class
 		);

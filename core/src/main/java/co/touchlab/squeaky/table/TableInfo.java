@@ -16,17 +16,15 @@ public class TableInfo<T>
 {
 	public final Class<T> dataClass;
 	private final String tableName;
-	private final String viewQuery;
 	private final FieldType[] fieldTypes;
 	private final ForeignCollectionInfo[] foreignCollections;
 	public final FieldType idField;
 
-	public TableInfo(Class clazz, String name, String viewQuery, FieldsEnum[] fields, ForeignCollectionInfo[] foreignCollections)
+	public TableInfo(Class clazz, String name, FieldsEnum[] fields, ForeignCollectionInfo[] foreignCollections)
 			throws SQLException
 	{
 		this.dataClass = clazz;
 		this.tableName = name;
-		this.viewQuery = viewQuery;
 		this.fieldTypes = new FieldType[fields.length];
 		int i = 0;
 		for (FieldsEnum field : fields)
@@ -61,11 +59,6 @@ public class TableInfo<T>
 	public String getTableName()
 	{
 		return tableName;
-	}
-
-	public String getViewQuery()
-	{
-		return viewQuery;
 	}
 
 	/**

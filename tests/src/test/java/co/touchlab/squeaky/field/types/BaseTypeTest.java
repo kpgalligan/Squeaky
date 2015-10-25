@@ -7,6 +7,8 @@ import co.touchlab.squeaky.table.TableUtils;
 import org.robolectric.RuntimeEnvironment;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class BaseTypeTest
 {
@@ -16,24 +18,25 @@ public abstract class BaseTypeTest
 		return new SimpleHelper(RuntimeEnvironment.application, getClass().getSimpleName() + ".db", c);
 	}
 
-	public SimpleHelper createViewHelper(Class viewClass, Class... c)
+	public SimpleHelper createViewHelper(String viewSql, Class... c)
 	{
-		return new SimpleHelper(RuntimeEnvironment.application, viewClass, getClass().getSimpleName() + ".db", c);
+		return new SimpleHelper(RuntimeEnvironment.application, Collections.singletonList(viewSql), getClass().getSimpleName() + ".db", c);
 	}
 
 	public static class SimpleHelper extends SqueakyOpenHelper
 	{
-		private Class viewClass;
+		private List<String> createSqlList;
 
 		public SimpleHelper(Context context, String name, Class... managingClasses)
 		{
 			super(context, name, null, 1, managingClasses);
 		}
 
-		public SimpleHelper(Context context, Class viewClass, String name, Class... managingClasses)
+		public SimpleHelper(Context context, List<String> createSqlList, String name, Class... managingClasses)
 		{
+
 			super(context, name, null, 1, managingClasses);
-			this.viewClass = viewClass;
+			this.createSqlList = createSqlList;
 		}
 
 		@Override
@@ -42,9 +45,12 @@ public abstract class BaseTypeTest
 			try
 			{
 				TableUtils.createTables(sqLiteDatabase, getManagingClasses());
-				if (viewClass != null)
+				if (createSqlList != null)
 				{
-					TableUtils.createViews(sqLiteDatabase, viewClass);
+					for (String s : createSqlList)
+					{
+						sqLiteDatabase.execSQL(s);
+					}
 				}
 			}
 			catch (SQLException e)
@@ -65,10 +71,7 @@ public abstract class BaseTypeTest
 			}
 			try
 			{
-				if (viewClass != null)
-				{
-					TableUtils.dropViews(sqLiteDatabase, true, viewClass);
-				}
+
 				TableUtils.dropTables(sqLiteDatabase, true, reversed);
 			}
 			catch (SQLException e)

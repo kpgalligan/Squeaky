@@ -37,7 +37,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -60,6 +59,11 @@ public class AnnotationProcessor extends AbstractProcessor
 	private List<ClassName> baseClasses;
 	private List<ClassName> generatedClasses;
 	private Elements elementUtils;
+
+	enum EntityType
+	{
+		Table, View, Query
+	}
 
 	@Override
 	public synchronized void init(ProcessingEnvironment processingEnv)
@@ -108,20 +112,18 @@ public class AnnotationProcessor extends AbstractProcessor
 		public final List<ForeignCollectionHolder> foreignCollectionInfos;
 		public final TypeElement typeElement;
 		public final String tableName;
-		public final String viewQuery;
-		public final boolean table;
+		public final EntityType entityType;
 
-		public DatabaseTableHolder(Element annoDatabaseTableElement, List<FieldTypeGen> fieldTypeGens, List<ForeignCollectionHolder> foreignCollectionInfos, TypeElement typeElement, String tableName, String viewQuery, List<FieldTypeGen> finalFieldTypeGens, ExecutableElement finalConstructor, boolean table)
+		public DatabaseTableHolder(Element annoDatabaseTableElement, List<FieldTypeGen> fieldTypeGens, List<ForeignCollectionHolder> foreignCollectionInfos, TypeElement typeElement, String tableName, List<FieldTypeGen> finalFieldTypeGens, ExecutableElement finalConstructor, EntityType entityType)
 		{
 			this.annoDatabaseTableElement = annoDatabaseTableElement;
 			this.fieldTypeGens = fieldTypeGens;
 			this.foreignCollectionInfos = foreignCollectionInfos;
 			this.typeElement = typeElement;
 			this.tableName = tableName;
-			this.viewQuery = viewQuery;
 			this.finalFieldTypeGens = finalFieldTypeGens;
 			this.finalConstructor = finalConstructor;
-			this.table = table;
+			this.entityType = entityType;
 		}
 	}
 	private boolean safeProcess(RoundEnvironment roundEnv)
@@ -138,7 +140,7 @@ public class AnnotationProcessor extends AbstractProcessor
 				error(annotatedElement, "Only classes can be annotated with %s", DatabaseTable.class.getSimpleName());
 				return false;
 			}
-			if (processTableView(tableHolders, annotatedElement, true)) return false;
+			if (processTableViewQuery(tableHolders, annotatedElement, EntityType.Table)) return false;
 		}
 
 		for (Element annotatedElement : roundEnv.getElementsAnnotatedWith(DatabaseView.class))
@@ -148,7 +150,17 @@ public class AnnotationProcessor extends AbstractProcessor
 				error(annotatedElement, "Only classes can be annotated with %s", DatabaseView.class.getSimpleName());
 				return false;
 			}
-			if (processTableView(tableHolders, annotatedElement, false)) return false;
+			if (processTableViewQuery(tableHolders, annotatedElement, EntityType.View)) return false;
+		}
+
+		for (Element annotatedElement : roundEnv.getElementsAnnotatedWith(DatabaseQuery.class))
+		{
+			if (!annotatedElement.getKind().isClass())
+			{
+				error(annotatedElement, "Only classes can be annotated with %s", DatabaseQuery.class.getSimpleName());
+				return false;
+			}
+			if (processTableViewQuery(tableHolders, annotatedElement, EntityType.Query)) return false;
 		}
 
 		for (DatabaseTableHolder tableHolder : tableHolders)
@@ -168,10 +180,26 @@ public class AnnotationProcessor extends AbstractProcessor
 		return false;
 	}
 
-	private boolean processTableView(List<DatabaseTableHolder> tableHolders, Element annotatedElement, boolean table)
+
+
+	private boolean processTableViewQuery(List<DatabaseTableHolder> tableHolders, Element annotatedElement, EntityType entityType)
 	{
 		TypeElement typeElement = (TypeElement) annotatedElement;
-		String tableName = table ? extractTableName(typeElement) : extractViewName(typeElement);
+		String fromString;
+
+		switch (entityType)
+		{
+			case Table:
+			case View:
+				fromString = extractTableName(typeElement);
+				break;
+			case Query:
+				fromString = "("+ typeElement.getAnnotation(DatabaseQuery.class).fromQuery() +")";
+				break;
+			default:
+				throw new RuntimeException("No type (this will NEVER happen)");
+		}
+
 		List<FieldTypeGen> fieldTypeGens = new ArrayList<FieldTypeGen>();
 		List<ForeignCollectionHolder> foreignCollectionInfos = new ArrayList<ForeignCollectionHolder>();
 
@@ -193,12 +221,7 @@ public class AnnotationProcessor extends AbstractProcessor
 					} else if (element.getAnnotation(ForeignCollectionField.class) != null) {
 						ForeignCollectionField foreignCollectionField = element.getAnnotation(ForeignCollectionField.class);
 						foreignCollectionInfos.add(new ForeignCollectionHolder(foreignCollectionField, (VariableElement)element, messager));
-
-/*FieldBindings fieldConfig = FieldBindings.fromForeignCollection(element, foreignCollectionField);
-if (fieldConfig != null) {
-fieldConfigs.add(fieldConfig);
-}*/
-}
+					}
 				}
 			}
 			if (working.getSuperclass().getKind().equals(TypeKind.NONE))
@@ -211,9 +234,10 @@ fieldConfigs.add(fieldConfig);
 		{
 			error(
 					typeElement,
-					"Every class annnotated with %s or %s must have at least 1 field annotated with %s",
+					"Every class annnotated with %s, %s, or %s must have at least 1 field annotated with %s",
 					DatabaseTable.class.getSimpleName(),
 					DatabaseView.class.getSimpleName(),
+					DatabaseQuery.class.getSimpleName(),
 					DatabaseField.class.getSimpleName()
 			);
 			return true;
@@ -280,11 +304,10 @@ fieldConfigs.add(fieldConfig);
 				fieldTypeGens,
 				foreignCollectionInfos,
 				typeElement,
-				tableName,
-				table ? null : StringUtils.trimToNull(typeElement.getAnnotation(DatabaseView.class).viewQuery()),
+				fromString,
 				finalFields,
 				finalConstructor,
-				table);
+				entityType);
 
 		tableHolders.add(tableHolder);
 		return false;
@@ -295,7 +318,7 @@ fieldConfigs.add(fieldConfig);
 		TypeElement element = tableHolder.typeElement;
 		List<FieldTypeGen> fieldTypeGens = tableHolder.fieldTypeGens;
 		List<ForeignCollectionHolder> foreignCollectionInfos = tableHolder.foreignCollectionInfos;
-		String tableName = tableHolder.tableName;
+
 
 		ConfigureClassDefinitions configureClassDefinitions = new ConfigureClassDefinitions(databaseTableHolders, element).invoke();
 		ClassName configName = configureClassDefinitions.getConfigName();
@@ -325,7 +348,7 @@ fieldConfigs.add(fieldConfig);
 		configBuilder.addMethod(constructor);
 
 		createObject(databaseTableHolders, tableHolder, className, configBuilder);
-		fillRow(databaseTableHolders, foreignCollectionInfos, element, fieldTypeGens, tableName, className, idType, configBuilder);
+		fillRow(databaseTableHolders, foreignCollectionInfos, element, fieldTypeGens, className, idType, configBuilder);
 //		assignVersion(className, configBuilder);
 		assignId(fieldTypeGens, className, configBuilder);
 		extractId(fieldTypeGens, className, configBuilder);
@@ -337,10 +360,10 @@ fieldConfigs.add(fieldConfig);
 
 		addForeignCollectionFillers(configureClassDefinitions, foreignCollectionInfos, className, idType, configBuilder);
 
-		MethodSpec fieldConfigsMethod = fieldConfigs(databaseTableHolders, fieldTypeGens, tableName, className, configBuilder);
+		MethodSpec fieldConfigsMethod = fieldConfigs(databaseTableHolders, fieldTypeGens, tableHolder.entityType == EntityType.Table ? tableHolder.tableName : null, configBuilder);
 		MethodSpec foreignConfigsMethod = foreignConfigs(foreignCollectionInfos, configBuilder);
 
-		tableConfig(element, tableName, tableHolder.viewQuery, className, configBuilder, fieldConfigsMethod, foreignConfigsMethod);
+		tableConfig(element, tableHolder.tableName, className, configBuilder, fieldConfigsMethod, foreignConfigsMethod);
 
 		baseClasses.add(className);
 		generatedClasses.add(configName);
@@ -395,19 +418,18 @@ fieldConfigs.add(fieldConfig);
 		configBuilder.addMethod(globalFillMethod.build());
 	}
 
-	private void tableConfig(TypeElement element, String tableName, String viewQuery, ClassName className, TypeSpec.Builder configBuilder, MethodSpec fieldConfigsMethod, MethodSpec foreignConfigsMethod)
+	private void tableConfig(TypeElement element, String tableName, ClassName className, TypeSpec.Builder configBuilder, MethodSpec fieldConfigsMethod, MethodSpec foreignConfigsMethod)
 	{
 		TypeName databaseTableConfig = ParameterizedTypeName.get(ClassName.get(TableInfo.class), className);
 		MethodSpec.Builder tableConfigMethodBuilder = MethodSpec.methodBuilder("getTableConfig")
 				.addModifiers(Modifier.PUBLIC)
 				.addException(SQLException.class)
 				.returns(databaseTableConfig)
-				.addStatement("$T config = new $T($T.class, $S, $S, $N(), $N())",
+				.addStatement("$T config = new $T($T.class, $S, $N(), $N())",
 						databaseTableConfig,
 						databaseTableConfig,
 						element,
 						tableName,
-						viewQuery,
 						fieldConfigsMethod,
 						foreignConfigsMethod
 				);
@@ -417,7 +439,7 @@ fieldConfigs.add(fieldConfig);
 		configBuilder.addMethod(tableConfigMethodBuilder.build());
 	}
 
-	private MethodSpec fieldConfigs(List<DatabaseTableHolder> databaseTableHolders, List<FieldTypeGen> fieldTypeGens, String tableName, ClassName className, TypeSpec.Builder configBuilder)
+	private MethodSpec fieldConfigs(List<DatabaseTableHolder> databaseTableHolders, List<FieldTypeGen> fieldTypeGens, String indexNameBase, TypeSpec.Builder configBuilder)
 	{
 		TypeSpec.Builder fieldsEnumBuilder = TypeSpec.enumBuilder("Fields")
 				.addModifiers(Modifier.PUBLIC)
@@ -436,22 +458,16 @@ fieldConfigs.add(fieldConfig);
 								.build());
 
 
-		TypeName listOfFieldConfigs = ParameterizedTypeName.get(List.class, FieldsEnum.class);
-		TypeName arrayListOfFieldConfigs = ParameterizedTypeName.get(ArrayList.class, FieldsEnum.class);
-
 		MethodSpec.Builder fieldConfigsMethodBuilder = MethodSpec.methodBuilder("getFields")
 				.addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-//				.addException(SQLException.class)
 				.returns(FieldsEnum[].class);
 
 		for (FieldTypeGen config : fieldTypeGens)
 		{
 			fieldsEnumBuilder
 					.addEnumConstant(config.fieldName,
-							TypeSpec.anonymousClassBuilder("$L", getFieldConfig(databaseTableHolders, config, config.databaseField, tableName, className)).build()
+							TypeSpec.anonymousClassBuilder("$L", getFieldConfig(databaseTableHolders, config, config.databaseField, indexNameBase)).build()
 					);
-//			fieldConfigsMethodBuilder.addCode(getFieldConfig(databaseTableHolders, config, config.databaseField, tableName, className));
-//			fieldConfigsMethodBuilder.addStatement("list.add(Fields.$L)", config.fieldName);
 		}
 
 
@@ -588,7 +604,7 @@ fieldConfigs.add(fieldConfig);
 		}
 	}*/
 
-	private void fillRow(List<DatabaseTableHolder> databaseTableHolders, List<ForeignCollectionHolder> foreignCollectionInfos,  TypeElement element, List<FieldTypeGen> fieldTypeGens, String tableName, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
+	private void fillRow(List<DatabaseTableHolder> databaseTableHolders, List<ForeignCollectionHolder> foreignCollectionInfos,  TypeElement element, List<FieldTypeGen> fieldTypeGens, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
 	{
 		ParameterizedTypeName modelDaoType = ParameterizedTypeName.get(ClassName.get(ModelDao.class), className, idType == null ? ClassName.get(Object.class) : idType);
 		MethodSpec.Builder javaFillMethodBuilder = MethodSpec.methodBuilder("fillRow")
@@ -601,7 +617,7 @@ fieldConfigs.add(fieldConfig);
 				.addException(SQLException.class)
 				.addAnnotation(Override.class);
 
-		makeCopyRows(databaseTableHolders, javaFillMethodBuilder, element, tableName, fieldTypeGens);
+		makeCopyRows(databaseTableHolders, javaFillMethodBuilder, element, fieldTypeGens);
 
 		for (ForeignCollectionHolder foreignCollectionInfo : foreignCollectionInfos)
 		{
@@ -784,7 +800,7 @@ fieldConfigs.add(fieldConfig);
 				.addParameter(className, "data")
 				;
 
-		if(tableHolder.table)
+		if(tableHolder.entityType == EntityType.Table)
 		{
 			int assignCount = 0;
 			int configCount = 0;
@@ -953,7 +969,7 @@ fieldConfigs.add(fieldConfig);
 		return (sqlType == SqlType.BLOB || sqlType == SqlType.BYTE_ARRAY || sqlType == SqlType.SERIALIZABLE);
 	}
 
-	private void makeCopyRows(List<DatabaseTableHolder> databaseTableHolders, MethodSpec.Builder methodBuilder, TypeElement element, String tableName, List<FieldTypeGen> fieldConfigs)
+	private void makeCopyRows(List<DatabaseTableHolder> databaseTableHolders, MethodSpec.Builder methodBuilder, TypeElement element, List<FieldTypeGen> fieldConfigs)
 	{
 		CodeBlock.Builder builder = CodeBlock.builder();
 		int count = 0;
@@ -1058,7 +1074,7 @@ fieldConfigs.add(fieldConfig);
 		return dataType;
 	}
 
-	private CodeBlock getFieldConfig(List<DatabaseTableHolder> databaseTableHolders, FieldTypeGen config, DatabaseField databaseField, String tableName, ClassName className)
+	private CodeBlock getFieldConfig(List<DatabaseTableHolder> databaseTableHolders, FieldTypeGen config, DatabaseField databaseField, String indexNameBase)
 	{
 		DataType dataType = findFieldDataType(databaseTableHolders, (TypeElement) config.databaseElement, config);
 
@@ -1091,7 +1107,7 @@ fieldConfigs.add(fieldConfig);
 							"$L" +
 							")",
 					FieldType.class,
-					tableName,
+					indexNameBase,
 					config.fieldName,
 					config.columnName,
 					config.isId,
@@ -1137,7 +1153,7 @@ fieldConfigs.add(fieldConfig);
 							"$L," +
 							"null, $L)",
 					FieldType.class,
-					tableName,
+					indexNameBase,
 					config.fieldName,
 					config.columnName,
 					config.isId,
@@ -1169,6 +1185,7 @@ fieldConfigs.add(fieldConfig);
 		Set<String> annotations = new LinkedHashSet<String>();
 		annotations.add(DatabaseTable.class.getCanonicalName());
 		annotations.add(DatabaseView.class.getCanonicalName());
+		annotations.add(DatabaseQuery.class.getCanonicalName());
 		return annotations;
 	}
 
@@ -1190,33 +1207,20 @@ fieldConfigs.add(fieldConfig);
 	private static String extractTableName(TypeElement element)
 	{
 		DatabaseTable databaseTable = element.getAnnotation(DatabaseTable.class);
-		String name;
-		if (databaseTable != null && StringUtils.isNoneEmpty(databaseTable.tableName()))
+		DatabaseView databaseView = element.getAnnotation(DatabaseView.class);
+		if (databaseTable != null && StringUtils.isNotEmpty(databaseTable.tableName()))
 		{
-			name = databaseTable.tableName();
+			return databaseTable.tableName();
+		}
+		else if(databaseView != null && StringUtils.isNotEmpty(databaseView.viewName()))
+		{
+			return databaseView.viewName();
 		}
 		else
 		{
 			// if the name isn't specified, it is the class name lowercased
-			name = element.getSimpleName().toString().toLowerCase();
+			return element.getSimpleName().toString().toLowerCase();
 		}
-		return name;
-	}
-
-	private static String extractViewName(TypeElement element)
-	{
-		DatabaseView databaseTable = element.getAnnotation(DatabaseView.class);
-		String name;
-		if (databaseTable != null && StringUtils.isNoneEmpty(databaseTable.viewName()))
-		{
-			name = databaseTable.viewName();
-		}
-		else
-		{
-			// if the name isn't specified, it is the class name lowercased
-			name = element.getSimpleName().toString().toLowerCase();
-		}
-		return name;
 	}
 
 	private class ConfigureClassDefinitions

@@ -33,6 +33,4 @@ public @interface DatabaseView
 	 * The name of the column in the database. If not set then the name is taken from the class name lowercased.
 	 */
 	String viewName() default "";
-
-	String viewQuery() default "";
 }

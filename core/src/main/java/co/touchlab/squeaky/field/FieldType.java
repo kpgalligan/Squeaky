@@ -1,6 +1,7 @@
 package co.touchlab.squeaky.field;
 
 import android.database.Cursor;
+import android.text.TextUtils;
 import co.touchlab.squeaky.field.types.BigDecimalStringType;
 import co.touchlab.squeaky.field.types.DateStringType;
 import co.touchlab.squeaky.field.types.TimeStampStringType;
@@ -33,7 +34,6 @@ public class FieldType
 	private static float DEFAULT_VALUE_FLOAT;
 	private static double DEFAULT_VALUE_DOUBLE;
 
-	private final String tableName;
 	private final String columnName;
 	private final boolean isId;
 	private final boolean isGeneratedId;
@@ -50,6 +50,7 @@ public class FieldType
 	private final boolean throwIfNull;
 	private final Enum<?> unknownEnumVal;
 	private final boolean foreignAutoRefresh;
+	private String indexNameBase;
 	private String indexName;
 	private String uniqueIndexName;
 
@@ -59,15 +60,8 @@ public class FieldType
 
 	private FieldConverter fieldConverter;
 
-	/**
-	 * ThreadLocal counters to detect initialization loops. Notice that there is _not_ an initValue() method on purpose.
-	 * We don't want to create these if we don't have to.
-	 */
-	private static final ThreadLocal<LevelCounters> threadLevelCounters = new ThreadLocal<LevelCounters>();
-
-
 	public FieldType(
-			String tableName,
+			String indexNameBase,
 			String fieldName,
 			String columnName,
 			boolean isId,
@@ -89,7 +83,7 @@ public class FieldType
 			boolean foreignAutoRefresh)
 	{
 		this.fieldName = fieldName;
-		this.tableName = tableName;
+		this.indexNameBase = indexNameBase;
 		this.canBeNull = canBeNull;
 		this.format = format;
 		this.unique = unique;
@@ -123,11 +117,6 @@ public class FieldType
 		{
 			throw new RuntimeException(e);
 		}
-	}
-
-	public String getTableName()
-	{
-		return tableName;
 	}
 
 	public String getFieldName()
@@ -239,42 +228,42 @@ public class FieldType
 
 	public String getIndexName()
 	{
-		return getIndexName(tableName);
+		return getIndexName(indexNameBase);
 	}
 
-	public String getIndexName(String tableName)
+	public String getIndexName(String indexNameBase)
 	{
-		if (index && (indexName == null || indexName.equals("")))
+		if (index && TextUtils.isEmpty(indexName))
 		{
-			indexName = findIndexName(tableName);
+			indexName = findIndexName(indexNameBase);
 		}
 		return indexName;
 	}
 
-	public String getUniqueIndexName(String tableName)
+	public String getUniqueIndexName(String indexNameBase)
 	{
 		if (uniqueIndex && (uniqueIndexName == null || uniqueIndexName.equals("")))
 		{
-			uniqueIndexName = findIndexName(tableName);
+			uniqueIndexName = findIndexName(indexNameBase);
 		}
 		return uniqueIndexName;
 	}
 
-	private String findIndexName(String tableName)
+	private String findIndexName(String indexNameBase)
 	{
 		if (columnName == null)
 		{
-			return tableName + "_" + fieldName + "_idx";
+			return indexNameBase + "_" + fieldName + "_idx";
 		}
 		else
 		{
-			return tableName + "_" + columnName + "_idx";
+			return indexNameBase + "_" + columnName + "_idx";
 		}
 	}
 
 	public String getUniqueIndexName()
 	{
-		return getUniqueIndexName(tableName);
+		return getUniqueIndexName(indexNameBase);
 	}
 
 	public DataType getDataType()
@@ -384,19 +373,6 @@ public class FieldType
 		{
 			this.defaultValue = this.fieldConverter.parseDefaultString(this, defaultStr);
 		}
-	}
-
-	private static class LevelCounters
-	{
-		// current auto-refresh recursion level
-		int autoRefreshLevel;
-		// maximum auto-refresh recursion level
-		int autoRefreshLevelMax;
-
-		// current foreign-collection recursion level
-		int foreignCollectionLevel;
-		// maximum foreign-collection recursion level
-		int foreignCollectionLevelMax;
 	}
 
 	public DataPersister getDataPersister(DataPersister defaultPersister)

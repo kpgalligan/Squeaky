@@ -28,14 +28,6 @@ public class TableUtils
 	{
 	}
 
-	/**
-	 * Issue the database statements to create the table associated with a table configuration.
-	 *
-	 * @param connectionSource connectionSource Associated connection source.
-	 * @param tableConfig      Hand or spring wired table configuration. If null then the class must have {@link DatabaseField}
-	 *                         annotations.
-	 * @return The number of statements executed to do so.
-	 */
 	public static <T, ID> int createTables(SQLiteDatabase connectionSource, Class... clazz)
 			throws SQLException
 	{
@@ -43,17 +35,6 @@ public class TableUtils
 		for (Class aClass : clazz)
 		{
 			count += createTable(connectionSource, aClass, false);
-		}
-		return count;
-	}
-
-	public static <T, ID> int createViews(SQLiteDatabase connectionSource, Class... clazz)
-			throws SQLException
-	{
-		int count = 0;
-		for (Class aClass : clazz)
-		{
-			count += createView(connectionSource, aClass, false);
 		}
 		return count;
 	}
@@ -77,26 +58,6 @@ public class TableUtils
 		return count;
 	}
 
-	public static <T, ID> int createViewsIfNotExists(SQLiteDatabase connectionSource, Class... clazz)
-			throws SQLException
-	{
-		int count = 0;
-		for (Class aClass : clazz)
-		{
-			count += createView(connectionSource, aClass, true);
-		}
-		return count;
-	}
-
-	/**
-	 * Return an ordered collection of SQL statements that need to be run to create a table. To do the work of creating,
-	 * you should call {@link #createTable}.
-	 *
-	 * @param connectionSource Our connect source which is used to get the database type, not to apply the creates.
-	 * @param tableConfig      Hand or spring wired table configuration. If null then the class must have {@link DatabaseField}
-	 *                         annotations.
-	 * @return The collection of table create statements.
-	 */
 	public static <T, ID> List<String> getCreateTableStatements(SQLiteDatabase connectionSource,
 																Class clazz) throws SQLException
 	{
@@ -104,19 +65,6 @@ public class TableUtils
 		return addCreateTableStatements(loadTableMapper(clazz), false);
 	}
 
-	/**
-	 * Issue the database statements to drop the table associated with a table configuration.
-	 * <p/>
-	 * <p>
-	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
-	 * </p>
-	 *
-	 * @param connectionSource Associated connection source.
-	 * @param tableConfig      Hand or spring wired table configuration. If null then the class must have {@link DatabaseField}
-	 *                         annotations.
-	 * @param ignoreErrors     If set to true then try each statement regardless of {@link SQLException} thrown previously.
-	 * @return The number of statements executed to do so.
-	 */
 	public static <T, ID> int dropTables(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
 	{
 		int count = 0;
@@ -155,12 +103,6 @@ public class TableUtils
 	{
 
 		return doCreateTable(connectionSource, loadTableMapper(clazz), ifNotExists);
-	}
-
-	private static <T, ID> int createView(SQLiteDatabase connectionSource, Class clazz, boolean ifNotExists) throws SQLException
-	{
-
-		return doCreateView(connectionSource, loadTableMapper(clazz), ifNotExists);
 	}
 
 	private static void clearTable(SQLiteDatabase connectionSource, String tableName) throws SQLException
@@ -282,25 +224,6 @@ public class TableUtils
 		addCreateIndexStatements(tableInfo, statements, ifNotExists, true);
 	}
 
-	/**
-	 * Generate and return the list of statements to create a database table and any associated features.
-	 */
-	private static <T, ID> void addCreateViewStatements(GeneratedTableMapper<T, ID> tableInfo,
-														List<String> statements, boolean ifNotExists) throws SQLException
-	{
-		StringBuilder sb = new StringBuilder(256);
-		sb.append("CREATE VIEW ");
-		if (ifNotExists)
-		{
-			sb.append("IF NOT EXISTS ");
-		}
-		appendEscapedEntityName(sb, tableInfo.getTableConfig().getTableName());
-		sb.append(" AS ");
-		sb.append(tableInfo.getTableConfig().getViewQuery());
-
-		statements.add(sb.toString());
-	}
-
 	private static <T, ID> void addCreateIndexStatements(GeneratedTableMapper<T, ID> tableInfo,
 														 List<String> statements, boolean ifNotExists, boolean unique) throws SQLException
 	{
@@ -410,19 +333,6 @@ public class TableUtils
 
 	}
 
-	private static <T, ID> int doCreateView(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableInfo,
-											boolean ifNotExists) throws SQLException
-	{
-		OLog.i(TAG, "creating table '{" + tableInfo.getTableConfig().getTableName() + "}'");
-		List<String> statements = new ArrayList<String>();
-		addCreateViewStatements(tableInfo, statements, ifNotExists);
-
-		int stmtC =
-				doStatements(connectionSource, "create", statements, false, false, false);
-		return stmtC;
-
-	}
-
 	private static int doStatements(SQLiteDatabase connection, String label, Collection<String> statements,
 									boolean ignoreErrors, boolean returnsNegative, boolean expectingZero) throws SQLException
 	{
@@ -456,13 +366,6 @@ public class TableUtils
 	{
 		List<String> statements = new ArrayList<String>();
 		addCreateTableStatements(tableInfo, statements, ifNotExists);
-		return statements;
-	}
-
-	private static <T, ID> List<String> addCreateViewStatements(GeneratedTableMapper<T, ID> tableInfo, boolean ifNotExists) throws SQLException
-	{
-		List<String> statements = new ArrayList<String>();
-		addCreateViewStatements(tableInfo, statements, ifNotExists);
 		return statements;
 	}
 
