@@ -70,7 +70,7 @@ public class ViewTest extends BaseTypeTest
 			Assert.assertTrue(parentChildView.childId > 0);
 			Assert.assertTrue(parentChildView.parentName.startsWith("p "));
 		}
-		
+
 		/*Parent parentDb = parentdao.queryForAll().list().get(0);
 		parentDao.fillForeignCollection(parentDb, "children");
 
