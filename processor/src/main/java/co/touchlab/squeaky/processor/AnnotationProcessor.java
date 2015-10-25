@@ -561,7 +561,7 @@ fieldConfigs.add(fieldConfig);
 		{
 			javaFillMethodBuilder.addStatement("$T data = new $T()", className, className);
 		}
-		messager.printMessage(Diagnostic.Kind.ERROR, "balls: start");
+//		messager.printMessage(Diagnostic.Kind.ERROR, "balls: start");
 		/*List<TypeMirror> mirrors = new ArrayList<>();
 		listTypes(tableHolder.typeElement.asType(), mirrors);
 
