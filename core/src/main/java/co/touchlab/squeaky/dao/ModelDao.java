@@ -226,30 +226,6 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		return results;
 	}
 
-	private ForeignRefresh[] fillForeignRefreshMap(FieldType parentType, int count) throws SQLException
-	{
-		if(count == 0)
-			return null;
-
-		FieldType[] fieldTypes = squeakyContext.getGeneratedTableMapper(parentType.getFieldType()).getTableConfig().getFieldTypes();
-		return fillForeignRefreshMap(fieldTypes, count);
-	}
-
-	private ForeignRefresh[] fillForeignRefreshMap(FieldType[] fieldTypes, int count) throws SQLException
-	{
-		List<ForeignRefresh> foreignRefreshs = new ArrayList<>();
-
-		for (FieldType fieldType : fieldTypes)
-		{
-			if(fieldType.isForeign() && fieldType.isForeignAutoRefresh())
-			{
-				foreignRefreshs.add(new ForeignRefresh(fieldType.getFieldName(), fillForeignRefreshMap(fieldType, count-1)));
-			}
-		}
-
-		return foreignRefreshs.size() == 0 ? null : foreignRefreshs.toArray(new ForeignRefresh[foreignRefreshs.size()]);
-	}
-
 	private Cursor makeCursor(String from, String where, String[] args, String orderBy, Integer limit, Integer offset)
 	{
 		StringBuilder sb = new StringBuilder();
@@ -613,7 +589,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	private ForeignRefresh[] generateDefaultForeignRefreshMap() throws SQLException
 	{
-		return fillForeignRefreshMap(generatedTableMapper.getTableConfig().getFieldTypes(), Config.MAX_AUTO_REFRESH);
+		return DaoHelper.fillForeignRefreshMap(squeakyContext, generatedTableMapper.getTableConfig().getFieldTypes(), Config.MAX_AUTO_REFRESH);
 	}
 
 	@Override

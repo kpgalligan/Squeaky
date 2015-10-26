@@ -540,6 +540,9 @@ public class AnnotationProcessor extends AbstractProcessor
 
 		if(tableHolder.finalConstructor != null)
 		{
+			javaFillMethodBuilder.beginControlFlow("if(results == null)")
+					.addStatement("throw new $T(\"Foreign entities can't have final fields. They need to be refreshed.\")", SQLException.class)
+					.endControlFlow();
 			List<String> consParamList = new ArrayList<String>();
 
 			List<? extends VariableElement> parameters = tableHolder.finalConstructor.getParameters();
@@ -1001,15 +1004,12 @@ public class AnnotationProcessor extends AbstractProcessor
 
 					CodeBlock.Builder foreignBuilder = CodeBlock.builder();
 					foreignBuilder.add("if(!results.isNull(" + count + ")){");
-					foreignBuilder.addStatement("$T __$N = $T.instance.createObject(results)", configureClassDefinitions.className, config.fieldName, configureClassDefinitions.configName);
+					foreignBuilder.addStatement("$T __$N = $T.instance.createObject(null)", configureClassDefinitions.className, config.fieldName, configureClassDefinitions.configName);
 					foreignBuilder.addStatement("$T.instance.assignId(__$N, $N)", configureClassDefinitions.configName, config.fieldName, accessData);
 
-					if(config.foreignAutoRefresh)
-					{
-						foreignBuilder.beginControlFlow("if(foreignRefreshMap == null || $T.findRefresh(foreignRefreshMap, $S) != null)", DaoHelper.class, config.fieldName);
-						foreignBuilder.addStatement("modelDao.getOpenHelper().getDao($T.class).refresh(__$N, $T.findRefresh(foreignRefreshMap, $S).refreshFields)", configureClassDefinitions.className, config.fieldName, DaoHelper.class, config.fieldName);
-						foreignBuilder.endControlFlow();
-					}
+					foreignBuilder.beginControlFlow("if(foreignRefreshMap != null && $T.findRefresh(foreignRefreshMap, $S) != null)", DaoHelper.class, config.fieldName);
+					foreignBuilder.addStatement("modelDao.getOpenHelper().getDao($T.class).refresh(__$N, $T.findRefresh(foreignRefreshMap, $S).refreshFields)", configureClassDefinitions.className, config.fieldName, DaoHelper.class, config.fieldName);
+					foreignBuilder.endControlFlow();
 
 					if (config.useGetSet)
 					{

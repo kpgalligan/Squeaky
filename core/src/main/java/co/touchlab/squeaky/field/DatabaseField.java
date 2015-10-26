@@ -41,13 +41,6 @@ public @interface DatabaseField
 	public static final String DEFAULT_STRING = "__ormlite__ no default value string was specified";
 
 	/**
-	 * Default for the maxForeignAutoRefreshLevel.
-	 *
-	 * @see #maxForeignAutoRefreshLevel()
-	 */
-	public static final int DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL = 2;
-
-	/**
 	 * The name of the column in the database. If not set then the name is taken from the field name.
 	 */
 	String columnName() default "";
@@ -176,21 +169,10 @@ public @interface DatabaseField
 	 * This will _not_ automagically create the foreign object but when the object is queried, a separate database call
 	 * will be made to load of the fields of the foreign object via an internal DAO. The default is to just have the ID
 	 * field in the object retrieved and for the caller to call refresh on the correct DAO.
+	 *
+	 * This will only traverse 2 levels by default.  Also, this will be ignored if you specify a refresh map explicitly.
 	 */
 	boolean foreignAutoRefresh() default false;
-
-	/**
-	 * Set this to be the number of times to refresh a foreign object's foreign object. If you query for A and it has an
-	 * foreign field B which has an foreign field C ..., then querying for A could get expensive. Setting this value to
-	 * 1 will mean that when you query for A, B will be auto-refreshed, but C will just have its id field set. This also
-	 * works if A has an auto-refresh field B which has an auto-refresh field A.
-	 * <p/>
-	 * <p>
-	 * <b>NOTE:</b> Increasing this value will result in more database transactions whenever you query for A, so use
-	 * carefully.
-	 * </p>
-	 */
-	int maxForeignAutoRefreshLevel() default DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL;
 
 	/**
 	 * Allows you to set a custom persister class to handle this field. This class must have a getSingleton() static
@@ -207,30 +189,6 @@ public @interface DatabaseField
 	 * supports this behavior and if {@link #generatedId()} is also true for the field.
 	 */
 	boolean allowGeneratedIdInsert() default false;
-
-	/**
-	 * Specify the SQL necessary to create this field in the database. This can be used if you need to tune the schema
-	 * to enable some per-database feature or to override the default SQL generated.
-	 */
-	String columnDefinition() default "";
-
-	/**
-	 * <p>
-	 * Set this to be true (default false) to have the foreign field will be automagically created using its internal
-	 * DAO if the ID field is not set (null or 0). So when you call dao.create() on the parent object, any field with
-	 * this set to true will possibly be created via an internal DAO. By default you have to create the object using its
-	 * DAO directly. This only works if {@link #generatedId()} is also set to true.
-	 * </p>
-	 * <p/>
-	 * <pre>
-	 * Order order1 = new Order();
-	 * // account1 has not been created in the db yet and it's id == null
-	 * order1.account = account1;
-	 * // this will create order1 _and_ pass order1.account to the internal account dao.create().
-	 * orderDao.create(order1);
-	 * </pre>
-	 */
-	boolean foreignAutoCreate() default false;
 
 	/**
 	 * Name of the foreign object's field that is tied to this table. This does not need to be specified if you are

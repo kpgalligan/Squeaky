@@ -175,10 +175,7 @@ public class FieldTypeGen
 			throw new IllegalArgumentException("Field " + fieldName
 					+ " must have foreign = true if foreignAutoRefresh = true");
 		}
-		if (databaseField.foreignAutoCreate() && !databaseField.foreign()) {
-			throw new IllegalArgumentException("Field " + fieldName
-					+ " must have foreign = true if foreignAutoCreate = true");
-		}
+
 		if (StringUtils.isNoneEmpty(databaseField.foreignColumnName()) && !databaseField.foreign()) {
 			throw new IllegalArgumentException("Field " + fieldName
 					+ " must have foreign = true if foreignColumnName is set");

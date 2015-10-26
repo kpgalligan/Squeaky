@@ -13,24 +13,29 @@ import co.touchlab.squeaky.table.GeneratedTableMapper;
  */
 public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 {
-	private final SqueakyContext helperHelper;
+	private final SqueakyContext squeakyContext;
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class... managingClasses)
 	{
 		super(context, name, factory, version);
-		helperHelper = new SqueakyContext(this, managingClasses);
+		squeakyContext = new SqueakyContext(this, managingClasses);
 	}
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Class[] managingClasses)
 	{
 		super(context, name, factory, version, errorHandler);
-		helperHelper = new SqueakyContext(this, managingClasses);
+		squeakyContext = new SqueakyContext(this, managingClasses);
+	}
+
+	public SqueakyContext getSqueakyContext()
+	{
+		return squeakyContext;
 	}
 
 	public <D extends Dao<T, ?>, T> D getDao(Class<T> clazz)
 	{
 		// special reflection fu is now handled internally by create dao calling the database type
-		Dao<T, ?> dao = helperHelper.getDao(clazz);
+		Dao<T, ?> dao = squeakyContext.getDao(clazz);
 		@SuppressWarnings("unchecked")
 		D castDao = (D) dao;
 		return castDao;
@@ -39,13 +44,13 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 	@Override
 	public synchronized void close()
 	{
-		helperHelper.close();
+		squeakyContext.close();
 		super.close();
 	}
 
 	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
 	{
-		return helperHelper.getGeneratedTableMapper(clazz);
+		return squeakyContext.getGeneratedTableMapper(clazz);
 	}
 
 	public static GeneratedTableMapper loadGeneratedTableMapper(Class clazz)
@@ -62,6 +67,6 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper
 
 	public Class[] getManagingClasses()
 	{
-		return helperHelper.getManagingClasses();
+		return squeakyContext.getManagingClasses();
 	}
 }
