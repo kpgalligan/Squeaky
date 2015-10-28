@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.dao;
 
+import android.text.TextUtils;
 import co.touchlab.squeaky.field.FieldType;
 
 import java.sql.SQLException;
@@ -11,50 +12,54 @@ import java.util.List;
  */
 public class DaoHelper
 {
-	/*public static class ForeignRefreshBuilder
+	//parent[child[grandDad]],parentLazy
+	public static Dao.ForeignRefresh[] refresh(String refreshTree)
 	{
-		private ForeignRefreshBuilder parent;
-		private List<ForeignRefreshBuilder> fields = new ArrayList<>();
-		private String field;
+		List<String> parsedFields = new ArrayList<>();
 
-		ForeignRefreshBuilder(String field, ForeignRefreshBuilder parent)
+		int bracketCount = 0;
+		int lastBreak = 0;
+		for(int i=0; i<refreshTree.length(); i++)
 		{
-			this.field = field;
-			this.parent = parent;
+			if(bracketCount == 0 && refreshTree.charAt(i) == ',')
+			{
+				String fieldTree = refreshTree.substring(lastBreak, i);
+				parsedFields.add(fieldTree.trim());
+				lastBreak = i+1;
+			}
+			else if(refreshTree.charAt(i) == '[')
+			{
+				bracketCount++;
+			}
+			else if(refreshTree.charAt(i) == ']')
+			{
+				bracketCount--;
+			}
 		}
 
-		public ForeignRefreshBuilder add(String field)
+		if(bracketCount != 0)
+			throw new RuntimeException("Bad refresh format "+ refreshTree);
+
+		parsedFields.add(refreshTree.substring(lastBreak).trim());
+
+		List<Dao.ForeignRefresh> refreshs = new ArrayList<>(parsedFields.size());
+		for (String parsedField : parsedFields)
 		{
-			fields.add(new ForeignRefreshBuilder(field, this));
-			return this;
+			if(parsedField.contains("["))
+			{
+				int startIndex = parsedField.indexOf('[');
+				refreshs.add(new Dao.ForeignRefresh(parsedField.substring(0, startIndex),
+						refresh(parsedField.substring(startIndex + 1, parsedField.length() - 1))
+				));
+			}
+			else
+			{
+				refreshs.add(new Dao.ForeignRefresh(parsedField));
+			}
 		}
 
-		public ForeignRefreshBuilder addChildFields()
-		{
-			return fields.get(fields.size() - 1);
-		}
-
-		public ForeignRefreshBuilder doneChildFields()
-		{
-			return parent;
-		}
-
-		public Dao.ForeignRefresh[] build()
-		{
-
-		}
-
-		private Dao.ForeignRefresh[] internalBuild()
-		{
-
-		}
-
+		return refreshs.toArray(new Dao.ForeignRefresh[refreshs.size()]);
 	}
-
-	public static ForeignRefreshBuilder foreignRefreshBuilder()
-	{
-		return new ForeignRefreshBuilder(null);
-	}*/
 
 	public static Dao.ForeignRefresh findRefresh(Dao.ForeignRefresh[] foreignRefreshs, String fieldName)
 	{

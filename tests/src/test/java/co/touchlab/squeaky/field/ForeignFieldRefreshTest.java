@@ -41,48 +41,39 @@ public class ForeignFieldRefreshTest extends BaseTypeTest
 	{
 		Dao.ForeignRefresh[] oneLevel = DaoHelper.fillForeignRefreshMap(helper.getSqueakyContext(), ChildEager.class, 1);
 
-		Dao.ForeignRefresh[] oneLevelCompare = new Dao.ForeignRefresh[]{
-				new Dao.ForeignRefresh("parent")
-		};
+		Dao.ForeignRefresh[] oneLevelCompare = DaoHelper.refresh("parent");
 
 		Assert.assertTrue(sameRefreshMap(oneLevel, oneLevelCompare));
 
 		Dao.ForeignRefresh[] twoLevel = DaoHelper.fillForeignRefreshMap(helper.getSqueakyContext(), ChildEager.class, 2);
 
-		Dao.ForeignRefresh[] twoLevelCompare = new Dao.ForeignRefresh[]{
-				new Dao.ForeignRefresh("parent", new Dao.ForeignRefresh[]{new Dao.ForeignRefresh("grandParentEager")})
-		};
+		Dao.ForeignRefresh[] twoLevelCompare = DaoHelper.refresh("parent[grandParentEager]");
 
 		Assert.assertTrue(sameRefreshMap(twoLevel, twoLevelCompare));
 
 		Dao.ForeignRefresh[] threeLevel = DaoHelper.fillForeignRefreshMap(helper.getSqueakyContext(), ChildEager.class, 3);
 
-		Dao.ForeignRefresh[] threeLevelCompare = new Dao.ForeignRefresh[]{
-				new Dao.ForeignRefresh("parent", new Dao.ForeignRefresh[]{new Dao.ForeignRefresh("grandParentEager", new Dao.ForeignRefresh[]{
-						new Dao.ForeignRefresh("childEager")
-				})})
-		};
+		Dao.ForeignRefresh[] threeLevelCompare = DaoHelper.refresh("parent[grandParentEager[childEager]]");
 
 		Assert.assertTrue(sameRefreshMap(threeLevel, threeLevelCompare));
 
 		//Inception time
 		Dao.ForeignRefresh[] sixLevel = DaoHelper.fillForeignRefreshMap(helper.getSqueakyContext(), ChildEager.class, 6);
 
-		Dao.ForeignRefresh[] sixLevelCompare = new Dao.ForeignRefresh[]{
-				new Dao.ForeignRefresh("parent", new Dao.ForeignRefresh[]{new Dao.ForeignRefresh("grandParentEager", new Dao.ForeignRefresh[]{
-						new Dao.ForeignRefresh("childEager", threeLevelCompare)
-				})})
-		};
+		Dao.ForeignRefresh[] sixLevelCompare = DaoHelper.refresh("parent[grandParentEager[childEager[" +
+				"parent[grandParentEager[childEager]]" +
+				"]]]");
 
 		Assert.assertTrue(sameRefreshMap(sixLevel, sixLevelCompare));
 
 		Dao.ForeignRefresh[] nineLevel = DaoHelper.fillForeignRefreshMap(helper.getSqueakyContext(), ChildEager.class, 9);
 
-		Dao.ForeignRefresh[] nineLevelCompare = new Dao.ForeignRefresh[]{
-				new Dao.ForeignRefresh("parent", new Dao.ForeignRefresh[]{new Dao.ForeignRefresh("grandParentEager", new Dao.ForeignRefresh[]{
-						new Dao.ForeignRefresh("childEager", sixLevelCompare)
-				})})
-		};
+		Dao.ForeignRefresh[] nineLevelCompare = DaoHelper.refresh(
+				"parent[grandParentEager[childEager[" +
+					"parent[grandParentEager[childEager[" +
+						"parent[grandParentEager[childEager]]" +
+					"]]]"+
+				"]]]");
 
 		Assert.assertTrue(sameRefreshMap(nineLevel, nineLevelCompare));
 	}
@@ -131,17 +122,21 @@ public class ForeignFieldRefreshTest extends BaseTypeTest
 		Assert.assertTrue(noRefresh.parent.name == null);
 
 		ChildEager deepRefresh = childEagerDao.query(new Where<ChildEager, Integer>(childEagerDao).eq("id", child.id)).foreignRefreshMap(
-				new Dao.ForeignRefresh[]{new Dao.ForeignRefresh("parent",
-						new Dao.ForeignRefresh[]{
-								new Dao.ForeignRefresh("grandParentLazy", new Dao.ForeignRefresh[]{
-										new Dao.ForeignRefresh("childEager")
-								})
-						}
-						)}
+				DaoHelper.refresh("parent[grandParentLazy[childEager]]")
 		).list().get(0);
 
 		Assert.assertTrue(deepRefresh.parent.name != null && deepRefresh.parent.grandParentEager.name == null &&
 				deepRefresh.parent.grandParentLazy.childEager.asdf != null);
+
+		Parent testParent = parentDao.query(new Where<ChildEager, Integer>(parentDao).eq("id", popsEager.id))
+				.foreignRefreshMap(DaoHelper.refresh("grandParentLazy[childEager[parent[grandParentEager]]],grandParentEager"))
+				.list().get(0);
+
+		Assert.assertTrue(
+				testParent.grandParentLazy.childEager.parent.grandParentEager.name != null &&
+						testParent.grandParentLazy.childEager.parent.grandParentEager.childEager.asdf == null &&
+						testParent.grandParentEager.childEager.asdf == null
+		);
 	}
 
 	private boolean sameRefreshMap(Dao.ForeignRefresh[] left, Dao.ForeignRefresh[] right)
