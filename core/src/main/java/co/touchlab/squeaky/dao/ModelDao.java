@@ -36,9 +36,25 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	private final String[] tableCols;
 	private final SqueakyContext squeakyContext;
 	private final FieldType idFieldType;
-
-	private SQLiteStatement createStatement;
-	private SQLiteStatement updateStatement;
+	private final List<SQLiteStatement> statementList = Collections.synchronizedList(new ArrayList<SQLiteStatement>());
+	private ThreadLocal<SQLiteStatement> createStatement = new ThreadLocal<SQLiteStatement>(){
+		@Override
+		protected SQLiteStatement initialValue()
+		{
+			SQLiteStatement sqLiteStatement = makeCreateStatement();
+			statementList.add(sqLiteStatement);
+			return sqLiteStatement;
+		}
+	};
+	private ThreadLocal<SQLiteStatement> updateStatement = new ThreadLocal<SQLiteStatement>(){
+		@Override
+		protected SQLiteStatement initialValue()
+		{
+			SQLiteStatement sqLiteStatement = makeUpdateStatement();
+			statementList.add(sqLiteStatement);
+			return sqLiteStatement;
+		}
+	};
 
 	protected ModelDao(SqueakyContext openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
 	{
@@ -71,10 +87,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	public void cleanUp()
 	{
-		if (createStatement != null)
-			createStatement.close();
-		if (updateStatement != null)
-			updateStatement.close();
+		for (SQLiteStatement sqLiteStatement : statementList)
+		{
+			sqLiteStatement.close();
+		}
 	}
 
 	private String[] buildSelect() throws SQLException
@@ -262,7 +278,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public void create(T data) throws SQLException
 	{
-		SQLiteStatement sqLiteStatement = makeCreateStatement();
+		SQLiteStatement sqLiteStatement = createStatement.get();
 
 		generatedTableMapper.bindCreateVals(sqLiteStatement, data);
 
@@ -283,9 +299,9 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	}
 
-	private synchronized SQLiteStatement makeCreateStatement() throws SQLException
+	private SQLiteStatement makeCreateStatement()
 	{
-		if (createStatement == null)
+		try
 		{
 			SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
@@ -311,10 +327,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			}
 			sb.append(")values(").append(args.toString()).append(")");
 
-			createStatement = db.compileStatement(sb.toString());
+			return db.compileStatement(sb.toString());
 		}
-
-		return createStatement;
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void fillContentVal(ContentValues values, FieldType fieldType, Object val)
@@ -378,18 +396,17 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public void update(T data) throws SQLException
 	{
-		SQLiteStatement sqLiteStatement = makeUpdateStatement();
+		SQLiteStatement us = updateStatement.get();
+		generatedTableMapper.bindVals(us, data);
 
-		generatedTableMapper.bindVals(sqLiteStatement, data);
-
-		sqLiteStatement.executeUpdateDelete();
+		us.executeUpdateDelete();
 
 		notifyChanges();
 	}
 
-	private synchronized SQLiteStatement makeUpdateStatement() throws SQLException
+	private SQLiteStatement makeUpdateStatement()
 	{
-		if (updateStatement == null)
+		try
 		{
 			SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
@@ -412,10 +429,12 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 			sb.append(" where ").append(generatedTableMapper.getTableConfig().idField.getColumnName()).append(" = ?");
 
-			updateStatement = db.compileStatement(sb.toString());
+			return db.compileStatement(sb.toString());
 		}
-
-		return updateStatement;
+		catch (SQLException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -681,6 +700,35 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		{
 			next.onChange();
 		}
+	}
+
+	@Override
+	public Query all()
+	{
+		return new Query()
+		{
+			@Override
+			public String getFromStatement(boolean joinsAllowed) throws SQLException
+			{
+				StringBuilder sb = new StringBuilder();
+				sb.append(generatedTableMapper.getTableConfig().getTableName());
+				if(joinsAllowed)
+					sb.append(" ").append(DEFAULT_TABLE_PREFIX);
+				return  sb.toString();
+			}
+
+			@Override
+			public String getWhereStatement(boolean joinsAllowed) throws SQLException
+			{
+				return null;
+			}
+
+			@Override
+			public String[] getParameters() throws SQLException
+			{
+				return null;
+			}
+		};
 	}
 
 	public GeneratedTableMapper<T, ID> getGeneratedTableMapper()

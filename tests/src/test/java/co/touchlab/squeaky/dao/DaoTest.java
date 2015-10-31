@@ -344,6 +344,46 @@ public class DaoTest extends BaseTypeTest
 		Assert.assertEquals(3, changeCount.get());
 	}
 
+	@Test
+	public void testAll() throws SQLException
+	{
+		Dao<Bar, Integer> barDao = getBarDao();
+		barDao.create(new Bar(12, "asdf"));
+		barDao.create(new Bar(13, "asdf"));
+
+		Assert.assertEquals(2, barDao.query(barDao.all()).list().size());
+		Assert.assertEquals(0, barDao.queryForEq("name", "quert").list().size());
+		barDao.update(barDao.all(), DaoHelper.vals().add("name", "quert").build());
+
+		Assert.assertEquals(2, barDao.queryForEq("name", "quert").list().size());
+	}
+
+	@Test
+	public void testQueryModifiers()throws SQLException
+	{
+		Dao<Bar, Integer> barDao = getBarDao();
+		for(int i=0; i<50; i++)
+		{
+			barDao.create(new Bar(i, "asdf"));
+		}
+
+		List<Bar> firstList = barDao.queryForAll().limit(20).list();
+		Assert.assertEquals(20, firstList.size());
+		Assert.assertEquals(0, firstList.get(0).id);
+		Assert.assertEquals(19, firstList.get(firstList.size() - 1).id);
+
+		List<Bar> offsetList = barDao.queryForAll().offset(12).limit(20).list();
+		Assert.assertEquals(20, offsetList.size());
+		Assert.assertEquals(12, offsetList.get(0).id);
+		Assert.assertEquals(31, offsetList.get(firstList.size() - 1).id);
+
+		List<Bar> reverseList = barDao.queryForAll().orderBy("id desc").limit(20).list();
+		Assert.assertEquals(49, reverseList.get(0).id);
+
+		barDao.delete(barDao.all());
+		Assert.assertEquals(0, barDao.queryForAll().list().size());
+	}
+
 	private Foo createFoo(String name, int ival, long lval, Date aDate) throws SQLException
 	{
 		Foo foo = new Foo();

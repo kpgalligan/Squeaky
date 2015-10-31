@@ -5,7 +5,9 @@ import co.touchlab.squeaky.field.FieldType;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by kgalligan on 10/15/15.
@@ -59,6 +61,26 @@ public class DaoHelper
 		}
 
 		return refreshs.toArray(new Dao.ForeignRefresh[refreshs.size()]);
+	}
+
+	public static class ValBuilder
+	{
+		Map<String, Object> vals = new HashMap<>();
+		public ValBuilder add(String col, Object val)
+		{
+			vals.put(col, val);
+			return this;
+		}
+
+		public Map<String, Object> build()
+		{
+			return vals;
+		}
+	}
+
+	public static ValBuilder vals()
+	{
+		return new ValBuilder();
 	}
 
 	public static Dao.ForeignRefresh findRefresh(Dao.ForeignRefresh[] foreignRefreshs, String fieldName)

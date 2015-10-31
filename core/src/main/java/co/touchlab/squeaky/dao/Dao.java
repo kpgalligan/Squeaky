@@ -153,4 +153,10 @@ public interface Dao<T, ID>
 		 */
 		void onChange();
 	}
+
+	/**
+	 * Helper that matches all for query
+	 * @return
+	 */
+	Query all();
 }
