@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.apptools;
+package co.touchlab.squeaky.old;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -85,18 +85,4 @@ public class SqueakyContext
 
 		throw new SQLException("No field type found for " + columnFieldName);
 	}
-
-	public ForeignCollectionInfo findForeignCollectionInfo(Class c, String fieldName) throws SQLException
-	{
-		ForeignCollectionInfo[] foreignCollections = getGeneratedTableMapper(c).getTableConfig().getForeignCollections();
-		for (ForeignCollectionInfo foreignCollection : foreignCollections)
-		{
-			if (foreignCollection.foreignFieldName.equals(fieldName))
-			{
-				return foreignCollection;
-			}
-		}
-
-		throw new SQLException("ForeignCollectionInfo not found for '" + fieldName + "'");
-	}
 }

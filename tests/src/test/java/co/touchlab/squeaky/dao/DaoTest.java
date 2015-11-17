@@ -267,6 +267,33 @@ public class DaoTest extends BaseTypeTest
 	}
 
 	@Test
+	public void testIteratorOtherMethods() throws SQLException
+	{
+		createBar(12, "a", false);
+		createBar(13, "b", false);
+		createBar(14, "c", false);
+
+		//Not sure we can depend on sqlite order, but this passes
+		CloseableIterator<Bar> iterator = getBarDao().iterator();
+		Bar bar12 = iterator.nextThrow();
+		Assert.assertEquals(12, bar12.id);
+		Bar bar12a = iterator.current();
+		Assert.assertEquals(bar12.id, bar12a.id);
+
+		Bar bar13 = iterator.nextThrow();
+		Assert.assertEquals(13, bar13.id);
+		int previousId = iterator.previous().id;
+		Assert.assertEquals(12, previousId);
+		Assert.assertNull(iterator.previous());
+		Assert.assertEquals(iterator.moveRelative(2).id, 13);
+
+		iterator.moveToNext();
+		Assert.assertEquals(iterator.current().id, 14);
+
+		iterator.closeQuietly();
+	}
+
+	@Test
 	public void testIteratorQuery() throws SQLException
 	{
 		createBar(12, "a", false);

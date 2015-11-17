@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.apptools;
+package co.touchlab.squeaky.old;
 
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.DataType;

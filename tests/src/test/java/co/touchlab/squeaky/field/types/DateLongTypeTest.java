@@ -1,6 +1,5 @@
 package co.touchlab.squeaky.field.types;
 
-import co.touchlab.squeaky.dao.BaseTable;
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.DataType;
 import co.touchlab.squeaky.field.DatabaseField;

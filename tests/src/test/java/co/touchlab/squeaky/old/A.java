@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.apptools.basic;
+package co.touchlab.squeaky.old;
 
 import co.touchlab.squeaky.field.DatabaseField;
 import co.touchlab.squeaky.table.DatabaseTable;

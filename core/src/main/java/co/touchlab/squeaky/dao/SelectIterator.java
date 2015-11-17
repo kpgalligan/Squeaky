@@ -89,10 +89,8 @@ public class SelectIterator<T, ID> implements CloseableIterator<T>
 		}
 		catch (SQLException e)
 		{
-			//TODO
+			throw new RuntimeException(e);
 		}
-
-		return null;
 	}
 
 	public void remove()
