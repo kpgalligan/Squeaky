@@ -18,12 +18,12 @@ public interface FieldConverter
 	/**
 	 * Convert a default string object and return the appropriate argument to a SQL insert or update statement.
 	 */
-	public Object parseDefaultString(FieldType fieldType, String defaultStr) throws SQLException;
+	Object parseDefaultString(FieldType fieldType, String defaultStr) throws SQLException;
 
 	/**
 	 * Convert a Java object and return the appropriate argument to a SQL insert or update statement.
 	 */
-	public Object javaToSqlArg(FieldType fieldType, Object obj) throws SQLException;
+	Object javaToSqlArg(FieldType fieldType, Object obj) throws SQLException;
 
 	/**
 	 * Return the SQL argument object extracted from the results associated with column in position columnPos. For
@@ -32,9 +32,9 @@ public interface FieldConverter
 	 * @param fieldType Associated FieldType which may be null.
 	 * @throws SQLException If there is a problem accessing the results data.
 	 */
-	public Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
+	Object resultToSqlArg(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
-	public Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
+	Object resultToJava(FieldType fieldType, Cursor results, int columnPos) throws SQLException;
 
 	/**
 	 * Return the object converted from the SQL arg to java. This takes the database representation and converts it into
@@ -45,10 +45,10 @@ public interface FieldConverter
 	 * @param sqlArg    SQL argument converted with {@link #resultToSqlArg(FieldType, DatabaseResults, int)} which will not be
 	 *                  null.
 	 */
-	public Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException;
+	Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException;
 
 	/**
 	 * Return the SQL type that is stored in the database for this argument.
 	 */
-	public SqlType getSqlType();
+	SqlType getSqlType();
 }
