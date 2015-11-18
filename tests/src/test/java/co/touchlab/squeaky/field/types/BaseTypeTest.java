@@ -2,6 +2,7 @@ package co.touchlab.squeaky.field.types;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import co.touchlab.squeaky.db.sqlite.SQLiteDatabaseImpl;
 import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.table.TableUtils;
 import org.robolectric.RuntimeEnvironment;
@@ -44,7 +45,7 @@ public abstract class BaseTypeTest
 		{
 			try
 			{
-				TableUtils.createTables(sqLiteDatabase, getManagingClasses());
+				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), getManagingClasses());
 				if (createSqlList != null)
 				{
 					for (String s : createSqlList)
@@ -72,7 +73,7 @@ public abstract class BaseTypeTest
 			try
 			{
 
-				TableUtils.dropTables(sqLiteDatabase, true, reversed);
+				TableUtils.dropTables(new SQLiteDatabaseImpl(sqLiteDatabase), true, reversed);
 			}
 			catch (SQLException e)
 			{

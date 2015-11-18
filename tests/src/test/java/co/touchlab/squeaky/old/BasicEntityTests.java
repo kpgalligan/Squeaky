@@ -3,6 +3,7 @@ package co.touchlab.squeaky.old;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import co.touchlab.squeaky.dao.Dao;
+import co.touchlab.squeaky.db.sqlite.SQLiteDatabaseImpl;
 import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.DatabaseField;
 import co.touchlab.squeaky.table.DatabaseTable;
@@ -215,7 +216,7 @@ public class BasicEntityTests
 		{
 			try
 			{
-				TableUtils.createTables(sqLiteDatabase, A.class, BPackage.class, CProtected.class);
+				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), A.class, BPackage.class, CProtected.class);
 			}
 			catch (SQLException e)
 			{
@@ -228,7 +229,7 @@ public class BasicEntityTests
 		{
 			try
 			{
-				TableUtils.dropTables(sqLiteDatabase, true, CProtected.class, BPackage.class, A.class);
+				TableUtils.dropTables(new SQLiteDatabaseImpl(sqLiteDatabase), true, CProtected.class, BPackage.class, A.class);
 				onCreate(sqLiteDatabase);
 			}
 			catch (SQLException e)

@@ -2,6 +2,7 @@ package co.touchlab.squeaky.field;
 
 import android.database.Cursor;
 import co.touchlab.squeaky.dao.Dao;
+import co.touchlab.squeaky.db.sqlite.SQLiteDatabaseImpl;
 import co.touchlab.squeaky.field.types.BaseTypeTest;
 import co.touchlab.squeaky.table.DatabaseTable;
 import co.touchlab.squeaky.table.TableUtils;
@@ -60,7 +61,7 @@ public class DatabaseFieldTest extends BaseTypeTest
 	@Test
 	public void testVariousFieldConfigs()throws Exception
 	{
-		List<String> sqlList = TableUtils.getCreateTableStatements(helper.getWritableDatabase(), VariousFieldConfigs.class);
+		List<String> sqlList = TableUtils.getCreateTableStatements(new SQLiteDatabaseImpl(helper.getWritableDatabase()), VariousFieldConfigs.class);
 
 		Assert.assertTrue(sqlList.get(0).contains("UNIQUE (`uni`)"));
 		Assert.assertTrue(sqlList.get(0).contains("UNIQUE (`uniComboA`,`uniComboB`)"));

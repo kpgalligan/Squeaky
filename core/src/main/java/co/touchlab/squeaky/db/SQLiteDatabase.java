@@ -19,4 +19,5 @@ public interface SQLiteDatabase
 	long countOf(String tableName);
 	long countOf(Query where) throws SQLException;
 	long longForQuery(String query, String... arguments);
+	void execSQL(String sql);
 }

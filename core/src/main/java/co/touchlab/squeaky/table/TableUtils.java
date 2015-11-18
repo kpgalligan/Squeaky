@@ -1,6 +1,6 @@
 package co.touchlab.squeaky.table;
 
-import android.database.sqlite.SQLiteDatabase;
+import co.touchlab.squeaky.db.SQLiteDatabase;
 import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.DataPersister;
 import co.touchlab.squeaky.field.FieldType;

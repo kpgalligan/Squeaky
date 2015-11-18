@@ -2,6 +2,7 @@ package co.touchlab.squeaky.old;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import co.touchlab.squeaky.db.sqlite.SQLiteDatabaseImpl;
 import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.table.TableUtils;
 import org.robolectric.RuntimeEnvironment;
@@ -31,7 +32,7 @@ public class BaseTest
 		{
 			try
 			{
-				TableUtils.createTables(sqLiteDatabase, getManagingClasses());
+				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), getManagingClasses());
 			}
 			catch (SQLException e)
 			{
@@ -51,7 +52,7 @@ public class BaseTest
 			}
 			try
 			{
-				TableUtils.dropTables(sqLiteDatabase, true, reversed);
+				TableUtils.dropTables(new SQLiteDatabaseImpl(sqLiteDatabase), true, reversed);
 			}
 			catch (SQLException e)
 			{

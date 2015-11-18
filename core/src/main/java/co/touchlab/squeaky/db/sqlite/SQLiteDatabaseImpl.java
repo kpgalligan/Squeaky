@@ -63,4 +63,10 @@ public class SQLiteDatabaseImpl implements SQLiteDatabase
 	{
 		return DatabaseUtils.longForQuery(db, query, arguments);
 	}
+
+	@Override
+	public void execSQL(String sql)
+	{
+		db.execSQL(sql);
+	}
 }
