@@ -24,10 +24,11 @@
 package co.touchlab.squeaky.processor;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
+
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.DaoHelper;
 import co.touchlab.squeaky.dao.ModelDao;
+import co.touchlab.squeaky.db.SQLiteStatement;
 import co.touchlab.squeaky.field.*;
 import co.touchlab.squeaky.table.*;
 import com.google.common.base.Joiner;

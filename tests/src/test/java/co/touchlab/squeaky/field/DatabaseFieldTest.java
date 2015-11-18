@@ -65,8 +65,8 @@ public class DatabaseFieldTest extends BaseTypeTest
 		Assert.assertTrue(sqlList.get(0).contains("UNIQUE (`uni`)"));
 		Assert.assertTrue(sqlList.get(0).contains("UNIQUE (`uniComboA`,`uniComboB`)"));
 
-		lookForIndex(sqlList, "funkyIndex", "CREATE INDEX `funkyTown` ON `variousfieldconfigs` ( `funkyIndex` )");
-		lookForIndex(sqlList, "funkyUniqueIndex", "CREATE UNIQUE INDEX `funkyUniqueTown` ON `variousfieldconfigs` ( `funkyUniqueIndex` )");
+		lookForIndex(sqlList, "funkyTown", "CREATE INDEX `funkyTown` ON `variousfieldconfigs` ( `funkyIndex` )");
+		lookForIndex(sqlList, "funkyUniqueTown", "CREATE UNIQUE INDEX `funkyUniqueTown` ON `variousfieldconfigs` ( `funkyUniqueIndex` )");
 	}
 
 	private void lookForIndex(List<String> sqlList, String indexName, String createStmt)

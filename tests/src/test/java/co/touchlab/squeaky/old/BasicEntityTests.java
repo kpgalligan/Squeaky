@@ -3,7 +3,7 @@ package co.touchlab.squeaky.old;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import co.touchlab.squeaky.dao.Dao;
-import co.touchlab.squeaky.dao.SqueakyOpenHelper;
+import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.DatabaseField;
 import co.touchlab.squeaky.table.DatabaseTable;
 import co.touchlab.squeaky.table.TableUtils;

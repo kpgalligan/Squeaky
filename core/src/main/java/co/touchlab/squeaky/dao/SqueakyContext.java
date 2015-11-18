@@ -2,6 +2,7 @@ package co.touchlab.squeaky.dao;
 
 import co.touchlab.squeaky.db.SQLiteDatabase;
 import co.touchlab.squeaky.db.SQLiteOpenHelper;
+import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
