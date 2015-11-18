@@ -20,4 +20,7 @@ public interface SQLiteDatabase
 	long countOf(Query where) throws SQLException;
 	long longForQuery(String query, String... arguments);
 	void execSQL(String sql);
+	void beginTransaction();
+	void setTransactionSuccessful();
+	void endTransaction();
 }

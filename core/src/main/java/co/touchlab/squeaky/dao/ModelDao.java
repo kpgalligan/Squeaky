@@ -579,20 +579,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public int delete(Query where) throws SQLException
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("delete from ").append(where.getFromStatement(false));
-		String whereStatement = where.getWhereStatement(false);
-		if (!TextUtils.isEmpty(whereStatement))
-			sb.append(" where ").append(whereStatement);
-
-		String queryString = sb.toString();
-		SQLiteStatement sqLiteStatement = squeakyContext.getDatabase().compileStatement(queryString);
-		String[] parameters = where.getParameters();
-
-		if (parameters != null && parameters.length > 0)
-			sqLiteStatement.bindAllArgsAsStrings(parameters);
-
-		long result = sqLiteStatement.executeUpdateDelete();
+		long result = squeakyContext.getDatabase().delete(
+				where.getFromStatement(false),
+				where.getWhereStatement(false),
+				where.getParameters());
 
 		notifyChanges();
 

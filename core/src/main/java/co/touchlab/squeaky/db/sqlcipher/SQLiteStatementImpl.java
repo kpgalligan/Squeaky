@@ -1,4 +1,4 @@
-package co.touchlab.squeaky.db.sqlite;
+package co.touchlab.squeaky.db.sqlcipher;
 
 import android.database.sqlite.SQLiteException;
 import co.touchlab.squeaky.db.SQLiteStatement;
@@ -8,9 +8,9 @@ import co.touchlab.squeaky.db.SQLiteStatement;
  */
 public class SQLiteStatementImpl implements SQLiteStatement
 {
-	private final android.database.sqlite.SQLiteStatement stmt;
+	private final net.sqlcipher.database.SQLiteStatement stmt;
 
-	public SQLiteStatementImpl(android.database.sqlite.SQLiteStatement stmt)
+	public SQLiteStatementImpl(net.sqlcipher.database.SQLiteStatement stmt)
 	{
 		this.stmt = stmt;
 	}

@@ -13,8 +13,6 @@ public interface SQLiteStatement
 
 	long executeUpdateDelete() throws SQLiteException;
 
-	void bindAllArgsAsStrings(String[] args);
-
 	void bindBlob(int index, byte[] value);
 
 	void bindDouble(int index, double value);

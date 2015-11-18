@@ -1,12 +1,13 @@
-package co.touchlab.squeaky.db.sqlite;
+package co.touchlab.squeaky.db.sqlcipher;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
+
 import android.database.sqlite.SQLiteException;
 import co.touchlab.squeaky.dao.Query;
 import co.touchlab.squeaky.db.SQLiteDatabase;
 import co.touchlab.squeaky.db.SQLiteStatement;
+import net.sqlcipher.DatabaseUtils;
 
 import java.sql.SQLException;
 
@@ -15,9 +16,9 @@ import java.sql.SQLException;
  */
 public class SQLiteDatabaseImpl implements SQLiteDatabase
 {
-	private final android.database.sqlite.SQLiteDatabase db;
+	private final net.sqlcipher.database.SQLiteDatabase db;
 
-	public SQLiteDatabaseImpl(android.database.sqlite.SQLiteDatabase db)
+	public SQLiteDatabaseImpl(net.sqlcipher.database.SQLiteDatabase db)
 	{
 		this.db = db;
 	}
