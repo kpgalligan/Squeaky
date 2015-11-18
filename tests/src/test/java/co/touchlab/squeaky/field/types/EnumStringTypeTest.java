@@ -99,19 +99,6 @@ public class EnumStringTypeTest extends BaseTypeTest
 	}
 
 	@Test
-	public void testUnknownValueAnnotation() throws Exception
-	{
-		Dao<LocalUnknownEnum, Object> dao = helper.getDao(LocalUnknownEnum.class);
-		LocalUnknownEnum localUnknownEnum = new LocalUnknownEnum();
-		localUnknownEnum.ourEnum = OurEnum.SECOND;
-		dao.create(localUnknownEnum);
-		helper.getWritableDatabase().execSQL("UPDATE " + TABLE_NAME + " set ourEnum = 'THIRD'");
-		List<LocalUnknownEnum> unknowns = dao.queryForAll().list();
-		assertEquals(1, unknowns.size());
-		assertEquals(OurEnum.FIRST, unknowns.get(0).ourEnum);
-	}
-
-	@Test
 	public void testCoverage()
 	{
 		new EnumStringType(SqlType.STRING, new Class[0]);
@@ -123,13 +110,6 @@ public class EnumStringTypeTest extends BaseTypeTest
 	protected static class LocalEnumString
 	{
 		@DatabaseField(columnName = ENUM_COLUMN)
-		OurEnum ourEnum;
-	}
-
-	@DatabaseTable(tableName = TABLE_NAME)
-	protected static class LocalUnknownEnum
-	{
-		@DatabaseField(columnName = ENUM_COLUMN, unknownEnumName = "FIRST")
 		OurEnum ourEnum;
 	}
 

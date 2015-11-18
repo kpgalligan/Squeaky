@@ -54,11 +54,11 @@ public class EnumStringType extends BaseEnumType
 		Map<String, Enum<?>> enumStringMap = (Map<String, Enum<?>>) fieldType.getDataTypeConfigObj();
 		if (enumStringMap == null)
 		{
-			return enumVal(fieldType, value, null, fieldType.getUnknownEnumVal());
+			return enumVal(fieldType, value, null);
 		}
 		else
 		{
-			return enumVal(fieldType, value, enumStringMap.get(value), fieldType.getUnknownEnumVal());
+			return enumVal(fieldType, value, enumStringMap.get(value));
 		}
 	}
 

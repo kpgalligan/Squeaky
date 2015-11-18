@@ -220,9 +220,6 @@ public class FieldTypeGen
 			}
 			throw new IllegalArgumentException(sb.toString());
 		}
-		if (databaseField.throwIfNull() && !dataPersister.isPrimitive()) {
-			throw new SQLException("Field " + fieldName + " must be a primitive if set with throwIfNull");
-		}
 		//TODO: What types can be an id?
 		/*if (this.isId && !dataPersister.isAppropriateId()) {
 			throw new SQLException("Field '" + fieldName + "' is of data type " + dataPersister

@@ -23,20 +23,16 @@ public abstract class BaseEnumType extends BaseDataType
 		super(sqlType);
 	}
 
-	protected static Enum<?> enumVal(FieldType fieldType, Object val, Enum<?> enumVal, Enum<?> unknownEnumVal)
+	protected static Enum<?> enumVal(FieldType fieldType, Object val, Enum<?> enumVal)
 			throws SQLException
 	{
 		if (enumVal != null)
 		{
 			return enumVal;
 		}
-		else if (unknownEnumVal == null)
-		{
-			throw new SQLException("Cannot get enum value of '" + val + "' for field " + fieldType);
-		}
 		else
 		{
-			return unknownEnumVal;
+			throw new SQLException("Cannot get enum value of '" + val + "' for field " + fieldType);
 		}
 	}
 }

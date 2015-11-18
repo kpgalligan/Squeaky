@@ -62,11 +62,11 @@ public class EnumIntegerType extends BaseEnumType
 		Map<Integer, Enum<?>> enumIntMap = (Map<Integer, Enum<?>>) fieldType.getDataTypeConfigObj();
 		if (enumIntMap == null)
 		{
-			return enumVal(fieldType, valInteger, null, fieldType.getUnknownEnumVal());
+			return enumVal(fieldType, valInteger, null);
 		}
 		else
 		{
-			return enumVal(fieldType, valInteger, enumIntMap.get(valInteger), fieldType.getUnknownEnumVal());
+			return enumVal(fieldType, valInteger, enumIntMap.get(valInteger));
 		}
 	}
 

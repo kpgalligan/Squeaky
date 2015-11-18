@@ -47,8 +47,6 @@ public class FieldType
 	private final boolean uniqueCombo;
 	private final boolean index;
 	private final boolean uniqueIndex;
-	private final boolean throwIfNull;
-	private final Enum<?> unknownEnumVal;
 	private final boolean foreignAutoRefresh;
 	private String indexNameBase;
 	private String indexName;
@@ -78,8 +76,6 @@ public class FieldType
 			String indexName,
 			String uniqueIndexName,
 			String configDefaultValue,
-			boolean throwIfNull,
-			Enum<?> unknownEnumVal,
 			boolean foreignAutoRefresh)
 	{
 		this.fieldName = fieldName;
@@ -92,7 +88,6 @@ public class FieldType
 		this.uniqueIndex = uniqueIndex;
 		this.indexName = indexName;
 		this.uniqueIndexName = uniqueIndexName;
-		this.throwIfNull = throwIfNull;
 		this.foreignAutoRefresh = foreignAutoRefresh;
 		this.dataPersister = dataType.getDataPersister();
 		this.isForeign = isForeign;
@@ -101,7 +96,6 @@ public class FieldType
 		this.columnName = columnName;
 		this.isId = isId;
 		this.isGeneratedId = isGeneratedId;
-		this.unknownEnumVal = unknownEnumVal;
 
 		//TODO: Move this to annotation processor code
 		if ((this.isId || this.isGeneratedId) && this.isForeign)
@@ -195,12 +189,6 @@ public class FieldType
 	public boolean isEscapedValue()
 	{
 		return dataPersister.isEscapedValue();
-	}
-
-	//Figure out enums
-	public Enum<?> getUnknownEnumVal()
-	{
-		return unknownEnumVal;
 	}
 
 	public boolean isForeignAutoRefresh()

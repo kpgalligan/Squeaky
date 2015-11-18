@@ -25,7 +25,9 @@ package co.touchlab.squeaky.processor;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
-import co.touchlab.squeaky.dao.*;
+import co.touchlab.squeaky.dao.Dao;
+import co.touchlab.squeaky.dao.DaoHelper;
+import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.field.*;
 import co.touchlab.squeaky.table.*;
 import com.google.common.base.Joiner;
@@ -1078,103 +1080,50 @@ public class AnnotationProcessor extends AbstractProcessor
 	{
 		DataType dataType = findFieldDataType(databaseTableHolders, (TypeElement) config.databaseElement, config);
 
-		boolean hasDefualtEnumValue = !(databaseField.unknownEnumName() == null || databaseField.unknownEnumName().equals(""));
 
 		CodeBlock.Builder builder = CodeBlock.builder();
 
-		if (hasDefualtEnumValue)
-		{
-			builder.add("new $T( " +
-							"$S," +
-							"$S," +
-							"$S," +
-							"$L," + //isId
-							"$L," +
-							"$L," +
-							"$T.$L," +
-							"$T.class," +
-							"$L," + //canBeNull
-							"$S," +
-							"$L," +
-							"$L," +
-							"$L," +
-							"$L," + //uniqueIndex
-							"$S," +
-							"$S," +
-							"$S," +
-							"$L," +
-							"$T.$L,"+
-							"$L" +
-							")",
-					FieldType.class,
-					indexNameBase,
-					config.fieldName,
-					config.columnName,
-					config.isId,
-					config.isGeneratedId,
-					config.foreign,
-					DataType.class,
-					dataType,
-					ClassName.get(config.dataTypeMirror),
-					databaseField.canBeNull(),
-					StringUtils.trimToNull(databaseField.format()),
-					databaseField.unique(),
-					databaseField.uniqueCombo(),
-					databaseField.index(),
-					databaseField.uniqueIndex(),
-					StringUtils.trimToNull(databaseField.indexName()),
-					StringUtils.trimToNull(databaseField.uniqueIndexName()),
-					config.defaultValue,
-					databaseField.throwIfNull(),
-					hasDefualtEnumValue ? ClassName.get(config.dataTypeMirror) : null,
-					hasDefualtEnumValue ? databaseField.unknownEnumName() : null,
-					config.foreignAutoRefresh
-			);
-		} else
-		{
-			builder.add("new $T( " +
-							"$S," +
-							"$S," +
-							"$S," +
-							"$L," + //isId
-							"$L," +
-							"$L," +
-							"$T.$L," +
-							"$T.class," +
-							"$L," + //canBeNull
-							"$S," +
-							"$L," +
-							"$L," +
-							"$L," +
-							"$L," + //uniqueIndex
-							"$S," +
-							"$S," +
-							"$S," +
-							"$L," +
-							"null, $L)",
-					FieldType.class,
-					indexNameBase,
-					config.fieldName,
-					config.columnName,
-					config.isId,
-					config.isGeneratedId,
-					config.foreign,
-					DataType.class,
-					dataType,
-					ClassName.get(config.dataTypeMirror),
-					databaseField.canBeNull(),
-					StringUtils.trimToNull(databaseField.format()),
-					databaseField.unique(),
-					databaseField.uniqueCombo(),
-					databaseField.index(),
-					databaseField.uniqueIndex(),
-					StringUtils.trimToNull(databaseField.indexName()),
-					StringUtils.trimToNull(databaseField.uniqueIndexName()),
-					config.defaultValue,
-					databaseField.throwIfNull(),
-					config.foreignAutoRefresh
-			);
-		}
+
+		builder.add("new $T( " +
+						"$S," +
+						"$S," +
+						"$S," +
+						"$L," + //isId
+						"$L," +
+						"$L," +
+						"$T.$L," +
+						"$T.class," +
+						"$L," + //canBeNull
+						"$S," +
+						"$L," +
+						"$L," +
+						"$L," +
+						"$L," + //uniqueIndex
+						"$S," +
+						"$S," +
+						"$S," +
+						"$L)",
+				FieldType.class,
+				indexNameBase,
+				config.fieldName,
+				config.columnName,
+				config.isId,
+				config.isGeneratedId,
+				config.foreign,
+				DataType.class,
+				dataType,
+				ClassName.get(config.dataTypeMirror),
+				databaseField.canBeNull(),
+				StringUtils.trimToNull(databaseField.format()),
+				databaseField.unique(),
+				databaseField.uniqueCombo(),
+				databaseField.index(),
+				databaseField.uniqueIndex(),
+				StringUtils.trimToNull(databaseField.indexName()),
+				StringUtils.trimToNull(databaseField.uniqueIndexName()),
+				config.defaultValue,
+				config.foreignAutoRefresh
+		);
 
 		return builder.build();
 	}

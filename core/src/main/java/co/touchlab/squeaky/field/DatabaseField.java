@@ -38,7 +38,7 @@ public @interface DatabaseField
 	/**
 	 * this special string is used as a .equals check to see if no default was specified
 	 */
-	public static final String DEFAULT_STRING = "__ormlite__ no default value string was specified";
+	String DEFAULT_STRING = "__ormlite__ no default value string was specified";
 
 	/**
 	 * The name of the column in the database. If not set then the name is taken from the field name.
@@ -100,20 +100,6 @@ public @interface DatabaseField
 	 * </pre>
 	 */
 	boolean useGetSet() default false;
-
-	/**
-	 * If the field is an Enum and the database has a value that is not one of the names in the enum then this name will
-	 * be used instead. It must match one of the enum names. This is mainly useful when you are worried about backwards
-	 * compatibility with older database rows or future compatibility if you have to roll back to older data definition.
-	 */
-	String unknownEnumName() default "";
-
-	/**
-	 * If this is set to true (default false) then it will throw a SQLException if a null value is attempted to be
-	 * de-persisted into a primitive. This must only be used on a primitive field. If this is false then if the database
-	 * field is null, the value of the primitive will be set to 0.
-	 */
-	boolean throwIfNull() default false;
 
 	/**
 	 * Optional format information that can be used by various field types. For example, if the Date is to be persisted
