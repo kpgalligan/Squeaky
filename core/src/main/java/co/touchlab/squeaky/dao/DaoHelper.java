@@ -1,6 +1,5 @@
 package co.touchlab.squeaky.dao;
 
-import android.text.TextUtils;
 import co.touchlab.squeaky.field.FieldType;
 
 import java.sql.SQLException;

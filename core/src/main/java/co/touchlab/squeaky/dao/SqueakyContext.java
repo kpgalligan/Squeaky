@@ -1,8 +1,8 @@
 package co.touchlab.squeaky.dao;
 
-import android.database.sqlite.SQLiteOpenHelper;
+import co.touchlab.squeaky.db.SQLiteDatabase;
+import co.touchlab.squeaky.db.SQLiteOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
-import co.touchlab.squeaky.field.ForeignCollectionInfo;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
 import java.sql.SQLException;
@@ -66,9 +66,14 @@ public class SqueakyContext
 		return managingClasses;
 	}
 
-	public SQLiteOpenHelper getHelper()
+//	public SQLiteOpenHelper getHelper()
+//	{
+//		return helper;
+//	}
+
+	public SQLiteDatabase getDatabase()
 	{
-		return helper;
+		return helper.getDatabase();
 	}
 
 	public FieldType findFieldType(Class c, String columnFieldName) throws SQLException

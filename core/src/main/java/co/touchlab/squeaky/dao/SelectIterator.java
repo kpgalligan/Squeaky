@@ -1,7 +1,6 @@
 package co.touchlab.squeaky.dao;
 
 import android.database.Cursor;
-import co.touchlab.squeaky.Config;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 import co.touchlab.squeaky.table.TransientCache;
 

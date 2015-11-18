@@ -2,12 +2,11 @@ package co.touchlab.squeaky.dao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import co.touchlab.squeaky.Config;
+import co.touchlab.squeaky.db.SQLiteStatement;
+import co.touchlab.squeaky.db.SQLiteDatabase;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.field.ForeignCollectionInfo;
 import co.touchlab.squeaky.sql.SqlHelper;
@@ -259,7 +258,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			sb.append(" offset ").append(offset);
 
 		String sql = sb.toString();
-		return squeakyContext.getHelper().getWritableDatabase()
+		return squeakyContext.getDatabase()
 				.rawQuery(sql, args);
 	}
 
@@ -303,7 +302,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		try
 		{
-			SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
+			SQLiteDatabase db = squeakyContext.getDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into ");
@@ -408,7 +407,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	{
 		try
 		{
-			SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
+			SQLiteDatabase db = squeakyContext.getDatabase();
 			TableInfo<T> tableConfig = generatedTableMapper.getTableConfig();
 			StringBuilder sb = new StringBuilder();
 			sb.append("update ").append(tableConfig.getTableName()).append(" set ");
@@ -440,7 +439,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public int updateId(T data, ID newId) throws SQLException
 	{
-		SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
+		SQLiteDatabase db = squeakyContext.getDatabase();
 
 		ContentValues values = new ContentValues();
 
@@ -456,7 +455,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public int update(Query where, Map<String, Object> valueMap) throws SQLException
 	{
-		SQLiteDatabase db = squeakyContext.getHelper().getWritableDatabase();
+		SQLiteDatabase db = squeakyContext.getDatabase();
 		ContentValues values = new ContentValues();
 
 		for (String fieldKey : valueMap.keySet())
@@ -513,7 +512,10 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public int deleteById(ID id) throws SQLException
 	{
-		int result = squeakyContext.getHelper().getWritableDatabase().delete(generatedTableMapper.getTableConfig().getTableName(), idFieldType.getColumnName() + "= ?", new String[]{id.toString()});
+		int result = squeakyContext.getDatabase().delete(
+				generatedTableMapper.getTableConfig().getTableName(),
+				idFieldType.getColumnName() + "= ?",
+				new String[]{id.toString()});
 
 		notifyChanges();
 
@@ -584,17 +586,17 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 			sb.append(" where ").append(whereStatement);
 
 		String queryString = sb.toString();
-		SQLiteStatement sqLiteStatement = squeakyContext.getHelper().getWritableDatabase().compileStatement(queryString);
+		SQLiteStatement sqLiteStatement = squeakyContext.getDatabase().compileStatement(queryString);
 		String[] parameters = where.getParameters();
 
 		if (parameters != null && parameters.length > 0)
 			sqLiteStatement.bindAllArgsAsStrings(parameters);
 
-		int result = sqLiteStatement.executeUpdateDelete();
+		long result = sqLiteStatement.executeUpdateDelete();
 
 		notifyChanges();
 
-		return result;
+		return (int)result;
 	}
 
 	@Override
@@ -623,7 +625,8 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public long queryRawValue(String query, String... arguments) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), query, arguments);
+		return squeakyContext.getDatabase().longForQuery(query, arguments);
+//		return DatabaseUtils.longForQuery(squeakyContext.getDatabase(), query, arguments);
 	}
 
 	@Override
@@ -665,13 +668,15 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public long countOf() throws SQLException
 	{
-		return DatabaseUtils.queryNumEntries(squeakyContext.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
+		return squeakyContext.getDatabase().countOf(generatedTableMapper.getTableConfig().getTableName());
+//		return DatabaseUtils.queryNumEntries(squeakyContext.getHelper().getWritableDatabase(), generatedTableMapper.getTableConfig().getTableName());
 	}
 
 	@Override
 	public long countOf(Query where) throws SQLException
 	{
-		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), "select count(*) from " + where.getFromStatement(true) + " where " + where.getWhereStatement(true), where.getParameters());
+		return squeakyContext.getDatabase().countOf(where);
+//		return DatabaseUtils.longForQuery(squeakyContext.getHelper().getWritableDatabase(), "select count(*) from " + where.getFromStatement(true) + " where " + where.getWhereStatement(true), where.getParameters());
 	}
 
 	@Override
