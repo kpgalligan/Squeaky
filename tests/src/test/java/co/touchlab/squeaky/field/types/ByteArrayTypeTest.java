@@ -40,7 +40,7 @@ public class ByteArrayTypeTest extends BaseTypeTest
 	public void testByteArray() throws Exception
 	{
 		Class<LocalByteArray> clazz = LocalByteArray.class;
-		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
+		Dao<LocalByteArray> dao = helper.getDao(clazz);
 		byte[] val = new byte[]{123, 4, 124, 1, 0, 72};
 		String valStr = Arrays.toString(val);
 		LocalByteArray foo = new LocalByteArray();
@@ -53,7 +53,7 @@ public class ByteArrayTypeTest extends BaseTypeTest
 	public void testByteArrayNull() throws Exception
 	{
 		Class<LocalByteArray> clazz = LocalByteArray.class;
-		Dao<LocalByteArray, Object> dao = helper.getDao(clazz);
+		Dao<LocalByteArray> dao = helper.getDao(clazz);
 		LocalByteArray foo = new LocalByteArray();
 		dao.create(new LocalByteArray());
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

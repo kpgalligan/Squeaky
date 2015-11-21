@@ -22,7 +22,7 @@ public class BooleanObjectTypeTest extends BaseTypeTest
 
 		SimpleHelper helper = createHelper(LocalBooleanObj.class);
 		Class<LocalBooleanObj> clazz = LocalBooleanObj.class;
-		Dao<LocalBooleanObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalBooleanObj> dao = helper.getDao(clazz);
 		Boolean val = true;
 		String valStr = val.toString();
 		LocalBooleanObj foo = new LocalBooleanObj();
@@ -40,7 +40,7 @@ public class BooleanObjectTypeTest extends BaseTypeTest
 		SimpleHelper helper = createHelper(LocalBooleanObj.class);
 
 		Class<LocalBooleanObj> clazz = LocalBooleanObj.class;
-		Dao<LocalBooleanObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalBooleanObj> dao = helper.getDao(clazz);
 		LocalBooleanObj foo = new LocalBooleanObj();
 		dao.create(foo);
 

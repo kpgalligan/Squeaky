@@ -10,15 +10,15 @@ import java.sql.SQLException;
 /**
  * @author graywatson, kgalligan
  */
-public class SelectIterator<T, ID> implements CloseableIterator<T>
+public class SelectIterator<T> implements CloseableIterator<T>
 {
 	private final Cursor cursor;
-	private final ModelDao<T, ID> modelDao;
-	private final GeneratedTableMapper<T, ID> generatedTableMapper;
+	private final ModelDao<T> modelDao;
+	private final GeneratedTableMapper<T> generatedTableMapper;
 	private final TransientCache objectCache = new TransientCache();
 	private final Dao.ForeignRefresh[] foreignRefreshMap;
 
-	public SelectIterator(Cursor cursor, ModelDao<T, ID> modelDao, Dao.ForeignRefresh[] foreignRefreshMap)
+	public SelectIterator(Cursor cursor, ModelDao<T> modelDao, Dao.ForeignRefresh[] foreignRefreshMap)
 	{
 		this.cursor = cursor;
 		this.modelDao = modelDao;

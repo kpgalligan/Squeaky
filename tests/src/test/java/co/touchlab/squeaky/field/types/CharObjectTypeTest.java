@@ -35,7 +35,7 @@ public class CharObjectTypeTest extends BaseTypeTest
 	public void testCharObj() throws Exception
 	{
 		Class<LocalCharObj> clazz = LocalCharObj.class;
-		Dao<LocalCharObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalCharObj> dao = helper.getDao(clazz);
 		Character val = 'w';
 		String valStr = val.toString();
 		LocalCharObj foo = new LocalCharObj();
@@ -49,7 +49,7 @@ public class CharObjectTypeTest extends BaseTypeTest
 	public void testCharObjNull() throws Exception
 	{
 		Class<LocalCharObj> clazz = LocalCharObj.class;
-		Dao<LocalCharObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalCharObj> dao = helper.getDao(clazz);
 		LocalCharObj foo = new LocalCharObj();
 		dao.create(foo);
 

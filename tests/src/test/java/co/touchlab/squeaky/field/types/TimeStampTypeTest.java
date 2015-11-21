@@ -41,7 +41,7 @@ public class TimeStampTypeTest extends BaseTypeTest
 	public void testTimeStamp() throws Exception
 	{
 		Class<LocalTimeStamp> clazz = LocalTimeStamp.class;
-		Dao<LocalTimeStamp, Object> dao = helper.getDao(clazz);
+		Dao<LocalTimeStamp> dao = helper.getDao(clazz);
 		GregorianCalendar c = new GregorianCalendar();
 		c.set(GregorianCalendar.MILLISECOND, 0);
 		long millis = c.getTimeInMillis();
@@ -59,7 +59,7 @@ public class TimeStampTypeTest extends BaseTypeTest
 	public void testTimeStampNull() throws Exception
 	{
 		Class<LocalTimeStamp> clazz = LocalTimeStamp.class;
-		Dao<LocalTimeStamp, Object> dao = helper.getDao(clazz);
+		Dao<LocalTimeStamp> dao = helper.getDao(clazz);
 		LocalTimeStamp foo = new LocalTimeStamp();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
@@ -67,7 +67,7 @@ public class TimeStampTypeTest extends BaseTypeTest
 
 	/*@Test
 	public void testTimeStampDefault() throws Exception {
-		Dao<TimeStampDefault, Object> dao = helper.getDao(TimeStampDefault.class);
+		Dao<TimeStampDefault> dao = helper.getDao(TimeStampDefault.class);
 		TimeStampDefault foo = new TimeStampDefault();
 		Timestamp before = new Timestamp(System.currentTimeMillis());
 		Thread.sleep(1);

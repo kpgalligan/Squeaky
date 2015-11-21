@@ -12,7 +12,7 @@ public class DataPersisterManagerTest /*extends BaseCoreTest */
 	public void testCustomType() throws Exception {
 		DataPersisterManager.registerDataPersisters(new StoredClassPersister());
 		try {
-			Dao<PersistedStored, Object> dao = createDao(PersistedStored.class, true);
+			Dao<PersistedStored> dao = createDao(PersistedStored.class, true);
 			PersistedStored wrapper = new PersistedStored();
 			String stuff = "pfjwpfjww";
 			wrapper.storedClass = new StoredClass(stuff);
@@ -28,7 +28,7 @@ public class DataPersisterManagerTest /*extends BaseCoreTest */
 
 	@Test
 	public void testCustomTypePersister() throws Exception {
-		Dao<PersistedStoredPersister, Object> dao = createDao(PersistedStoredPersister.class, true);
+		Dao<PersistedStoredPersister> dao = createDao(PersistedStoredPersister.class, true);
 		PersistedStoredPersister wrapper = new PersistedStoredPersister();
 		String stuff = "pfjwpfjww";
 		wrapper.storedClass = new StoredClass(stuff);
@@ -48,7 +48,7 @@ public class DataPersisterManagerTest /*extends BaseCoreTest */
 	public void testCustomEnumPersister() throws Exception {
 		DataPersisterManager.registerDataPersisters(new EnumConstantPersister());
 		try {
-			Dao<PersistedDataType, Object> dao = createDao(PersistedDataType.class, true);
+			Dao<PersistedDataType> dao = createDao(PersistedDataType.class, true);
 			PersistedDataType wrapper = new PersistedDataType();
 			SomeEnum someEnum = SomeEnum.SECOND;
 			wrapper.someEnum = someEnum;

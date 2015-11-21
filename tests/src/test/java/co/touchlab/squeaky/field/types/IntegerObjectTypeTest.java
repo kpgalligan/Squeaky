@@ -35,7 +35,7 @@ public class IntegerObjectTypeTest extends BaseTypeTest
 	public void testIntObj() throws Exception
 	{
 		Class<LocalIntObj> clazz = LocalIntObj.class;
-		Dao<LocalIntObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalIntObj> dao = helper.getDao(clazz);
 		Integer val = 313213123;
 		String valStr = val.toString();
 		LocalIntObj foo = new LocalIntObj();
@@ -48,7 +48,7 @@ public class IntegerObjectTypeTest extends BaseTypeTest
 	public void testIntObjNull() throws Exception
 	{
 		Class<LocalIntObj> clazz = LocalIntObj.class;
-		Dao<LocalIntObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalIntObj> dao = helper.getDao(clazz);
 		LocalIntObj foo = new LocalIntObj();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

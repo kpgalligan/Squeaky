@@ -66,7 +66,7 @@ public class FieldTypeGen
 	private FieldTypeGen foreignIdField;
 	private TableInfo<?> foreignTableInfo;
 	private FieldTypeGen foreignFieldType;
-//	private BaseDaoImpl<?, ?> foreignDao;
+//	private BaseDaoImpl<?> foreignDao;
 //	private MappedQueryForId<Object, Object> mappedQueryForId;
 
 
@@ -347,10 +347,10 @@ public class FieldTypeGen
 	/*public void configDaoInformation(ConnectionSource connectionSource, Class<?> parentClass) throws SQLException {
 		Class<?> fieldClass = field.getType();
 		DatabaseType databaseType = connectionSource.getDatabaseType();
-		TableInfo<?, ?> foreignTableInfo;
+		TableInfo<?> foreignTableInfo;
 		final FieldType foreignIdField;
 		final FieldType foreignFieldType;
-		final BaseDaoImpl<?, ?> foreignDao;
+		final BaseDaoImpl<?> foreignDao;
 		final MappedQueryForId<Object, Object> mappedQueryForId;
 
 		String foreignColumnName = fieldConfig.getForeignColumnName();
@@ -358,12 +358,12 @@ public class FieldTypeGen
 			DatabaseTableConfig<?> tableConfig = fieldConfig.getForeignTableConfig();
 			if (tableConfig == null) {
 				// NOTE: the cast is necessary for maven
-				foreignDao = (BaseDaoImpl<?, ?>) DaoManager.createDao(connectionSource, fieldClass);
+				foreignDao = (BaseDaoImpl<?>) DaoManager.createDao(connectionSource, fieldClass);
 				foreignTableInfo = foreignDao.getTableInfo();
 			} else {
 				tableConfig.extractFieldTypes(connectionSource);
 				// NOTE: the cast is necessary for maven
-				foreignDao = (BaseDaoImpl<?, ?>) DaoManager.createDao(connectionSource, tableConfig);
+				foreignDao = (BaseDaoImpl<?>) DaoManager.createDao(connectionSource, tableConfig);
 				foreignTableInfo = foreignDao.getTableInfo();
 			}
 			if (foreignColumnName == null) {
@@ -393,7 +393,7 @@ public class FieldTypeGen
 			if (tableConfig != null) {
 				tableConfig.extractFieldTypes(connectionSource);
 				// NOTE: the cast is necessary for maven
-				foreignDao = (BaseDaoImpl<?, ?>) DaoManager.createDao(connectionSource, tableConfig);
+				foreignDao = (BaseDaoImpl<?>) DaoManager.createDao(connectionSource, tableConfig);
 			} else {
 				*//*
 				 * Initially we were only doing this just for BaseDaoEnabled.class and isForeignAutoCreate(). But we
@@ -402,7 +402,7 @@ public class FieldTypeGen
 				 * allows us to make use of any table configs.
 				 *//*
 				// NOTE: the cast is necessary for maven
-				foreignDao = (BaseDaoImpl<?, ?>) DaoManager.createDao(connectionSource, fieldClass);
+				foreignDao = (BaseDaoImpl<?>) DaoManager.createDao(connectionSource, fieldClass);
 			}
 			foreignTableInfo = foreignDao.getTableInfo();
 			foreignIdField = foreignTableInfo.getIdField();

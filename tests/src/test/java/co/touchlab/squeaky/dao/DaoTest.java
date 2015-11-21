@@ -174,8 +174,8 @@ public class DaoTest extends BaseTypeTest
 		createFoo("asdf", 444, 23523534255l, new Date());
 		createFoo("asdf", 123, 23523534255l, new Date());
 
-		Dao<Foo, Integer> fooDao = getFooDao();
-		Where<Foo, Integer> where = new Where<>(fooDao);
+		Dao<Foo> fooDao = getFooDao();
+		Where<Foo> where = new Where<>(fooDao);
 		where.eq("ival", 123);
 
 		Assert.assertEquals(2, fooDao.countOf(where));
@@ -239,8 +239,8 @@ public class DaoTest extends BaseTypeTest
 		createBar(13, "b", false);
 		createBar(14, "c", false);
 
-		Dao<Bar, Integer> dao = getBarDao();
-		Where<Bar, Integer> where = new Where<Bar, Integer>(dao);
+		Dao<Bar> dao = getBarDao();
+		Where<Bar> where = new Where<Bar>(dao);
 		where.ge("id", 13);
 
 		dao.delete(where);
@@ -302,7 +302,7 @@ public class DaoTest extends BaseTypeTest
 		createBar(14, "c", false);
 
 		//Not sure we can depend on sqlite order, but this passes
-		Where<Bar, Integer> where = new Where<Bar, Integer>(getBarDao());
+		Where<Bar> where = new Where<Bar>(getBarDao());
 		where.in("id", 12, 14);
 
 		CloseableIterator<Bar> iterator = getBarDao().iterator(where);
@@ -339,7 +339,7 @@ public class DaoTest extends BaseTypeTest
 		createBar(16, "c", false);
 
 		Assert.assertEquals(5, getBarDao().countOf());
-		Where<Bar, Integer> where = new Where<Bar, Integer>(getBarDao());
+		Where<Bar> where = new Where<Bar>(getBarDao());
 		where.eq("name", "c");
 		Assert.assertEquals(3, getBarDao().countOf(where));
 	}
@@ -375,7 +375,7 @@ public class DaoTest extends BaseTypeTest
 	@Test
 	public void testAll() throws SQLException
 	{
-		Dao<Bar, Integer> barDao = getBarDao();
+		Dao<Bar> barDao = getBarDao();
 		barDao.create(new Bar(12, "asdf"));
 		barDao.create(new Bar(13, "asdf"));
 
@@ -389,7 +389,7 @@ public class DaoTest extends BaseTypeTest
 	@Test
 	public void testQueryModifiers()throws SQLException
 	{
-		Dao<Bar, Integer> barDao = getBarDao();
+		Dao<Bar> barDao = getBarDao();
 		for(int i=0; i<50; i++)
 		{
 			barDao.create(new Bar(i, "asdf"));
@@ -437,12 +437,12 @@ public class DaoTest extends BaseTypeTest
 		return bar;
 	}
 
-	private Dao<Foo, Integer> getFooDao()
+	private Dao<Foo> getFooDao()
 	{
 		return helper.getDao(Foo.class);
 	}
 
-	private Dao<Bar, Integer> getBarDao()
+	private Dao<Bar> getBarDao()
 	{
 		return helper.getDao(Bar.class);
 	}

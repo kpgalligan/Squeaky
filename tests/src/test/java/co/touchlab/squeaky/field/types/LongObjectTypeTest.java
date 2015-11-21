@@ -36,7 +36,7 @@ public class LongObjectTypeTest extends BaseTypeTest
 	public void testLongObj() throws Exception
 	{
 		Class<LocalLongObj> clazz = LocalLongObj.class;
-		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalLongObj> dao = helper.getDao(clazz);
 		Long val = 13312321312312L;
 		String valStr = val.toString();
 		LocalLongObj foo = new LocalLongObj();
@@ -49,7 +49,7 @@ public class LongObjectTypeTest extends BaseTypeTest
 	public void testLongObjNull() throws Exception
 	{
 		Class<LocalLongObj> clazz = LocalLongObj.class;
-		Dao<LocalLongObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalLongObj> dao = helper.getDao(clazz);
 		LocalLongObj foo = new LocalLongObj();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

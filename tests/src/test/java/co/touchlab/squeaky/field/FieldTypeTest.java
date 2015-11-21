@@ -168,7 +168,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 		expect(resultMock.findColumn("name")).andReturn(0);
 		expect(resultMock.wasNull(0)).andReturn(false);
 		replay(resultMock);
-		assertEquals(nameResult, fieldType.resultToJava(resultMock, new HashMap<String, Integer>()));
+		assertEquals(nameResult, fieldType.resultToJava(resultMock, new HashMap<String>()));
 		verify(resultMock);
 		assertTrue(resultToSqlArgCalled.get());
 	}
@@ -454,7 +454,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 		expect(results.getInt(fieldNum)).andReturn(0);
 		expect(results.wasNull(fieldNum)).andReturn(true);
 		replay(results);
-		fieldType.resultToJava(results, new HashMap<String, Integer>());
+		fieldType.resultToJava(results, new HashMap<String>());
 		verify(results);
 	}
 
@@ -472,7 +472,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 		expect(results.getTimestamp(fieldNum)).andReturn(null);
 		expect(results.wasNull(fieldNum)).andReturn(true);
 		replay(results);
-		assertNull(fieldType.resultToJava(results, new HashMap<String, Integer>()));
+		assertNull(fieldType.resultToJava(results, new HashMap<String>()));
 		verify(results);
 	}
 
@@ -488,7 +488,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 		expect(results.findColumn(field.getName())).andReturn(fieldNum);
 		expect(results.wasNull(fieldNum)).andReturn(true);
 		replay(results);
-		assertNull(fieldType.resultToJava(results, new HashMap<String, Integer>()));
+		assertNull(fieldType.resultToJava(results, new HashMap<String>()));
 		verify(results);
 	}
 
@@ -735,7 +735,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 
 	@Test
 	public void testDefaultValueEmptyStringPersist() throws Exception {
-		Dao<DefaultEmptyString, Integer> dao = createDao(DefaultEmptyString.class, true);
+		Dao<DefaultEmptyString> dao = createDao(DefaultEmptyString.class, true);
 
 		DefaultEmptyString foo = new DefaultEmptyString();
 		assertEquals(1, dao.create(foo));
@@ -747,8 +747,8 @@ public class FieldTypeTest /*extends BaseCoreTest */
 
 	@Test
 	public void testForeignInCache() throws Exception {
-		Dao<ForeignParent, Integer> parentDao = createDao(ForeignParent.class, true);
-		Dao<ForeignForeign, Integer> foreignDao = createDao(ForeignForeign.class, true);
+		Dao<ForeignParent> parentDao = createDao(ForeignParent.class, true);
+		Dao<ForeignForeign> foreignDao = createDao(ForeignForeign.class, true);
 		foreignDao.setObjectCache(true);
 
 		ForeignForeign foreign = new ForeignForeign();
@@ -781,7 +781,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 		DatabaseTableConfig<ForeignObjectNoAnnotations> foreignTableConfig =
 				new DatabaseTableConfig<ForeignObjectNoAnnotations>(ForeignObjectNoAnnotations.class,
 						foreignFieldConfigs);
-		Dao<ForeignObjectNoAnnotations, Integer> foreignDao = createDao(foreignTableConfig, true);
+		Dao<ForeignObjectNoAnnotations> foreignDao = createDao(foreignTableConfig, true);
 
 		ArrayList<DatabaseFieldConfig> parentFieldConfigs = new ArrayList<DatabaseFieldConfig>();
 		fieldConfig = new DatabaseFieldConfig();
@@ -798,7 +798,7 @@ public class FieldTypeTest /*extends BaseCoreTest */
 		fieldConfig.setMaxForeignAutoRefreshLevel(2);
 		parentFieldConfigs.add(fieldConfig);
 
-		Dao<ObjectNoAnnotations, Integer> parentDao =
+		Dao<ObjectNoAnnotations> parentDao =
 				createDao(new DatabaseTableConfig<ObjectNoAnnotations>(ObjectNoAnnotations.class, parentFieldConfigs),
 						true);
 

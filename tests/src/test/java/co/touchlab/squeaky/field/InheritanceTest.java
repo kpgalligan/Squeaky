@@ -36,7 +36,7 @@ public class InheritanceTest extends BaseTypeTest
 	@Test
 	public void testForeignCollectionEager() throws Exception
 	{
-		Dao<Foo, Integer> dao = helper.getDao(Foo.class);
+		Dao<Foo> dao = helper.getDao(Foo.class);
 
 		Foo foo = new Foo(22, 123, "456", new Date());
 

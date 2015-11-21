@@ -23,7 +23,7 @@ public class BooleanIntegerTypeTest extends BaseTypeTest
 		SimpleHelper helper = createHelper(LocalBooleanInteger.class);
 
 		Class<LocalBooleanInteger> clazz = LocalBooleanInteger.class;
-		Dao<LocalBooleanInteger, Object> dao = helper.getDao(clazz);
+		Dao<LocalBooleanInteger> dao = helper.getDao(clazz);
 		boolean val = true;
 		String valStr = Boolean.toString(val);
 		LocalBooleanInteger foo = new LocalBooleanInteger();

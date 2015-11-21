@@ -39,7 +39,7 @@ public class DateLongTypeTest extends BaseTypeTest
 	public void testDateLong() throws Exception
 	{
 		Class<LocalDateLong> clazz = LocalDateLong.class;
-		Dao<LocalDateLong, Object> dao = helper.getDao(clazz);
+		Dao<LocalDateLong> dao = helper.getDao(clazz);
 		Date val = new Date();
 		long sqlVal = val.getTime();
 		String valStr = Long.toString(val.getTime());
@@ -54,7 +54,7 @@ public class DateLongTypeTest extends BaseTypeTest
 	public void testDateLongNull() throws Exception
 	{
 		Class<LocalDateLong> clazz = LocalDateLong.class;
-		Dao<LocalDateLong, Object> dao = helper.getDao(clazz);
+		Dao<LocalDateLong> dao = helper.getDao(clazz);
 		LocalDateLong foo = new LocalDateLong();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

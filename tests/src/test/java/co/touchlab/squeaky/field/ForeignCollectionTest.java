@@ -37,13 +37,13 @@ public class ForeignCollectionTest extends BaseTypeTest
 	@Test
 	public void testForeignCollectionEager() throws Exception
 	{
-		Dao<ParentEager, Integer> parentDao = helper.getDao(ParentEager.class);
+		Dao<ParentEager> parentDao = helper.getDao(ParentEager.class);
 
 		ParentEager parent = new ParentEager();
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildEager, Integer> childDao = helper.getDao(ChildEager.class);
+		Dao<ChildEager> childDao = helper.getDao(ChildEager.class);
 		Random random = new Random();
 		List<ChildEager> children = new ArrayList<ChildEager>();
 
@@ -64,13 +64,13 @@ public class ForeignCollectionTest extends BaseTypeTest
 	@Test
 	public void testForeignCollectionLazy() throws Exception
 	{
-		Dao<ParentLazy, Integer> parentDao = helper.getDao(ParentLazy.class);
+		Dao<ParentLazy> parentDao = helper.getDao(ParentLazy.class);
 
 		ParentLazy parent = new ParentLazy();
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildLazy, Integer> childDao = helper.getDao(ChildLazy.class);
+		Dao<ChildLazy> childDao = helper.getDao(ChildLazy.class);
 		Random random = new Random();
 		List<ChildLazy> children = new ArrayList<ChildLazy>();
 
@@ -92,14 +92,14 @@ public class ForeignCollectionTest extends BaseTypeTest
 	@Test
 	public void testForeignCollectionString() throws Exception
 	{
-		Dao<ParentString, Integer> parentDao = helper.getDao(ParentString.class);
+		Dao<ParentString> parentDao = helper.getDao(ParentString.class);
 
 		ParentString parent = new ParentString();
 		parent.id = "parentid";
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildString, Integer> childDao = helper.getDao(ChildString.class);
+		Dao<ChildString> childDao = helper.getDao(ChildString.class);
 		Random random = new Random();
 		List<ChildString> children = new ArrayList<ChildString>();
 
@@ -122,13 +122,13 @@ public class ForeignCollectionTest extends BaseTypeTest
 	@Test
 	public void testForeignCollectionOrder() throws Exception
 	{
-		Dao<ParentOrder, Integer> parentDao = helper.getDao(ParentOrder.class);
+		Dao<ParentOrder> parentDao = helper.getDao(ParentOrder.class);
 
 		ParentOrder parent = new ParentOrder();
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildOrder, Integer> childDao = helper.getDao(ChildOrder.class);
+		Dao<ChildOrder> childDao = helper.getDao(ChildOrder.class);
 		Random random = new Random();
 		List<ChildOrder> children = new ArrayList<ChildOrder>();
 

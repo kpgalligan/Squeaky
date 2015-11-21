@@ -10,15 +10,15 @@ import java.sql.SQLException;
 /**
  * Created by kgalligan on 5/24/15.
  */
-public interface GeneratedTableMapper<T, ID>
+public interface GeneratedTableMapper<T>
 {
 	T createObject(Cursor results) throws SQLException;
 
-	void fillRow(T data, Cursor results, ModelDao<T, ID> modelDao, Dao.ForeignRefresh[] foreignRefreshMap, TransientCache objectCache) throws SQLException;
+	void fillRow(T data, Cursor results, ModelDao<T> modelDao, Dao.ForeignRefresh[] foreignRefreshMap, TransientCache objectCache) throws SQLException;
 
 	void assignId(T data, Object val);
 
-	ID extractId(T data);
+	Object extractId(T data);
 
 	void bindVals(SQLiteStatement stmt, T data) throws SQLException;
 
@@ -30,7 +30,7 @@ public interface GeneratedTableMapper<T, ID>
 
 	TableInfo<T> getTableConfig() throws SQLException;
 
-	void fillForeignCollection(T data, ModelDao<T, ID> modelDao, String fieldName) throws SQLException;
+	void fillForeignCollection(T data, ModelDao<T> modelDao, String fieldName) throws SQLException;
 
 	//Foreign
 

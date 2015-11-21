@@ -42,7 +42,7 @@ public class BigDecimalTypeTest extends BaseTypeTest
 	public void testBigDecimal() throws Exception
 	{
 		Class<LocalBigDecimal> clazz = LocalBigDecimal.class;
-		Dao<LocalBigDecimal, Object> dao = helper.getDao(LocalBigDecimal.class);
+		Dao<LocalBigDecimal> dao = helper.getDao(LocalBigDecimal.class);
 		BigDecimal val = new BigDecimal("1.345345435345345345345345345345345345345345346356524234234");
 		String valStr = val.toString();
 		LocalBigDecimal foo = new LocalBigDecimal();
@@ -55,7 +55,7 @@ public class BigDecimalTypeTest extends BaseTypeTest
 	@Test
 	public void testBigDecimalNull() throws Exception
 	{
-		Dao<LocalBigDecimal, Object> dao = helper.getDao(LocalBigDecimal.class);
+		Dao<LocalBigDecimal> dao = helper.getDao(LocalBigDecimal.class);
 		LocalBigDecimal foo = new LocalBigDecimal();
 		dao.create(foo);
 
@@ -67,8 +67,8 @@ public class BigDecimalTypeTest extends BaseTypeTest
 	@Test(expected = SQLException.class)
 	public void testBigDecimalInvalidDbValue() throws Exception
 	{
-		Dao<LocalBigDecimal, Object> dao = helper.getDao(LocalBigDecimal.class);
-		Dao<NotBigDecimal, Object> notDao = helper.getDao(NotBigDecimal.class);
+		Dao<LocalBigDecimal> dao = helper.getDao(LocalBigDecimal.class);
+		Dao<NotBigDecimal> notDao = helper.getDao(NotBigDecimal.class);
 
 		NotBigDecimal notFoo = new NotBigDecimal();
 		notFoo.bigDecimal = "not valid form";

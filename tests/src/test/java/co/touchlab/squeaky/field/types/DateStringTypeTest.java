@@ -43,7 +43,7 @@ public class DateStringTypeTest extends BaseTypeTest
 	public void testDateString() throws Exception
 	{
 		Class<LocalDateString> clazz = LocalDateString.class;
-		Dao<LocalDateString, Object> dao = helper.getDao(clazz);
+		Dao<LocalDateString> dao = helper.getDao(clazz);
 		Date val = new Date();
 		String format = "yyyy-MM-dd HH:mm:ss.SSSSSS";
 		DateFormat dateFormat = new SimpleDateFormat(format);
@@ -60,7 +60,7 @@ public class DateStringTypeTest extends BaseTypeTest
 	public void testDateStringNull() throws Exception
 	{
 		Class<LocalDateString> clazz = LocalDateString.class;
-		Dao<LocalDateString, Object> dao = helper.getDao(clazz);
+		Dao<LocalDateString> dao = helper.getDao(clazz);
 		LocalDateString foo = new LocalDateString();
 		dao.create(foo);
 
@@ -70,7 +70,7 @@ public class DateStringTypeTest extends BaseTypeTest
 	@Test
 	public void testDateStringFormat() throws Exception
 	{
-		Dao<DateStringFormat, Object> dao = helper.getDao(DateStringFormat.class);
+		Dao<DateStringFormat> dao = helper.getDao(DateStringFormat.class);
 		DateStringFormat dateStringFormat = new DateStringFormat();
 		dateStringFormat.date = new SimpleDateFormat("yyyy-MM-dd").parse("2012-09-01");
 		dao.create(dateStringFormat);
@@ -83,7 +83,7 @@ public class DateStringTypeTest extends BaseTypeTest
 	@Test
 	public void testDateStringFormatNotDayAlign() throws Exception
 	{
-		Dao<DateStringFormat, Object> dao = helper.getDao(DateStringFormat.class);
+		Dao<DateStringFormat> dao = helper.getDao(DateStringFormat.class);
 		DateStringFormat dateStringFormat = new DateStringFormat();
 		dateStringFormat.date = new SimpleDateFormat("yyyy-MM-dd HH").parse("2012-09-01 12");
 		dao.create(dateStringFormat);

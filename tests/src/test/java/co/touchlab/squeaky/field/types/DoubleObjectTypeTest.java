@@ -35,7 +35,7 @@ public class DoubleObjectTypeTest extends BaseTypeTest
 	public void testDoubleObj() throws Exception
 	{
 		Class<LocalDoubleObj> clazz = LocalDoubleObj.class;
-		Dao<LocalDoubleObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalDoubleObj> dao = helper.getDao(clazz);
 		Double val = 13313323131.221;
 		String valStr = val.toString();
 		LocalDoubleObj foo = new LocalDoubleObj();
@@ -48,7 +48,7 @@ public class DoubleObjectTypeTest extends BaseTypeTest
 	public void testDoubleObjNull() throws Exception
 	{
 		Class<LocalDoubleObj> clazz = LocalDoubleObj.class;
-		Dao<LocalDoubleObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalDoubleObj> dao = helper.getDao(clazz);
 		LocalDoubleObj foo = new LocalDoubleObj();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

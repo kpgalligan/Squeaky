@@ -38,8 +38,8 @@ public class ViewTest extends BaseTypeTest
 	@Test
 	public void testView() throws Exception
 	{
-		Dao<Parent, Integer> parentDao = helper.getDao(Parent.class);
-		Dao<Child, Integer> childDao = helper.getDao(Child.class);
+		Dao<Parent> parentDao = helper.getDao(Parent.class);
+		Dao<Child> childDao = helper.getDao(Child.class);
 
 		for (int p = 0; p < 3; p++)
 		{
@@ -60,7 +60,7 @@ public class ViewTest extends BaseTypeTest
 			}
 		}
 
-		Dao<ParentChildView, Integer> parentChildViewDao = helper.getDao(ParentChildView.class);
+		Dao<ParentChildView> parentChildViewDao = helper.getDao(ParentChildView.class);
 
 		List<ParentChildView> parentChildViews = parentChildViewDao.queryForAll().list();
 

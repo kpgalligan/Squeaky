@@ -35,7 +35,7 @@ public class FloatObjectTypeTest extends BaseTypeTest
 	public void testFloatObj() throws Exception
 	{
 		Class<LocalFloatObj> clazz = LocalFloatObj.class;
-		Dao<LocalFloatObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalFloatObj> dao = helper.getDao(clazz);
 		Float val = 1331.221F;
 		String valStr = val.toString();
 		LocalFloatObj foo = new LocalFloatObj();
@@ -49,7 +49,7 @@ public class FloatObjectTypeTest extends BaseTypeTest
 	public void testFloatObjNull() throws Exception
 	{
 		Class<LocalFloatObj> clazz = LocalFloatObj.class;
-		Dao<LocalFloatObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalFloatObj> dao = helper.getDao(clazz);
 		LocalFloatObj foo = new LocalFloatObj();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

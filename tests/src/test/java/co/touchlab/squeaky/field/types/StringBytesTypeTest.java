@@ -38,7 +38,7 @@ public class StringBytesTypeTest extends BaseTypeTest
 	public void testStringBytes() throws Exception
 	{
 		Class<LocalStringBytes> clazz = LocalStringBytes.class;
-		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
+		Dao<LocalStringBytes> dao = helper.getDao(clazz);
 		String val = "string with \u0185";
 		LocalStringBytes foo = new LocalStringBytes();
 		foo.string = val;
@@ -51,7 +51,7 @@ public class StringBytesTypeTest extends BaseTypeTest
 	public void testStringBytesFormat() throws Exception
 	{
 		Class<LocalStringBytesUtf8> clazz = LocalStringBytesUtf8.class;
-		Dao<LocalStringBytesUtf8, Object> dao = helper.getDao(clazz);
+		Dao<LocalStringBytesUtf8> dao = helper.getDao(clazz);
 		String val = "string with \u0185";
 		LocalStringBytesUtf8 foo = new LocalStringBytesUtf8();
 		foo.string = val;
@@ -64,7 +64,7 @@ public class StringBytesTypeTest extends BaseTypeTest
 	public void testStringBytesNull() throws Exception
 	{
 		Class<LocalStringBytes> clazz = LocalStringBytes.class;
-		Dao<LocalStringBytes, Object> dao = helper.getDao(clazz);
+		Dao<LocalStringBytes> dao = helper.getDao(clazz);
 		LocalStringBytes foo = new LocalStringBytes();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

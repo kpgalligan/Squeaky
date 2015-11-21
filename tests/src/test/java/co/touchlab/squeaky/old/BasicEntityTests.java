@@ -31,7 +31,7 @@ public class BasicEntityTests
 
 		OpenHelper openHelper = new OpenHelper(RuntimeEnvironment.application);
 		{
-			Dao<A, Long> dao = openHelper.getDao(A.class);
+			Dao<A> dao = openHelper.getDao(A.class);
 			A a = new A();
 			a.name = "A test";
 			dao.create(a);
@@ -41,7 +41,7 @@ public class BasicEntityTests
 		}
 
 		{
-			Dao<BPackage, Long> bDao = openHelper.getDao(BPackage.class);
+			Dao<BPackage> bDao = openHelper.getDao(BPackage.class);
 
 			BPackage b = new BPackage(443);
 			b.name = "B test";
@@ -53,7 +53,7 @@ public class BasicEntityTests
 		}
 
 		{
-			Dao<CProtected, Long> cDao = openHelper.getDao(CProtected.class);
+			Dao<CProtected> cDao = openHelper.getDao(CProtected.class);
 
 			CProtected c = new CProtected();
 			c.name = "C test";
@@ -65,7 +65,7 @@ public class BasicEntityTests
 		}
 
 		{
-			Dao<DFinal, Long> dao = openHelper.getDao(DFinal.class);
+			Dao<DFinal> dao = openHelper.getDao(DFinal.class);
 
 			DFinal c = new DFinal(22, new Date(), "Final 22");
 

@@ -38,7 +38,7 @@ public class DatabaseFieldTest extends BaseTypeTest
 	@Test
 	public void testColumnName()throws Exception
 	{
-		Dao<ColumnNameTable, ?> dao = helper.getDao(ColumnNameTable.class);
+		Dao<ColumnNameTable> dao = helper.getDao(ColumnNameTable.class);
 		ColumnNameTable columnNameTable = new ColumnNameTable();
 		columnNameTable.id = 1;
 		columnNameTable.asdf = "jjjjj";
@@ -120,7 +120,7 @@ public class DatabaseFieldTest extends BaseTypeTest
 		String stuff = "djeqpodjewdopjed";
 		sub.stuff = stuff;
 
-		Dao<Sub, Object> dao = helper.getDao(Sub.class);
+		Dao<Sub> dao = helper.getDao(Sub.class);
 		assertEquals(0, sub.id);
 		dao.create(sub);
 //		assertEquals(1, dao.create(sub));

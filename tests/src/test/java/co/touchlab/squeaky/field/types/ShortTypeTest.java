@@ -40,7 +40,7 @@ public class ShortTypeTest extends BaseTypeTest
 	public void testShort() throws Exception
 	{
 		Class<LocalShort> clazz = LocalShort.class;
-		Dao<LocalShort, Object> dao = helper.getDao(clazz);
+		Dao<LocalShort> dao = helper.getDao(clazz);
 		short val = 12312;
 		String valStr = Short.toString(val);
 		LocalShort foo = new LocalShort();
@@ -52,11 +52,11 @@ public class ShortTypeTest extends BaseTypeTest
 	@Test
 	public void testShortPrimitiveNull() throws Exception
 	{
-		Dao<LocalShortObj, Object> objDao = helper.getDao(LocalShortObj.class);
+		Dao<LocalShortObj> objDao = helper.getDao(LocalShortObj.class);
 		LocalShortObj foo = new LocalShortObj();
 		foo.shortField = null;
 		objDao.create(foo);
-		Dao<LocalShort, Object> dao = helper.getDao(LocalShort.class);
+		Dao<LocalShort> dao = helper.getDao(LocalShort.class);
 		List<LocalShort> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).shortField);

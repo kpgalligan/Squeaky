@@ -25,7 +25,7 @@ public class TypesTest extends BaseTest
 	public void basicDbTest() throws SQLException
 	{
 		SimpleHelper helper = createHelper(ManyTypes.class);
-		Dao<ManyTypes, Integer> dao = helper.getDao(ManyTypes.class);
+		Dao<ManyTypes> dao = helper.getDao(ManyTypes.class);
 
 		ManyTypes manyTypes = new ManyTypes();
 		manyTypes.id = 1;

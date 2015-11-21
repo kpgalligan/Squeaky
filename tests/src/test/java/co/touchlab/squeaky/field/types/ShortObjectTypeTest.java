@@ -35,7 +35,7 @@ public class ShortObjectTypeTest extends BaseTypeTest
 	public void testShortObj() throws Exception
 	{
 		Class<LocalShortObj> clazz = LocalShortObj.class;
-		Dao<LocalShortObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalShortObj> dao = helper.getDao(clazz);
 		Short val = 12312;
 		String valStr = val.toString();
 		LocalShortObj foo = new LocalShortObj();
@@ -48,7 +48,7 @@ public class ShortObjectTypeTest extends BaseTypeTest
 	public void testShortObjNull() throws Exception
 	{
 		Class<LocalShortObj> clazz = LocalShortObj.class;
-		Dao<LocalShortObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalShortObj> dao = helper.getDao(clazz);
 		LocalShortObj foo = new LocalShortObj();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

@@ -29,7 +29,7 @@ public class TableUtils
 	{
 	}
 
-	public static <T, ID> int createTables(SQLiteDatabase connectionSource, Class... clazz)
+	public static <T> int createTables(SQLiteDatabase connectionSource, Class... clazz)
 			throws SQLException
 	{
 		int count = 0;
@@ -48,7 +48,7 @@ public class TableUtils
 	/**
 	 * Create a table if it does not already exist. This is not supported by all databases.
 	 */
-	public static <T, ID> int createTablesIfNotExists(SQLiteDatabase connectionSource, Class... clazz)
+	public static <T> int createTablesIfNotExists(SQLiteDatabase connectionSource, Class... clazz)
 			throws SQLException
 	{
 		int count = 0;
@@ -59,14 +59,14 @@ public class TableUtils
 		return count;
 	}
 
-	public static <T, ID> List<String> getCreateTableStatements(SQLiteDatabase connectionSource,
+	public static <T> List<String> getCreateTableStatements(SQLiteDatabase connectionSource,
 																Class clazz) throws SQLException
 	{
 
 		return addCreateTableStatements(loadTableMapper(clazz), false);
 	}
 
-	public static <T, ID> int dropTables(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
+	public static <T> int dropTables(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
 	{
 		int count = 0;
 		for (Class aClass : clazz)
@@ -76,7 +76,7 @@ public class TableUtils
 		return count;
 	}
 
-	public static <T, ID> int dropViews(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
+	public static <T> int dropViews(SQLiteDatabase connectionSource, boolean ignoreErrors, Class... clazz) throws SQLException
 	{
 		int count = 0;
 		for (Class aClass : clazz)
@@ -94,13 +94,13 @@ public class TableUtils
 	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
 	 * </p>
 	 */
-	public static <T, ID> void clearTable(SQLiteDatabase connectionSource, Class clazz)
+	public static <T> void clearTable(SQLiteDatabase connectionSource, Class clazz)
 			throws SQLException
 	{
 		clearTable(connectionSource, loadTableMapper(clazz).getTableConfig().getTableName());
 	}
 
-	private static <T, ID> int createTable(SQLiteDatabase connectionSource, Class clazz, boolean ifNotExists) throws SQLException
+	private static <T> int createTable(SQLiteDatabase connectionSource, Class clazz, boolean ifNotExists) throws SQLException
 	{
 
 		return doCreateTable(connectionSource, loadTableMapper(clazz), ifNotExists);
@@ -118,8 +118,8 @@ public class TableUtils
 		connectionSource.execSQL(sb.toString());
 	}
 
-	private static <T, ID> int doDropTable(SQLiteDatabase connectionSource,
-										   GeneratedTableMapper<T, ID> tableInfo, boolean ignoreErrors) throws SQLException
+	private static <T> int doDropTable(SQLiteDatabase connectionSource,
+										   GeneratedTableMapper<T> tableInfo, boolean ignoreErrors) throws SQLException
 	{
 		OLog.i(TAG, "dropping table '{" + tableInfo.getTableConfig().getTableName() + "}'");
 		List<String> statements = new ArrayList<String>();
@@ -131,8 +131,8 @@ public class TableUtils
 
 	}
 
-	private static <T, ID> int doDropView(SQLiteDatabase connectionSource,
-										  GeneratedTableMapper<T, ID> tableInfo, boolean ignoreErrors) throws SQLException
+	private static <T> int doDropView(SQLiteDatabase connectionSource,
+										  GeneratedTableMapper<T> tableInfo, boolean ignoreErrors) throws SQLException
 	{
 		OLog.i(TAG, "dropping table '{" + tableInfo.getTableConfig().getTableName() + "}'");
 		List<String> statements = new ArrayList<String>();
@@ -144,7 +144,7 @@ public class TableUtils
 
 	}
 
-	private static <T, ID> void addDropIndexStatements(GeneratedTableMapper<T, ID> tableInfo,
+	private static <T> void addDropIndexStatements(GeneratedTableMapper<T> tableInfo,
 													   List<String> statements) throws SQLException
 	{
 		// run through and look for index annotations
@@ -177,7 +177,7 @@ public class TableUtils
 	/**
 	 * Generate and return the list of statements to create a database table and any associated features.
 	 */
-	private static <T, ID> void addCreateTableStatements(GeneratedTableMapper<T, ID> tableInfo,
+	private static <T> void addCreateTableStatements(GeneratedTableMapper<T> tableInfo,
 														 List<String> statements, boolean ifNotExists) throws SQLException
 	{
 		StringBuilder sb = new StringBuilder(256);
@@ -225,7 +225,7 @@ public class TableUtils
 		addCreateIndexStatements(tableInfo, statements, ifNotExists, true);
 	}
 
-	private static <T, ID> void addCreateIndexStatements(GeneratedTableMapper<T, ID> tableInfo,
+	private static <T> void addCreateIndexStatements(GeneratedTableMapper<T> tableInfo,
 														 List<String> statements, boolean ifNotExists, boolean unique) throws SQLException
 	{
 		// run through and look for index annotations
@@ -295,7 +295,7 @@ public class TableUtils
 	/**
 	 * Generate and return the list of statements to drop a database table.
 	 */
-	private static <T, ID> void addDropTableStatements(GeneratedTableMapper<T, ID> tableInfo,
+	private static <T> void addDropTableStatements(GeneratedTableMapper<T> tableInfo,
 													   List<String> statements) throws SQLException
 	{
 		List<String> statementsBefore = new ArrayList<String>();
@@ -310,7 +310,7 @@ public class TableUtils
 		statements.addAll(statementsAfter);
 	}
 
-	private static <T, ID> void addDropViewStatements(GeneratedTableMapper<T, ID> tableInfo,
+	private static <T> void addDropViewStatements(GeneratedTableMapper<T> tableInfo,
 													  List<String> statements) throws SQLException
 	{
 		StringBuilder sb = new StringBuilder(64);
@@ -321,7 +321,7 @@ public class TableUtils
 		statements.add(sb.toString());
 	}
 
-	private static <T, ID> int doCreateTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T, ID> tableInfo,
+	private static <T> int doCreateTable(SQLiteDatabase connectionSource, GeneratedTableMapper<T> tableInfo,
 											 boolean ifNotExists) throws SQLException
 	{
 		OLog.i(TAG, "creating table '{" + tableInfo.getTableConfig().getTableName() + "}'");
@@ -363,7 +363,7 @@ public class TableUtils
 		return stmtC;
 	}
 
-	private static <T, ID> List<String> addCreateTableStatements(GeneratedTableMapper<T, ID> tableInfo, boolean ifNotExists) throws SQLException
+	private static <T> List<String> addCreateTableStatements(GeneratedTableMapper<T> tableInfo, boolean ifNotExists) throws SQLException
 	{
 		List<String> statements = new ArrayList<String>();
 		addCreateTableStatements(tableInfo, statements, ifNotExists);

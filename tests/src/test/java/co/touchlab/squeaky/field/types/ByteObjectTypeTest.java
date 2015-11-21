@@ -35,7 +35,7 @@ public class ByteObjectTypeTest extends BaseTypeTest
 	public void testByteObj() throws Exception
 	{
 		Class<LocalByteObj> clazz = LocalByteObj.class;
-		Dao<LocalByteObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalByteObj> dao = helper.getDao(clazz);
 		byte val = 123;
 		String valStr = Byte.toString(val);
 		LocalByteObj foo = new LocalByteObj();
@@ -49,7 +49,7 @@ public class ByteObjectTypeTest extends BaseTypeTest
 	public void testByteObjNull() throws Exception
 	{
 		Class<LocalByteObj> clazz = LocalByteObj.class;
-		Dao<LocalByteObj, Object> dao = helper.getDao(clazz);
+		Dao<LocalByteObj> dao = helper.getDao(clazz);
 		LocalByteObj foo = new LocalByteObj();
 		dao.create(new LocalByteObj());
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

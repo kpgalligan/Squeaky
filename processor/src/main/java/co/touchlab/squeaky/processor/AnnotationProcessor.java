@@ -337,7 +337,7 @@ public class AnnotationProcessor extends AbstractProcessor
 				.addField(FieldsEnum[].class, "fields")
 				.addField(ForeignCollectionInfo[].class, "foreignConfigs")
 				.addField(staticInstanceField)
-				.addSuperinterface(ParameterizedTypeName.get(ClassName.get(GeneratedTableMapper.class), className, idType == null ? ClassName.get(Object.class) : idType))
+				.addSuperinterface(ParameterizedTypeName.get(ClassName.get(GeneratedTableMapper.class), className))
 				.addJavadoc("Generated on $L\n", new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date()));
 
 
@@ -376,7 +376,7 @@ public class AnnotationProcessor extends AbstractProcessor
 
 	private void addForeignCollectionFillers(ConfigureClassDefinitions configureClassDefinitions, List<ForeignCollectionHolder> foreignCollectionInfos, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
 	{
-		ParameterizedTypeName modelDaoType = ParameterizedTypeName.get(ClassName.get(ModelDao.class), className, idType == null ? ClassName.get(Object.class) : idType);
+		ParameterizedTypeName modelDaoType = ParameterizedTypeName.get(ClassName.get(ModelDao.class), className);
 
 		MethodSpec.Builder globalFillMethod = MethodSpec.methodBuilder("fillForeignCollection")
 				.addModifiers(Modifier.PUBLIC)
@@ -612,7 +612,7 @@ public class AnnotationProcessor extends AbstractProcessor
 
 	private void fillRow(List<DatabaseTableHolder> databaseTableHolders, List<ForeignCollectionHolder> foreignCollectionInfos,  TypeElement element, List<FieldTypeGen> fieldTypeGens, ClassName className, ClassName idType, TypeSpec.Builder configBuilder)
 	{
-		ParameterizedTypeName modelDaoType = ParameterizedTypeName.get(ClassName.get(ModelDao.class), className, idType == null ? ClassName.get(Object.class) : idType);
+		ParameterizedTypeName modelDaoType = ParameterizedTypeName.get(ClassName.get(ModelDao.class), className);
 		MethodSpec.Builder javaFillMethodBuilder = MethodSpec.methodBuilder("fillRow")
 				.addModifiers(Modifier.PUBLIC)
 				.addParameter(className, "data")

@@ -45,7 +45,7 @@ public class JoinTest extends BaseTypeTest
 		createBar(createFoo("qwert", 456));
 
 		Dao dao = helper.getDao(Bar.class);
-		Where<Bar, Integer> where = new Where(dao);
+		Where<Bar> where = new Where(dao);
 
 		JoinAlias foo = where.join("foo");
 
@@ -64,7 +64,7 @@ public class JoinTest extends BaseTypeTest
 		createAsdf(createBar(createFoo("qwert", 456)));
 
 		Dao dao = helper.getDao(Asdf.class);
-		Where<Asdf, Integer> where = new Where(dao);
+		Where<Asdf> where = new Where(dao);
 
 		JoinAlias fooJoin = where.join("bar").join("foo");
 

@@ -36,7 +36,7 @@ public class StringTypeTest extends BaseTypeTest
 	public void testString() throws Exception
 	{
 		Class<LocalString> clazz = LocalString.class;
-		Dao<LocalString, Object> dao = helper.getDao(clazz);
+		Dao<LocalString> dao = helper.getDao(clazz);
 		String val = "str";
 		String valStr = val;
 		LocalString foo = new LocalString();

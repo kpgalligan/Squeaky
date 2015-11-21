@@ -44,8 +44,8 @@ public class InnerQueryTest extends BaseTypeTest
 		writableDatabase.beginTransaction();
 		try
 		{
-			Dao<Parent, ?> parentDao = helper.getDao(Parent.class);
-			Dao<Child, ?> childDao = helper.getDao(Child.class);
+			Dao<Parent> parentDao = helper.getDao(Parent.class);
+			Dao<Child> childDao = helper.getDao(Child.class);
 			Random random = new Random();
 			for(int i=0; i<1000; i++)
 			{

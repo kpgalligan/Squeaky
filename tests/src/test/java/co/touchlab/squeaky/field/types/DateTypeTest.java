@@ -38,7 +38,7 @@ public class DateTypeTest extends BaseTypeTest
 	public void testDate() throws Exception
 	{
 		Class<LocalDate> clazz = LocalDate.class;
-		Dao<LocalDate, Object> dao = helper.getDao(clazz);
+		Dao<LocalDate> dao = helper.getDao(clazz);
 		// we have to round to 0 millis
 		long millis = System.currentTimeMillis();
 		millis -= millis % 1000;
@@ -57,7 +57,7 @@ public class DateTypeTest extends BaseTypeTest
 	public void testDateNull() throws Exception
 	{
 		Class<LocalDate> clazz = LocalDate.class;
-		Dao<LocalDate, Object> dao = helper.getDao(clazz);
+		Dao<LocalDate> dao = helper.getDao(clazz);
 		LocalDate foo = new LocalDate();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));

@@ -24,13 +24,13 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author graywatson, kgalligan
  */
-public class ModelDao<T, ID> implements Dao<T, ID>
+public class ModelDao<T> implements Dao<T>
 {
 	public static final String DEFAULT_TABLE_PREFIX = "t";
 	public static final String EQ_OPERATION = "= ?";
 
 	private final Class<T> entityClass;
-	private final GeneratedTableMapper<T, ID> generatedTableMapper;
+	private final GeneratedTableMapper<T> generatedTableMapper;
 	private final Set<DaoObserver> daoObserverSet = Collections.newSetFromMap(new ConcurrentHashMap<DaoObserver, Boolean>());
 	private final String[] tableCols;
 	private final SqueakyContext squeakyContext;
@@ -55,7 +55,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		}
 	};
 
-	protected ModelDao(SqueakyContext openHelper, Class<T> entityClass, GeneratedTableMapper<T, ID> generatedTableMapper)
+	protected ModelDao(SqueakyContext openHelper, Class<T> entityClass, GeneratedTableMapper<T> generatedTableMapper)
 	{
 		this.squeakyContext = openHelper;
 		this.entityClass = entityClass;
@@ -105,7 +105,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	}
 
 	@Override
-	public T queryForId(ID id) throws SQLException
+	public T queryForId(Object id) throws SQLException
 	{
 		List<T> tList = queryForEq(idFieldType.getColumnName(), id).list();
 		return tList.size() == 0 ? null : tList.get(0);
@@ -380,7 +380,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public void createOrUpdate(T data) throws SQLException
 	{
-		ID id = extractId(data);
+		Object id = extractId(data);
 		// assume we need to create it if there is no id
 		if (id == null || !idExists(id))
 		{
@@ -437,7 +437,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	}
 
 	@Override
-	public int updateId(T data, ID newId) throws SQLException
+	public int updateId(T data, Object newId) throws SQLException
 	{
 		SQLiteDatabase db = squeakyContext.getDatabase();
 
@@ -510,7 +510,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	}
 
 	@Override
-	public int deleteById(ID id) throws SQLException
+	public int deleteById(Object id) throws SQLException
 	{
 		int result = squeakyContext.getDatabase().delete(
 				generatedTableMapper.getTableConfig().getTableName(),
@@ -525,7 +525,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public int delete(Collection<T> datas) throws SQLException
 	{
-		List<ID> ids = new ArrayList<ID>(datas.size());
+		List ids = new ArrayList(datas.size());
 		for (T data : datas)
 		{
 			ids.add(generatedTableMapper.extractId(data));
@@ -535,13 +535,13 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	}
 
 	@Override
-	public int deleteIds(Collection<ID> ids) throws SQLException
+	public int deleteIds(Collection<Object> ids) throws SQLException
 	{
 		final StringBuilder sb = new StringBuilder();
 		sb.append(idFieldType.getColumnName()).append(" in (");
 
 		boolean first = true;
-		for (ID id : ids)
+		for (Object id : ids)
 		{
 			if (first)
 				first = false;
@@ -592,7 +592,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public CloseableIterator<T> iterator() throws SQLException
 	{
-		return new SelectIterator<T, ID>(
+		return new SelectIterator<T>(
 				makeCursor(createDefaultFrom(), null, null, null, null, null),
 				ModelDao.this,
 				generateDefaultForeignRefreshMap());
@@ -606,7 +606,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	@Override
 	public CloseableIterator<T> iterator(Query where) throws SQLException
 	{
-		return new SelectIterator<T, ID>(
+		return new SelectIterator<T>(
 				makeCursor(where.getFromStatement(true), where.getWhereStatement(true), where.getParameters(), null, null, null),
 				ModelDao.this,
 				generateDefaultForeignRefreshMap());
@@ -632,7 +632,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 	}
 
 	@Override
-	public ID extractId(T data) throws SQLException
+	public Object extractId(T data) throws SQLException
 	{
 		return generatedTableMapper.extractId(data);
 	}
@@ -671,7 +671,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 
 	@Override
 	//TODO could be faster
-	public boolean idExists(ID id) throws SQLException
+	public boolean idExists(Object id) throws SQLException
 	{
 		return queryForId(id) != null;
 	}
@@ -726,7 +726,7 @@ public class ModelDao<T, ID> implements Dao<T, ID>
 		};
 	}
 
-	public GeneratedTableMapper<T, ID> getGeneratedTableMapper()
+	public GeneratedTableMapper<T> getGeneratedTableMapper()
 	{
 		return generatedTableMapper;
 	}

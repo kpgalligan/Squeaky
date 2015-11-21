@@ -36,7 +36,7 @@ public class CharTypeTest extends BaseTypeTest
 	public void testChar() throws Exception
 	{
 		Class<LocalChar> clazz = LocalChar.class;
-		Dao<LocalChar, Object> dao = helper.getDao(clazz);
+		Dao<LocalChar> dao = helper.getDao(clazz);
 		char val = 'w';
 		String valStr = Character.toString(val);
 		LocalChar foo = new LocalChar();

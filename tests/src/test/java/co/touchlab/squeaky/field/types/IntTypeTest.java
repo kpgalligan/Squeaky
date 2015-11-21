@@ -40,7 +40,7 @@ public class IntTypeTest extends BaseTypeTest
 	public void testInt() throws Exception
 	{
 		Class<LocalInt> clazz = LocalInt.class;
-		Dao<LocalInt, Object> dao = helper.getDao(clazz);
+		Dao<LocalInt> dao = helper.getDao(clazz);
 		int val = 313213123;
 		String valStr = Integer.toString(val);
 		LocalInt foo = new LocalInt();
@@ -52,12 +52,12 @@ public class IntTypeTest extends BaseTypeTest
 	@Test
 	public void testIntPrimitiveNull() throws Exception
 	{
-		Dao<LocalIntObj, Object> objDao = helper.getDao(LocalIntObj.class);
+		Dao<LocalIntObj> objDao = helper.getDao(LocalIntObj.class);
 		LocalIntObj foo = new LocalIntObj();
 		foo.intField = null;
 		objDao.create(foo);
 		// overlapping table
-		Dao<LocalInt, Object> dao = helper.getDao(LocalInt.class);
+		Dao<LocalInt> dao = helper.getDao(LocalInt.class);
 		List<LocalInt> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).intField);

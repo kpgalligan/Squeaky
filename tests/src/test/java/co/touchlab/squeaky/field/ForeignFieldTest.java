@@ -41,13 +41,13 @@ public class ForeignFieldTest extends BaseTypeTest
 	@Test
 	public void testEagerFetch() throws Exception
 	{
-		Dao<Parent, Integer> parentDao = helper.getDao(Parent.class);
+		Dao<Parent> parentDao = helper.getDao(Parent.class);
 
 		Parent parent = new Parent();
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<ChildEager, Integer> childDao = helper.getDao(ChildEager.class);
+		Dao<ChildEager> childDao = helper.getDao(ChildEager.class);
 		Random random = new Random();
 		List<ChildEager> children = new ArrayList<ChildEager>();
 
@@ -70,13 +70,13 @@ public class ForeignFieldTest extends BaseTypeTest
 	@Test
 	public void testForeignCollection() throws Exception
 	{
-		Dao<Parent, Integer> parentDao = helper.getDao(Parent.class);
+		Dao<Parent> parentDao = helper.getDao(Parent.class);
 
 		Parent parent = new Parent();
 		parent.name = "test";
 		parentDao.create(parent);
 
-		Dao<Child, Integer> childDao = helper.getDao(Child.class);
+		Dao<Child> childDao = helper.getDao(Child.class);
 		Random random = new Random();
 		List<Child> children = new ArrayList<Child>();
 
@@ -92,32 +92,32 @@ public class ForeignFieldTest extends BaseTypeTest
 		List<String> statements = new ArrayList<>();
 
 		{
-			Where<Child, Integer> where = new Where<>(childDao);
-			Where<Child, Integer> subwhere = where.eq("parent", parent);
+			Where<Child> where = new Where<>(childDao);
+			Where<Child> subwhere = where.eq("parent", parent);
 			statements.add(subwhere.getWhereStatement(true));
 			List<Child> childList = childDao.query(subwhere).list();
 			assertEquals(childList.size(), 20);
 		}
 
 		{
-			Where<Child, Integer> where = new Where<>(childDao);
-			Where<Child, Integer> subwhere = where.eq("parent_id", parent.id);
+			Where<Child> where = new Where<>(childDao);
+			Where<Child> subwhere = where.eq("parent_id", parent.id);
 			statements.add(subwhere.getWhereStatement(true));
 			List<Child> childList = childDao.query(subwhere).list();
 			assertEquals(childList.size(), 20);
 		}
 
 		{
-			Where<Child, Integer> where = new Where<>(childDao);
-			Where<Child, Integer> subwhere = where.eq("parent_id", parent);
+			Where<Child> where = new Where<>(childDao);
+			Where<Child> subwhere = where.eq("parent_id", parent);
 			statements.add(subwhere.getWhereStatement(true));
 			List<Child> childList = childDao.query(subwhere).list();
 			assertEquals(childList.size(), 20);
 		}
 
 		{
-			Where<Child, Integer> where = new Where<>(childDao);
-			Where<Child, Integer> subwhere = where.eq("parent", parent.id);
+			Where<Child> where = new Where<>(childDao);
+			Where<Child> subwhere = where.eq("parent", parent.id);
 			statements.add(subwhere.getWhereStatement(true));
 			List<Child> childList = childDao.query(subwhere).list();
 			assertEquals(childList.size(), 20);

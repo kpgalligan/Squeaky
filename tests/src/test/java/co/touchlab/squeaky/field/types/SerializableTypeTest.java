@@ -42,7 +42,7 @@ public class SerializableTypeTest extends BaseTypeTest
 	public void testSerializable() throws Exception
 	{
 		Class<LocalSerializable> clazz = LocalSerializable.class;
-		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
+		Dao<LocalSerializable> dao = helper.getDao(clazz);
 		Integer val = 1331333131;
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		ObjectOutputStream objOutStream = new ObjectOutputStream(outStream);
@@ -59,7 +59,7 @@ public class SerializableTypeTest extends BaseTypeTest
 	public void testSerializableNull() throws Exception
 	{
 		Class<LocalSerializable> clazz = LocalSerializable.class;
-		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
+		Dao<LocalSerializable> dao = helper.getDao(clazz);
 		LocalSerializable foo = new LocalSerializable();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
@@ -68,7 +68,7 @@ public class SerializableTypeTest extends BaseTypeTest
 	/*@Test
 	public void testSerializableNoValue() throws Exception {
 		Class<LocalSerializable> clazz = LocalSerializable.class;
-		Dao<LocalSerializable, Object> dao = helper.getDao(clazz);
+		Dao<LocalSerializable> dao = helper.getDao(clazz);
 		LocalSerializable foo = new LocalSerializable();
 		foo.serializable = null;
 		assertEquals(1, dao.create(foo));
@@ -96,7 +96,7 @@ public class SerializableTypeTest extends BaseTypeTest
 	/*@Test(expected = SQLException.class)
 	public void testSerializableInvalidResult() throws Exception {
 		Class<LocalByteArray> clazz = LocalByteArray.class;
-		Dao<LocalByteArray, Object> dao = createDao(clazz, true);
+		Dao<LocalByteArray> dao = createDao(clazz, true);
 		LocalByteArray foo = new LocalByteArray();
 		foo.byteField = new byte[] { 1, 2, 3, 4, 5 };
 		assertEquals(1, dao.create(foo));
@@ -128,7 +128,7 @@ public class SerializableTypeTest extends BaseTypeTest
 
 	/*@Test
 	public void testUpdateBuilderSerializable() throws Exception {
-		Dao<SerializedUpdate, Integer> dao = createDao(SerializedUpdate.class, true);
+		Dao<SerializedUpdate> dao = createDao(SerializedUpdate.class, true);
 		SerializedUpdate foo = new SerializedUpdate();
 		SerializedField serialized1 = new SerializedField("wow");
 		foo.serialized = serialized1;
@@ -151,7 +151,7 @@ public class SerializableTypeTest extends BaseTypeTest
 
 		// update with UpdateBuilder
 		SerializedField serialized3 = new SerializedField("crack");
-		UpdateBuilder<SerializedUpdate, Integer> ub = dao.updateBuilder();
+		UpdateBuilder<SerializedUpdate> ub = dao.updateBuilder();
 		ub.updateColumnValue(SerializedUpdate.SERIALIZED_FIELD_NAME, serialized3);
 		ub.where().idEq(foo.id);
 		assertEquals(1, ub.update());

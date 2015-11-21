@@ -37,7 +37,7 @@ public class LongStringTypeTest extends BaseTypeTest
 	public void testLongString() throws Exception
 	{
 		Class<LocalLongString> clazz = LocalLongString.class;
-		Dao<LocalLongString, Object> dao = helper.getDao(LocalLongString.class);
+		Dao<LocalLongString> dao = helper.getDao(LocalLongString.class);
 		String val = "str";
 		String valStr = val;
 		LocalLongString foo = new LocalLongString();

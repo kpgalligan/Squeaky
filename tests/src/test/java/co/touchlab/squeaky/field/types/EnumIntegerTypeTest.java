@@ -38,7 +38,7 @@ public class EnumIntegerTypeTest extends BaseTypeTest
 	public void testEnumInt() throws Exception
 	{
 		Class<LocalEnumInt> clazz = LocalEnumInt.class;
-		Dao<LocalEnumInt, Object> dao = helper.getDao(clazz);
+		Dao<LocalEnumInt> dao = helper.getDao(clazz);
 		OurEnum val = OurEnum.SECOND;
 		int sqlVal = val.ordinal();
 		String valStr = Integer.toString(sqlVal);
@@ -52,7 +52,7 @@ public class EnumIntegerTypeTest extends BaseTypeTest
 	public void testEnumIntNull() throws Exception
 	{
 		Class<LocalEnumInt> clazz = LocalEnumInt.class;
-		Dao<LocalEnumInt, Object> dao = helper.getDao(clazz);
+		Dao<LocalEnumInt> dao = helper.getDao(clazz);
 		LocalEnumInt foo = new LocalEnumInt();
 		dao.create(foo);
 		assertTrue(EqualsBuilder.reflectionEquals(foo, dao.queryForAll().list().get(0)));
@@ -61,7 +61,7 @@ public class EnumIntegerTypeTest extends BaseTypeTest
 	/*@Test
 	public void testEnumIntResultsNoFieldType() throws Exception {
 		Class<LocalEnumInt> clazz = LocalEnumInt.class;
-		Dao<LocalEnumInt, Object> dao = createDao(clazz, true);
+		Dao<LocalEnumInt> dao = createDao(clazz, true);
 		OurEnum val = OurEnum.SECOND;
 		LocalEnumInt foo = new LocalEnumInt();
 		foo.ourEnum = val;

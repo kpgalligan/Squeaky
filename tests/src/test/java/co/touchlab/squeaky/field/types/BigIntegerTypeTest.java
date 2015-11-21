@@ -40,7 +40,7 @@ public class BigIntegerTypeTest extends BaseTypeTest
 	@Test
 	public void testBigInteger() throws Exception
 	{
-		Dao<LocalBigInteger, Object> dao = helper.getDao(LocalBigInteger.class);
+		Dao<LocalBigInteger> dao = helper.getDao(LocalBigInteger.class);
 		BigInteger val =
 				new BigInteger(
 						"324234234234234234234234246467647647463345345435345345345345345345345345345345345346356524234234");
@@ -58,7 +58,7 @@ public class BigIntegerTypeTest extends BaseTypeTest
 	@Test
 	public void testBigIntegerNull() throws Exception
 	{
-		Dao<LocalBigInteger, Object> dao = helper.getDao(LocalBigInteger.class);
+		Dao<LocalBigInteger> dao = helper.getDao(LocalBigInteger.class);
 		LocalBigInteger foo = new LocalBigInteger();
 		dao.create(foo);
 
@@ -70,8 +70,8 @@ public class BigIntegerTypeTest extends BaseTypeTest
 	@Test(expected = SQLException.class)
 	public void testBigIntegerInvalidDbValue() throws Exception
 	{
-		Dao<LocalBigInteger, Object> dao = helper.getDao(LocalBigInteger.class);
-		Dao<NotBigInteger, Object> notDao = helper.getDao(NotBigInteger.class);
+		Dao<LocalBigInteger> dao = helper.getDao(LocalBigInteger.class);
+		Dao<NotBigInteger> notDao = helper.getDao(NotBigInteger.class);
 
 		NotBigInteger notFoo = new NotBigInteger();
 		notFoo.bigInteger = "not valid form";

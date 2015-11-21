@@ -35,10 +35,10 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 		return squeakyContext;
 	}
 
-	public <D extends Dao<T, ?>, T> D getDao(Class<T> clazz)
+	public <D extends Dao<T>, T> D getDao(Class<T> clazz)
 	{
 		// special reflection fu is now handled internally by create dao calling the database type
-		Dao<T, ?> dao = squeakyContext.getDao(clazz);
+		Dao<T> dao = squeakyContext.getDao(clazz);
 		@SuppressWarnings("unchecked")
 		D castDao = (D) dao;
 		return castDao;

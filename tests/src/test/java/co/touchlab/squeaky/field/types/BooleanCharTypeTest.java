@@ -23,7 +23,7 @@ public class BooleanCharTypeTest extends BaseTypeTest
 		SimpleHelper helper = createHelper(LocalBooleanChar.class);
 
 		Class<LocalBooleanChar> clazz = LocalBooleanChar.class;
-		Dao<LocalBooleanChar, Object> dao = helper.getDao(clazz);
+		Dao<LocalBooleanChar> dao = helper.getDao(clazz);
 		boolean val = true;
 		String valStr = Boolean.toString(val);
 		LocalBooleanChar foo = new LocalBooleanChar();

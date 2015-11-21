@@ -40,7 +40,7 @@ public class ByteTypeTest extends BaseTypeTest
 	public void testByte() throws Exception
 	{
 		Class<LocalByte> clazz = LocalByte.class;
-		Dao<LocalByte, Object> dao = helper.getDao(clazz);
+		Dao<LocalByte> dao = helper.getDao(clazz);
 		byte val = 123;
 		String valStr = Byte.toString(val);
 		LocalByte foo = new LocalByte();
@@ -53,12 +53,12 @@ public class ByteTypeTest extends BaseTypeTest
 	@Test
 	public void testBytePrimitiveNull() throws Exception
 	{
-		Dao<LocalByteObj, Object> objDao = helper.getDao(LocalByteObj.class);
+		Dao<LocalByteObj> objDao = helper.getDao(LocalByteObj.class);
 		LocalByteObj foo = new LocalByteObj();
 		foo.byteField = null;
 		objDao.create(foo);
 
-		Dao<LocalByte, Object> dao = helper.getDao(LocalByte.class);
+		Dao<LocalByte> dao = helper.getDao(LocalByte.class);
 		List<LocalByte> all = dao.queryForAll().list();
 		assertEquals(1, all.size());
 		assertEquals(0, all.get(0).byteField);

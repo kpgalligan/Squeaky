@@ -41,7 +41,7 @@ public class BooleanTypeTest extends BaseTypeTest
 	public void testBoolean() throws Exception
 	{
 		Class<LocalBoolean> clazz = LocalBoolean.class;
-		Dao<LocalBoolean, Object> dao = helper.getDao(clazz);
+		Dao<LocalBoolean> dao = helper.getDao(clazz);
 		boolean val = true;
 		String valStr = Boolean.toString(val);
 		LocalBoolean foo = new LocalBoolean();
@@ -54,12 +54,12 @@ public class BooleanTypeTest extends BaseTypeTest
 	@Test
 	public void testBooleanPrimitiveNull() throws Exception
 	{
-		Dao<LocalBooleanObj, Object> objDao = helper.getDao(LocalBooleanObj.class);
+		Dao<LocalBooleanObj> objDao = helper.getDao(LocalBooleanObj.class);
 		LocalBooleanObj foo = new LocalBooleanObj();
 		foo.bool = null;
 		objDao.create(foo);
 
-		Dao<LocalBoolean, Object> dao = helper.getDao(LocalBoolean.class);
+		Dao<LocalBoolean> dao = helper.getDao(LocalBoolean.class);
 		List<LocalBoolean> all = dao.queryForAll().list();
 
 		assertEquals(1, all.size());

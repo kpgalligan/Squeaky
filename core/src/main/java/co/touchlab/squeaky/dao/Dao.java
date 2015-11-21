@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author graywatson, kgalligan
  */
-public interface Dao<T, ID>
+public interface Dao<T>
 {
 	class ForeignRefresh
 	{
@@ -38,7 +38,7 @@ public interface Dao<T, ID>
 		List<T> list() throws SQLException;
 	}
 
-	T queryForId(ID id) throws SQLException;
+	T queryForId(Object id) throws SQLException;
 
 	QueryModifiers<T> queryForAll() throws SQLException;
 
@@ -58,7 +58,7 @@ public interface Dao<T, ID>
 
 	void update(T data) throws SQLException;
 
-	int updateId(T data, ID newId) throws SQLException;
+	int updateId(T data, Object newId) throws SQLException;
 
 	int update(Query where, Map<String, Object> valueMap) throws SQLException;
 
@@ -68,11 +68,11 @@ public interface Dao<T, ID>
 
 	int delete(T data) throws SQLException;
 
-	int deleteById(ID id) throws SQLException;
+	int deleteById(Object id) throws SQLException;
 
 	int delete(Collection<T> datas) throws SQLException;
 
-	int deleteIds(Collection<ID> ids) throws SQLException;
+	int deleteIds(Collection<Object> ids) throws SQLException;
 
 	int delete(Query preparedDelete) throws SQLException;
 
@@ -107,7 +107,7 @@ public interface Dao<T, ID>
 	 * Returns the ID from the data parameter passed in. This is used by some of the internal queries to be able to
 	 * search by id.
 	 */
-	ID extractId(T data) throws SQLException;
+	Object extractId(T data) throws SQLException;
 
 	void fillForeignCollection(T data, String fieldName) throws SQLException;
 
@@ -129,7 +129,7 @@ public interface Dao<T, ID>
 	/**
 	 * Returns true if an object exists that matches this ID otherwise false.
 	 */
-	boolean idExists(ID id) throws SQLException;
+	boolean idExists(Object id) throws SQLException;
 
 	void registerObserver(DaoObserver observer);
 

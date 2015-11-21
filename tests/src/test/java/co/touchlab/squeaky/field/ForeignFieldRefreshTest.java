@@ -82,9 +82,9 @@ public class ForeignFieldRefreshTest extends BaseTypeTest
 	@Test
 	public void testForeignRefreshMap() throws SQLException
 	{
-		Dao<GrandParent, ?> grandParentDao = helper.getDao(GrandParent.class);
-		Dao<Parent, ?> parentDao = helper.getDao(Parent.class);
-		Dao<ChildEager, Integer> childEagerDao = helper.getDao(ChildEager.class);
+		Dao<GrandParent> grandParentDao = helper.getDao(GrandParent.class);
+		Dao<Parent> parentDao = helper.getDao(Parent.class);
+		Dao<ChildEager> childEagerDao = helper.getDao(ChildEager.class);
 
 		GrandParent grampsEager = new GrandParent();
 		grampsEager.name = "grampsEager";
@@ -119,17 +119,17 @@ public class ForeignFieldRefreshTest extends BaseTypeTest
 		Assert.assertTrue(testDefault.parent.grandParentLazy.name == null && testDefault.parent.grandParentEager.name != null && testDefault.parent.grandParentEager.childEager.asdf == null);
 
 		//Disable all refresh.  Kind of garbage syntax.  To review.
-		ChildEager noRefresh = childEagerDao.query(new Where<ChildEager, Integer>(childEagerDao).eq("id", child.id)).foreignRefreshMap(new Dao.ForeignRefresh[0]).list().get(0);
+		ChildEager noRefresh = childEagerDao.query(new Where<ChildEager>(childEagerDao).eq("id", child.id)).foreignRefreshMap(new Dao.ForeignRefresh[0]).list().get(0);
 		Assert.assertTrue(noRefresh.parent.name == null);
 
-		ChildEager deepRefresh = childEagerDao.query(new Where<ChildEager, Integer>(childEagerDao).eq("id", child.id)).foreignRefreshMap(
+		ChildEager deepRefresh = childEagerDao.query(new Where<ChildEager>(childEagerDao).eq("id", child.id)).foreignRefreshMap(
 				DaoHelper.refresh("parent[grandParentLazy[childEager]]")
 		).list().get(0);
 
 		Assert.assertTrue(deepRefresh.parent.name != null && deepRefresh.parent.grandParentEager.name == null &&
 				deepRefresh.parent.grandParentLazy.childEager.asdf != null);
 
-		Parent testParent = parentDao.query(new Where<ChildEager, Integer>(parentDao).eq("id", popsEager.id))
+		Parent testParent = parentDao.query(new Where<ChildEager>(parentDao).eq("id", popsEager.id))
 				.foreignRefreshMap(DaoHelper.refresh("grandParentLazy[childEager[parent[grandParentEager]]],grandParentEager"))
 				.list().get(0);
 

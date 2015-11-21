@@ -39,8 +39,8 @@ public class QueryTest extends BaseTypeTest
 	@Test
 	public void testQuery() throws Exception
 	{
-		Dao<Parent, Integer> parentDao = helper.getDao(Parent.class);
-		Dao<Child, Integer> childDao = helper.getDao(Child.class);
+		Dao<Parent> parentDao = helper.getDao(Parent.class);
+		Dao<Child> childDao = helper.getDao(Child.class);
 
 		for (int p = 0; p < 3; p++)
 		{
@@ -61,7 +61,7 @@ public class QueryTest extends BaseTypeTest
 			}
 		}
 
-		Dao<ParentChildQuery, Integer> parentChildViewDao = helper.getDao(ParentChildQuery.class);
+		Dao<ParentChildQuery> parentChildViewDao = helper.getDao(ParentChildQuery.class);
 
 		List<ParentChildQuery> parentChildViews = parentChildViewDao.queryForAll().list();
 
