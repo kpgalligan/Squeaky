@@ -16,16 +16,14 @@ import java.util.Map;
  */
 public class SqueakyContext
 {
-	private final Class[] managingClasses;
 	private final SQLiteOpenHelper helper;
 	private final Map<Class, ModelDao> daoMap = new HashMap<Class, ModelDao>();
 	private final Map<Class, GeneratedTableMapper> generatedTableMapperMap = new HashMap<Class, GeneratedTableMapper>();
 
 
-	public SqueakyContext(SQLiteOpenHelper helper, Class[] managingClasses)
+	public SqueakyContext(SQLiteOpenHelper helper)
 	{
 		this.helper = helper;
-		this.managingClasses = managingClasses;
 	}
 
 	public synchronized Dao getDao(Class clazz)
@@ -60,16 +58,6 @@ public class SqueakyContext
 
 		return generatedTableMapper;
 	}
-
-	public Class[] getManagingClasses()
-	{
-		return managingClasses;
-	}
-
-//	public SQLiteOpenHelper getHelper()
-//	{
-//		return helper;
-//	}
 
 	public SQLiteDatabase getDatabase()
 	{

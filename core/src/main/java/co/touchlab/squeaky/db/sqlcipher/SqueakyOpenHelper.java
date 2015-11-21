@@ -21,16 +21,16 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	private final PassphraseProvider passphraseProvider;
 	private SQLiteDatabaseImpl sqLiteDatabase;
 
-	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, Class... managingClasses)
+	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider)
 	{
-		this(context, name, factory, version, passphraseProvider, null, managingClasses);
+		this(context, name, factory, version, passphraseProvider, null);
 	}
 
-	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, SQLiteDatabaseHook databaseHook, Class[] managingClasses)
+	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, SQLiteDatabaseHook databaseHook)
 	{
 		super(context, name, factory, version, databaseHook);
 		this.passphraseProvider = passphraseProvider;
-		squeakyContext = new SqueakyContext(this, managingClasses);
+		squeakyContext = new SqueakyContext(this);
 	}
 
 	public SqueakyContext getSqueakyContext()
@@ -57,11 +57,6 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
 	{
 		return squeakyContext.getGeneratedTableMapper(clazz);
-	}
-
-	public Class[] getManagingClasses()
-	{
-		return squeakyContext.getManagingClasses();
 	}
 
 	@Override

@@ -18,16 +18,16 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	private final SqueakyContext squeakyContext;
 	private SQLiteDatabaseImpl sqLiteDatabase;
 
-	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class... managingClasses)
+	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version)
 	{
 		super(context, name, factory, version);
-		squeakyContext = new SqueakyContext(this, managingClasses);
+		squeakyContext = new SqueakyContext(this);
 	}
 
-	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Class[] managingClasses)
+	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler)
 	{
 		super(context, name, factory, version, errorHandler);
-		squeakyContext = new SqueakyContext(this, managingClasses);
+		squeakyContext = new SqueakyContext(this);
 	}
 
 	public SqueakyContext getSqueakyContext()
@@ -54,11 +54,6 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	public synchronized GeneratedTableMapper getGeneratedTableMapper(Class clazz)
 	{
 		return squeakyContext.getGeneratedTableMapper(clazz);
-	}
-
-	public Class[] getManagingClasses()
-	{
-		return squeakyContext.getManagingClasses();
 	}
 
 	@Override
