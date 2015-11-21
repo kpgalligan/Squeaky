@@ -6,6 +6,7 @@ import co.touchlab.squeaky.field.SqlType;
 import co.touchlab.squeaky.table.DatabaseTable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -29,7 +30,7 @@ public class DoubleTypeTest extends BaseTypeTest
 		helper = getHelper();
 	}
 
-	@Before
+	@After
 	public void after()
 	{
 		helper.close();

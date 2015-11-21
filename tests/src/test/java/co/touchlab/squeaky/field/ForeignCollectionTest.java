@@ -5,6 +5,7 @@ import co.touchlab.squeaky.field.types.BaseTypeTest;
 import co.touchlab.squeaky.table.DatabaseTable;
 import co.touchlab.squeaky.utils.AssertHelper;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -27,7 +28,7 @@ public class ForeignCollectionTest extends BaseTypeTest
 		helper = getHelper();
 	}
 
-	@Before
+	@After
 	public void after()
 	{
 		helper.close();

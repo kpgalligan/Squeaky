@@ -18,6 +18,7 @@ import net.sqlcipher.database.SQLiteOpenHelper;
 public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.touchlab.squeaky.db.SQLiteOpenHelper
 {
 	private final SqueakyContext squeakyContext;
+	private final PassphraseProvider passphraseProvider;
 	private SQLiteDatabaseImpl sqLiteDatabase;
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, Class... managingClasses)
@@ -28,8 +29,8 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, SQLiteDatabaseHook databaseHook, Class[] managingClasses)
 	{
 		super(context, name, factory, version, databaseHook);
+		this.passphraseProvider = passphraseProvider;
 		squeakyContext = new SqueakyContext(this, managingClasses);
-		sqLiteDatabase = new SQLiteDatabaseImpl(getWritableDatabase(passphraseProvider.getPassphrase()));
 	}
 
 	public SqueakyContext getSqueakyContext()
@@ -64,8 +65,10 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	}
 
 	@Override
-	public co.touchlab.squeaky.db.SQLiteDatabase getWrappedDatabase()
+	public synchronized co.touchlab.squeaky.db.SQLiteDatabase getWrappedDatabase()
 	{
+		if(sqLiteDatabase == null)
+			sqLiteDatabase = new SQLiteDatabaseImpl(getWritableDatabase(passphraseProvider.getPassphrase()));
 		return sqLiteDatabase;
 	}
 }

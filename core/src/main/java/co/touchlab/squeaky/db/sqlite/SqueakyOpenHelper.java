@@ -16,20 +16,18 @@ import co.touchlab.squeaky.table.GeneratedTableMapper;
 public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.touchlab.squeaky.db.SQLiteOpenHelper
 {
 	private final SqueakyContext squeakyContext;
-	private final SQLiteDatabaseImpl sqLiteDatabase;
+	private SQLiteDatabaseImpl sqLiteDatabase;
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, Class... managingClasses)
 	{
 		super(context, name, factory, version);
 		squeakyContext = new SqueakyContext(this, managingClasses);
-		sqLiteDatabase = new SQLiteDatabaseImpl(getWritableDatabase());
 	}
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler, Class[] managingClasses)
 	{
 		super(context, name, factory, version, errorHandler);
 		squeakyContext = new SqueakyContext(this, managingClasses);
-		sqLiteDatabase = new SQLiteDatabaseImpl(getWritableDatabase());
 	}
 
 	public SqueakyContext getSqueakyContext()
@@ -64,8 +62,10 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	}
 
 	@Override
-	public co.touchlab.squeaky.db.SQLiteDatabase getWrappedDatabase()
+	public synchronized co.touchlab.squeaky.db.SQLiteDatabase getWrappedDatabase()
 	{
+		if(sqLiteDatabase == null)
+			sqLiteDatabase = new SQLiteDatabaseImpl(getWritableDatabase());
 		return sqLiteDatabase;
 	}
 }
