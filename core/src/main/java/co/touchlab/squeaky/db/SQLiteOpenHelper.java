@@ -5,5 +5,5 @@ package co.touchlab.squeaky.db;
  */
 public interface SQLiteOpenHelper
 {
-	SQLiteDatabase getDatabase();
+	SQLiteDatabase getWrappedDatabase();
 }

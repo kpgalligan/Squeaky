@@ -31,6 +31,7 @@ public abstract class BaseTypeTest
 		public SimpleHelper(Context context, String name, Class... managingClasses)
 		{
 			super(context, name, null, 1, managingClasses);
+
 		}
 
 		public SimpleHelper(Context context, List<String> createSqlList, String name, Class... managingClasses)
@@ -45,7 +46,8 @@ public abstract class BaseTypeTest
 		{
 			try
 			{
-				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), getManagingClasses());
+				Class[] managingClasses = getManagingClasses();
+				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), managingClasses);
 				if (createSqlList != null)
 				{
 					for (String s : createSqlList)

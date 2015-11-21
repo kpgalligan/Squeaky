@@ -2,7 +2,6 @@ package co.touchlab.squeaky.dao;
 
 import co.touchlab.squeaky.db.SQLiteDatabase;
 import co.touchlab.squeaky.db.SQLiteOpenHelper;
-import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.FieldType;
 import co.touchlab.squeaky.table.GeneratedTableMapper;
 
@@ -55,7 +54,7 @@ public class SqueakyContext
 		GeneratedTableMapper generatedTableMapper = generatedTableMapperMap.get(clazz);
 		if (generatedTableMapper == null)
 		{
-			generatedTableMapper = SqueakyOpenHelper.loadGeneratedTableMapper(clazz);
+			generatedTableMapper = loadGeneratedTableMapper(clazz);
 			generatedTableMapperMap.put(clazz, generatedTableMapper);
 		}
 
@@ -74,7 +73,7 @@ public class SqueakyContext
 
 	public SQLiteDatabase getDatabase()
 	{
-		return helper.getDatabase();
+		return helper.getWrappedDatabase();
 	}
 
 	public FieldType findFieldType(Class c, String columnFieldName) throws SQLException
@@ -90,5 +89,17 @@ public class SqueakyContext
 		}
 
 		throw new SQLException("No field type found for " + columnFieldName);
+	}
+
+	public static GeneratedTableMapper loadGeneratedTableMapper(Class clazz)
+	{
+		try
+		{
+			return (GeneratedTableMapper) Class.forName(clazz.getName() + "$$Configuration").newInstance();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 }

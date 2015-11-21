@@ -208,7 +208,7 @@ public class BasicEntityTests
 
 		public OpenHelper(Context context)
 		{
-			super(context, NAME, null, VERSION, A.class, BPackage.class, CProtected.class);
+			super(context, NAME, null, VERSION);
 		}
 
 		@Override

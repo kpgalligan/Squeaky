@@ -1,5 +1,6 @@
 package co.touchlab.squeaky.table;
 
+import co.touchlab.squeaky.dao.SqueakyContext;
 import co.touchlab.squeaky.db.SQLiteDatabase;
 import co.touchlab.squeaky.db.sqlite.SqueakyOpenHelper;
 import co.touchlab.squeaky.field.DataPersister;
@@ -41,7 +42,7 @@ public class TableUtils
 
 	private static GeneratedTableMapper loadTableMapper(Class dataclass)
 	{
-		return SqueakyOpenHelper.loadGeneratedTableMapper(dataclass);
+		return SqueakyContext.loadGeneratedTableMapper(dataclass);
 	}
 
 	/**

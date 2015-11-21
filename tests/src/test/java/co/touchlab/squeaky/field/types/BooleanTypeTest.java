@@ -4,6 +4,7 @@ import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.field.DatabaseField;
 import co.touchlab.squeaky.field.SqlType;
 import co.touchlab.squeaky.table.DatabaseTable;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ public class BooleanTypeTest extends BaseTypeTest
 		helper = getHelper();
 	}
 
-	@Before
+	@After
 	public void after()
 	{
 		helper.close();

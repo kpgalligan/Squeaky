@@ -18,7 +18,7 @@ import net.sqlcipher.database.SQLiteOpenHelper;
 public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.touchlab.squeaky.db.SQLiteOpenHelper
 {
 	private final SqueakyContext squeakyContext;
-	private final PassphraseProvider passphraseProvider;
+	private SQLiteDatabaseImpl sqLiteDatabase;
 
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, Class... managingClasses)
 	{
@@ -28,8 +28,8 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 	public SqueakyOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, PassphraseProvider passphraseProvider, SQLiteDatabaseHook databaseHook, Class[] managingClasses)
 	{
 		super(context, name, factory, version, databaseHook);
-		this.passphraseProvider = passphraseProvider;
 		squeakyContext = new SqueakyContext(this, managingClasses);
+		sqLiteDatabase = new SQLiteDatabaseImpl(getWritableDatabase(passphraseProvider.getPassphrase()));
 	}
 
 	public SqueakyContext getSqueakyContext()
@@ -58,26 +58,14 @@ public abstract class SqueakyOpenHelper extends SQLiteOpenHelper implements co.t
 		return squeakyContext.getGeneratedTableMapper(clazz);
 	}
 
-	public static GeneratedTableMapper loadGeneratedTableMapper(Class clazz)
-	{
-		try
-		{
-			return (GeneratedTableMapper) Class.forName(clazz.getName() + "$$Configuration").newInstance();
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
 	public Class[] getManagingClasses()
 	{
 		return squeakyContext.getManagingClasses();
 	}
 
 	@Override
-	public co.touchlab.squeaky.db.SQLiteDatabase getDatabase()
+	public co.touchlab.squeaky.db.SQLiteDatabase getWrappedDatabase()
 	{
-		return new SQLiteDatabaseImpl(getWritableDatabase(passphraseProvider.getPassphrase()));
+		return sqLiteDatabase;
 	}
 }

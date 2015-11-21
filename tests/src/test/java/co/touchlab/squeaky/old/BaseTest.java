@@ -21,10 +21,12 @@ public class BaseTest
 
 	public static class SimpleHelper extends SqueakyOpenHelper
 	{
+		Class[] managingClasses;
 
 		public SimpleHelper(Context context, String name, Class... managingClasses)
 		{
-			super(context, name, null, 1, managingClasses);
+			super(context, name, null, 1);
+			this.managingClasses = managingClasses;
 		}
 
 		@Override
@@ -32,7 +34,7 @@ public class BaseTest
 		{
 			try
 			{
-				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), getManagingClasses());
+				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), managingClasses);
 			}
 			catch (SQLException e)
 			{
@@ -43,7 +45,6 @@ public class BaseTest
 		@Override
 		public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion)
 		{
-			Class[] managingClasses = getManagingClasses();
 			Class[] reversed = new Class[managingClasses.length];
 
 			for (int i = 0; i < managingClasses.length; i++)
