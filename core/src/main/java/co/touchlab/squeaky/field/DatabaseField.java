@@ -167,25 +167,4 @@ public @interface DatabaseField
 	 * @see DataPersister
 	 */
 	Class<? extends DataPersister> persisterClass() default VoidType.class;
-
-	/**
-	 * If this is set to true then inserting an object with the ID field already set (i.e. not null, 0) will not
-	 * override it with a generated-id. If the field is null or 0 then the id will be generated. This is useful when you
-	 * have a table where items sometimes have IDs and sometimes need them generated. This only works if the database
-	 * supports this behavior and if {@link #generatedId()} is also true for the field.
-	 */
-	boolean allowGeneratedIdInsert() default false;
-
-	/**
-	 * Name of the foreign object's field that is tied to this table. This does not need to be specified if you are
-	 * using the ID of the foreign object which is recommended. For example, if you have an Order object with a foreign
-	 * Account then you may want to key off of the Account name instead of the Account ID.
-	 * <p/>
-	 * <p>
-	 * <b>NOTE:</b> Setting this implies {@link #foreignAutoRefresh()} is also set to true because there is no way to
-	 * refresh the object since the id field is not stored in the database. So when this is set, the field will be
-	 * automatically refreshed in another database query.
-	 * </p>
-	 */
-	String foreignColumnName() default "";
 }

@@ -58,18 +58,6 @@ public class FieldTypeGen
 	public String persisterClass;
 	public String defaultValue;
 
-
-//	private Object dataTypeConfigObj;
-
-	private FieldConverter fieldConverter;
-
-	private FieldTypeGen foreignIdField;
-	private TableInfo<?> foreignTableInfo;
-	private FieldTypeGen foreignFieldType;
-//	private BaseDaoImpl<?> foreignDao;
-//	private MappedQueryForId<Object, Object> mappedQueryForId;
-
-
 	public FieldTypeGen(Element databaseElement, Element fieldElement, Types typeUtils, Messager messager)
 	{
 		this.fieldElement = fieldElement;
@@ -113,19 +101,9 @@ public class FieldTypeGen
 
 		//OH SHIT FOREIGN
 
-		String foreignColumnName = StringUtils.trimToNull(databaseField.foreignColumnName());
 		String defaultColumnName = fieldName;
-		if (databaseField.foreign() || databaseField.foreignAutoRefresh() || foreignColumnName != null) {
-			//TODO: Check if foreign id is primitive
-			/*if (dataPersister != null && dataPersister.isPrimitive()) {
-				throw new IllegalArgumentException("Field " + this + " is a primitive class "
-						+ " but marked as foreign");
-			}*/
-			if (foreignColumnName == null) {
-				defaultColumnName = defaultColumnName + FOREIGN_ID_FIELD_SUFFIX;
-			} else {
-				defaultColumnName = defaultColumnName + "_" + foreignColumnName;
-			}
+		if (databaseField.foreign() || databaseField.foreignAutoRefresh()) {
+			defaultColumnName = defaultColumnName + FOREIGN_ID_FIELD_SUFFIX;
 		}
 		//TODO: WTF is this?
 		/*else if (dataPersister == null && (!fieldConfig.isForeignCollection())) {
@@ -166,25 +144,11 @@ public class FieldTypeGen
 		{
 			throw new IllegalArgumentException("Id field " + fieldName + " cannot also be a foreign object");
 		}
-		//extra validation
-		if (databaseField.allowGeneratedIdInsert() && !databaseField.generatedId()) {
-			throw new IllegalArgumentException("Field " + fieldName
-					+ " must be a generated-id if allowGeneratedIdInsert = true");
-		}
 		if (databaseField.foreignAutoRefresh() && !databaseField.foreign()) {
 			throw new IllegalArgumentException("Field " + fieldName
 					+ " must have foreign = true if foreignAutoRefresh = true");
 		}
 
-		if (StringUtils.isNoneEmpty(databaseField.foreignColumnName()) && !databaseField.foreign()) {
-			throw new IllegalArgumentException("Field " + fieldName
-					+ " must have foreign = true if foreignColumnName is set");
-		}
-		//TODO: Check versions
-		/*if (databaseField.version() && (dataPersister == null || !dataPersister.isValidForVersion())) {
-			throw new IllegalArgumentException("Field " + field.getName()
-					+ " is not a valid type to be a version field");
-		}*/
 		try
 		{
 			assignDataType(databaseField);
