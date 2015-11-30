@@ -75,7 +75,18 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
 	</build>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>bintray</name>
+			<url>http://jcenter.bintray.com</url>
+		</repository>
+	</repositories>
 	<properties>
 		<!-- default empty string that can be overridden on command line. due to surefire's parser bug, if we don't have this here 
 			and have any other characters where this is used, it'll get replaced with string "null" -->
