@@ -4,7 +4,7 @@ Squeaky is yet another ORM for Android, but its awesome, so keep reading.
 
 ## Origins
 
-Squeaky is based off ORMLite, which has been a widely used ORM for Android since 2010 or so.  ORMLite was designed to be a minimal ORM, for developers who didn't need the excess of Hibernate (etc).  This mapped well to mobile, as the extensive features of server-class ORMs were neither needed nor desired.
+Squeaky is based off of ORMLite, which has been a widely used ORM for Android since 2010 or so.  ORMLite was designed to be a minimal ORM, for developers who didn't need the excess of Hibernate (etc).  This mapped well to mobile, as the ~~excessive~~extensive feature set of server-class ORMs were neither needed nor desired.
 
 However, ORMLite was designed to be used across many database systems, which means it has to be pretty generic and has lots of extra glue code.  Also, it uses reflection for copying data, which impacts performance.  It works well, but could work much better.
 
@@ -36,6 +36,15 @@ You can use final fields in your data objects, with some caveats.
 2. Generated id values cannot be final, which should be fairly obvious.
 3. Foreign fields can be final, but their fields cannot (unless its an eager fetch, but that's still TODO).
 4. Foreign collections are out (but really?)
+
+### SQLCipher support
+
+SQLCipher is an encrypted version of SQLite. AFAIK, no off-the-shelf ORM supports this currently, except Realm.  Squeaky will let you do this.  Support is very new, so pardon the dust.
+
+### Foreign Map
+
+To facilitate "proper" thread boundary observation, IE disk I/O in a background thread, you can supply a map to explicitly load foreign references rather than relying on lazy loading or
+ annotation based config.
 
 ## Similarities to ORMLite
 
