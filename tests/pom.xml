@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.touchlab.squeaky</groupId>
     <artifactId>squeaky-tests</artifactId>
-    <version>0.4.0.0</version>
+    <version>0.4.0.1</version>
     <packaging>jar</packaging>
     <name>Squeaky ORM Tests</name>
     <url>https://github.com/touchlab/SqueakyProcessor</url>

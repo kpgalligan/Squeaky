@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.touchlab.squeaky</groupId>
 	<artifactId>squeaky-query</artifactId>
-	<version>0.4.0.0</version>
+	<version>0.4.0.1</version>
 	<packaging>jar</packaging>
 	<name>Squeaky ORM Query</name>
 	<url>https://github.com/touchlab/Squeaky</url>
@@ -122,4 +122,11 @@
 
 
 	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>squeaky-query</id>
+			<name>bmcd87</name>
+			<url>https://api.bintray.com/maven/bmcd87/Squeaky/squeaky-query/;publish=1</url>
+		</repository>
+	</distributionManagement>
 </project>
