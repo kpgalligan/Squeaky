@@ -10,12 +10,9 @@ import java.sql.SQLException;
 
 /**
  * Base data type that defines the default persistance methods for the various data types.
- * <p/>
  * <p>
  * Here's a good page about the <a href="http://docs.codehaus.org/display/CASTOR/Type+Mapping" >mapping for a number of
  * database types</a>:
- * </p>
- * <p/>
  * <p>
  * <b>NOTE:</b> If you are creating your own custom database persister, you probably will need to override the
  * {@link BaseFieldConverter#sqlArgToJava(FieldType, Object, int)} method as well which converts from a SQL data to

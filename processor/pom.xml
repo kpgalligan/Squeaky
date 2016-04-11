@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.touchlab.squeaky</groupId>
     <artifactId>squeaky-processor</artifactId>
-    <version>0.4.0.1</version>
+    <version>0.4.0.2</version>
     <packaging>jar</packaging>
     <name>Squeaky ORM Processor</name>
     <url>https://github.com/touchlab/SqueakyProcessor</url>
@@ -160,8 +160,8 @@
     <distributionManagement>
         <repository>
             <id>squeaky-processor</id>
-            <name>bmcd87</name>
-            <url>https://api.bintray.com/maven/bmcd87/Squeaky/squeaky-processor/;publish=1</url>
+            <name>touchlab</name>
+            <url>https://api.bintray.com/maven/touchlab/Squeaky/squeaky-processor/;publish=1</url>
         </repository>
     </distributionManagement>
 </project>

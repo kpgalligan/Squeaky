@@ -16,11 +16,11 @@ import java.util.List;
  * <p>
  * Here's a page with a <a href="http://www.w3schools.com/Sql/" >good tutorial of SQL commands</a>.
  * </p>
- * <p/>
+ * <p>
  * <p>
  * To create a query which looks up an account by name and password you would do the following:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * QueryBuilder&lt;Account, String&gt; qb = accountDao.queryBuilder();
  * Where where = qb.where();
@@ -32,47 +32,47 @@ import java.util.List;
  * where.eq(Account.PASSWORD_FIELD_NAME, &quot;_secret&quot;);
  * PreparedQuery&lt;Account, String&gt; preparedQuery = qb.prepareQuery();
  * </pre>
- * <p/>
+ * <p>
  * <p>
  * In this example, the SQL query that will be generated will be approximately:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * SELECT * FROM account WHERE (name = 'foo' AND passwd = '_secret')
  * </pre>
- * <p/>
+ * <p>
  * <p>
  * If you'd rather chain the methods onto one line (like StringBuilder), this can also be written as:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * queryBuilder.where().eq(Account.NAME_FIELD_NAME, &quot;foo&quot;).and().eq(Account.PASSWORD_FIELD_NAME, &quot;_secret&quot;);
  * </pre>
- * <p/>
+ * <p>
  * <p>
  * If you'd rather use parens and the like then you can call:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * Where where = queryBuilder.where();
  * where.and(where.eq(Account.NAME_FIELD_NAME, &quot;foo&quot;), where.eq(Account.PASSWORD_FIELD_NAME, &quot;_secret&quot;));
  * </pre>
- * <p/>
+ * <p>
  * <p>
  * All three of the above call formats produce the same SQL. For complex queries that mix ANDs and ORs, the last format
  * will be necessary to get the grouping correct. For example, here's a complex query:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * Where where = queryBuilder.where();
  * where.or(where.and(where.eq(Account.NAME_FIELD_NAME, &quot;foo&quot;), where.eq(Account.PASSWORD_FIELD_NAME, &quot;_secret&quot;)),
  * 		where.and(where.eq(Account.NAME_FIELD_NAME, &quot;bar&quot;), where.eq(Account.PASSWORD_FIELD_NAME, &quot;qwerty&quot;)));
  * </pre>
- * <p/>
+ * <p>
  * <p>
  * This produces the following approximate SQL:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * SELECT * FROM account WHERE ((name = 'foo' AND passwd = '_secret') OR (name = 'bar' AND passwd = 'qwerty'))
  * </pre>

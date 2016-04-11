@@ -7,7 +7,7 @@ import java.sql.SQLException;
 /**
  * Convert a Java object into the appropriate argument to a SQL statement and then back from the result set to the Java
  * object. This allows databases to configure per-type conversion. This is used by the
- * {@link BaseDatabaseType#getFieldConverter(DataPersister, FieldType)} method to find the converter for a particular
+ * {@link FieldType#getFieldConverter(DataPersister)} method to find the converter for a particular
  * database type. Databases can then override the default data conversion mechanisms as necessary.
  *
  * @author graywatson
@@ -42,7 +42,7 @@ public interface FieldConverter
 	 * and return a Date.
 	 *
 	 * @param fieldType Associated FieldType which may be null.
-	 * @param sqlArg    SQL argument converted with {@link #resultToSqlArg(FieldType, DatabaseResults, int)} which will not be
+	 * @param sqlArg    SQL argument converted with {@link #resultToSqlArg(FieldType, Cursor, int)} which will not be
 	 *                  null.
 	 */
 	Object sqlArgToJava(FieldType fieldType, Object sqlArg, int columnPos) throws SQLException;

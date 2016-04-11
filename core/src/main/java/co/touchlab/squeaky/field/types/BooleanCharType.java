@@ -11,11 +11,11 @@ import java.sql.SQLException;
  * Booleans can be stored in the database as the character '1' '0'. You can change the characters by specifying a format
  * string. It must be a string with 2 characters. The first character is the value for TRUE, the second is FALSE. You
  * must choose this DataType specifically with the {@link DatabaseField#dataType()} specifier.
- * <p/>
+ * <p>
  * <pre>
  * &#64;DatabaseField(format = "YN", dataType = DataType.BOOLEAN_CHAR)
  * </pre>
- * <p/>
+ * <p>
  * Thanks much to stew.
  *
  * @author graywatson
