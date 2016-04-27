@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.touchlab.squeaky</groupId>
     <artifactId>squeaky-tests</artifactId>
-    <version>0.4.0.1</version>
+    <version>0.5.0.0</version>
     <packaging>jar</packaging>
     <name>Squeaky ORM Tests</name>
     <url>https://github.com/touchlab/SqueakyProcessor</url>
@@ -80,19 +80,19 @@
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-core</artifactId>
-            <version>0.4.0.0</version>
+            <version>0.5.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-processor</artifactId>
-            <version>0.4.0.0</version>
+            <version>0.5.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-query</artifactId>
-            <version>0.4.0.0</version>
+            <version>0.5.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

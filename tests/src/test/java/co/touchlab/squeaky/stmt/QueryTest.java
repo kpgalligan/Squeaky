@@ -76,8 +76,8 @@ public class QueryTest extends BaseTypeTest
 				new Where<Foo>(dao)
 						.or()
 						.and()
-						.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)
-						.between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456)
+						.eq(QueryTest$Foo$Configuration.Fields.lval.name(), 2223424)
+						.between(QueryTest$Foo$Configuration.Fields.dval.name(), 123, 456)
 						.end()
 						.eq("ival", 123)
 						.end();
@@ -86,8 +86,8 @@ public class QueryTest extends BaseTypeTest
 		ManyClause or = complexWhere.or();
 
 		or.and()
-			.eq(QueryTest$Foo$$Configuration.Fields.lval.name(), 2223424)
-			.between(QueryTest$Foo$$Configuration.Fields.dval.name(), 123, 456);
+			.eq(QueryTest$Foo$Configuration.Fields.lval.name(), 2223424)
+			.between(QueryTest$Foo$Configuration.Fields.dval.name(), 123, 456);
 
 		or.eq("ival", 123);*/
 

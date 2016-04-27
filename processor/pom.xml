@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.touchlab.squeaky</groupId>
     <artifactId>squeaky-processor</artifactId>
-    <version>0.4.0.1</version>
+    <version>0.5.0.0</version>
     <packaging>jar</packaging>
     <name>Squeaky ORM Processor</name>
     <url>https://github.com/touchlab/SqueakyProcessor</url>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-core</artifactId>
-            <version>0.4.0.0</version>
+            <version>0.5.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup</groupId>

@@ -405,7 +405,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			fillCollectionMethod.addStatement("ForeignCollectionInfo foreignCollectionInfo = modelDao.findForeignCollectionInfo($S)", foreignCollectionInfo.variableName);
 			fillCollectionMethod.addStatement("data.$L = foreignDao.queryForEq(foreignCollectionInfo.foreignFieldName, data).orderBy(foreignCollectionInfo.orderBy).list()", foreignCollectionInfo.variableName);
 /*
-			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$$Configuration");
+			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$Configuration");
 			fillCollectionMethod.addStatement("data.$N = foreignDao.queryForEq($L$L, $S, modelDao.extractId(data))",
 					foreignCollectionInfo.variableName,
 					configName, ".Fields."+ foreignCollectionInfo.variableName +".getColumnName()");//, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
@@ -1229,7 +1229,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			{
 				idType = typeForString(idFieldGen.dataTypeClassname);
 			}
-			configName = ClassName.get(className.packageName(), Joiner.on('$').join(className.simpleNames()) + "$$Configuration");
+			configName = ClassName.get(className.packageName(), Joiner.on('$').join(className.simpleNames()) + "$Configuration");
 			return this;
 		}
 	}

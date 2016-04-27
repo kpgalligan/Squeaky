@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.touchlab.squeaky</groupId>
 	<artifactId>squeaky-query</artifactId>
-	<version>0.4.0.1</version>
+	<version>0.5.0.0</version>
 	<packaging>jar</packaging>
 	<name>Squeaky ORM Query</name>
 	<url>https://github.com/touchlab/Squeaky</url>
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>co.touchlab.squeaky</groupId>
 			<artifactId>squeaky-core</artifactId>
-			<version>0.4.0.0</version>
+			<version>0.5.0.0</version>
 		</dependency>
 
 		<!-- =================================================================== -->
