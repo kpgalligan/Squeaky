@@ -328,15 +328,15 @@ public class AnnotationProcessor extends AbstractProcessor
 		ClassName className = configureClassDefinitions.getClassName();
 		ClassName idType = configureClassDefinitions.getIdType();
 
-		FieldSpec staticInstanceField = FieldSpec.builder(configName, "instance", Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-				.initializer("new $T()", configName)
-				.build();
+//		FieldSpec staticInstanceField = FieldSpec.builder(configName, "instance", Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+//				.initializer("new $T()", configName)
+//				.build();
 
 		TypeSpec.Builder configBuilder = TypeSpec.classBuilder(configName.simpleName())
 				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
 				.addField(FieldsEnum[].class, "fields")
 				.addField(ForeignCollectionInfo[].class, "foreignConfigs")
-				.addField(staticInstanceField)
+//				.addField(staticInstanceField)
 				.addSuperinterface(ParameterizedTypeName.get(ClassName.get(GeneratedTableMapper.class), className))
 				.addJavadoc("Generated on $L\n", new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date()));
 
