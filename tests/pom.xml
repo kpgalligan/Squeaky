@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>co.touchlab.squeaky</groupId>
     <artifactId>squeaky-tests</artifactId>
-    <version>0.4.0.3</version>
+    <version>0.4.0.4</version>
     <packaging>jar</packaging>
     <name>Squeaky ORM Tests</name>
     <url>https://github.com/touchlab/SqueakyProcessor</url>
@@ -80,19 +80,19 @@
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-core</artifactId>
-            <version>0.4.0.3</version>
+            <version>0.4.0.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-processor</artifactId>
-            <version>0.4.0.3</version>
+            <version>0.4.0.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>co.touchlab.squeaky</groupId>
             <artifactId>squeaky-query</artifactId>
-            <version>0.4.0.3</version>
+            <version>0.4.0.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>19.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -114,16 +114,6 @@
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
             <version>${android-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.dagger</groupId>
-            <artifactId>dagger</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.dagger</groupId>
-            <artifactId>dagger-compiler</artifactId>
-            <version>1.2.2</version>
         </dependency>
 
         <!-- =================================================================== -->

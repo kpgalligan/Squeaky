@@ -15,8 +15,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 Add dependencies to the app build.gradle
 
 ```gradle
-apt 'co.touchlab.squeaky:squeaky-processor:0.4.0.3'
-compile 'co.touchlab.squeaky:squeaky-query:0.4.0.3'
+apt 'co.touchlab.squeaky:squeaky-processor:0.4.0.4'
+compile 'co.touchlab.squeaky:squeaky-query:0.4.0.4'
 ```
 
 In your model classes, add annotations.
