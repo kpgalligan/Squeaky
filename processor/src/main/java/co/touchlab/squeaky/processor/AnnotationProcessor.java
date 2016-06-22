@@ -1059,7 +1059,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			for (DatabaseTableHolder databaseTableHolder : databaseTableHolders)
 			{
 				System.out.println("Find foreign: "+ databaseTableHolder.typeElement.getQualifiedName() + "/" + fieldElement.getQualifiedName());
-				if(databaseTableHolder.typeElement.getQualifiedName().equals(fieldElement.getQualifiedName()))
+				if(databaseTableHolder.typeElement.getQualifiedName().toString().equals(config.dataTypeClassname))
 				{
 					for (FieldTypeGen fieldTypeGen : databaseTableHolder.fieldTypeGens)
 					{
