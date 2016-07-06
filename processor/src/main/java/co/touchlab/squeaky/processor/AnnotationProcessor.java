@@ -24,14 +24,12 @@
 package co.touchlab.squeaky.processor;
 
 import android.database.Cursor;
-
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.DaoHelper;
 import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.db.SQLiteStatement;
 import co.touchlab.squeaky.field.*;
 import co.touchlab.squeaky.table.*;
-import com.google.common.base.Joiner;
 import com.squareup.javapoet.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -328,15 +326,15 @@ public class AnnotationProcessor extends AbstractProcessor
 		ClassName className = configureClassDefinitions.getClassName();
 		ClassName idType = configureClassDefinitions.getIdType();
 
-//		FieldSpec staticInstanceField = FieldSpec.builder(configName, "instance", Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-//				.initializer("new $T()", configName)
-//				.build();
+		FieldSpec staticInstanceField = FieldSpec.builder(configName, "instance", Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+				.initializer("new $T()", configName)
+				.build();
 
 		TypeSpec.Builder configBuilder = TypeSpec.classBuilder(configName.simpleName())
 				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
 				.addField(FieldsEnum[].class, "fields")
 				.addField(ForeignCollectionInfo[].class, "foreignConfigs")
-//				.addField(staticInstanceField)
+				.addField(staticInstanceField)
 				.addSuperinterface(ParameterizedTypeName.get(ClassName.get(GeneratedTableMapper.class), className))
 				.addJavadoc("Generated on $L\n", new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date()));
 
@@ -1229,7 +1227,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			{
 				idType = typeForString(idFieldGen.dataTypeClassname);
 			}
-			configName = ClassName.get(className.packageName(), Joiner.on('$').join(className.simpleNames()) + "$Configuration");
+			configName = ClassName.get(className.packageName(), StringUtils.join(className.simpleNames(), "$") + "$Configuration");
 			return this;
 		}
 	}
