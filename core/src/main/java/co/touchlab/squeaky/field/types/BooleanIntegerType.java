@@ -10,11 +10,11 @@ import java.sql.SQLException;
 /**
  * Booleans can be stored in the database as the integer column type and the value 1 (really non-0) for true and 0 for
  * false. You must choose this DataType specifically with the {@link DatabaseField#dataType()} specifier.
- * <p/>
+ * <p>
  * <pre>
  * &#64;DatabaseField(dataType = DataType.BOOLEAN_INTEGER)
  * </pre>
- * <p/>
+ * <p>
  * Thanks much to stew.
  *
  * @author graywatson

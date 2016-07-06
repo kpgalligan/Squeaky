@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * Persists the {@link Date} Java class as long milliseconds since epoch.
- * <p/>
+ * <p>
  * <p>
  * NOTE: This is <i>not</i> the same as the {@link java.sql.Date} class.
  * </p>

@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 /**
  * Extension to Iterator to provide a close() method. This should be in the JDK.
- * <p/>
+ * <p>
  * <p>
  * <b>NOTE:</b> You must call {@link CloseableIterator#close()} method when you are done otherwise the underlying SQL
  * statement and connection may be kept open.

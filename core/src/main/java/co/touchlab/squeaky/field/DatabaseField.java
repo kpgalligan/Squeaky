@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Fields that are not to be persisted such as transient or other temporary fields probably should be ignored. For
  * example:
  * </p>
- * <p/>
+ * <p>
  * <pre>
  * &#064;DatabaseField(id = true)
  * private String name;
@@ -22,11 +22,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * &#064;DatabaseField(columnName = &quot;passwd&quot;, canBeNull = false)
  * private String password;
  * </pre>
- * <p/>
  * <p>
- * <b> WARNING:</b> If you add any extra fields here, you will need to add them to {@link DatabaseFieldConfig},
- * {@link DatabaseFieldConfigLoader}, DatabaseFieldConfigLoaderTest, and DatabaseTableConfigUtil as well.
- * </p>
  *
  * @author graywatson
  */
@@ -54,11 +50,11 @@ public @interface DatabaseField
 
 	/**
 	 * The default value of the field for creating the table. Default is none.
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * <b>NOTE:</b> If the field has a null value then this value will be inserted in its place when you call you call
-	 * {@link Dao#create(Object)}. This does not apply to primitive fields so you should just assign them in the class
-	 * instead.
+	 * {@link co.touchlab.squeaky.dao.Dao#create(Object)}. This does not apply to primitive fields so you should just
+	 * assign them in the class instead.
 	 * </p>
 	 */
 	String defaultValue() default DEFAULT_STRING;
@@ -79,13 +75,13 @@ public @interface DatabaseField
 	 * Package should use get...() and set...() to access the field value instead of the default direct field access via
 	 * reflection. This may be necessary if the object you are storing has protections around it.
 	 * </p>
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * <b>NOTE:</b> The name of the get method <i>must</i> match getXxx() where Xxx is the name of the field with the
 	 * first letter capitalized. The get <i>must</i> return a class which matches the field's. The set method
 	 * <i>must</i> match setXxx(), have a single argument whose class matches the field's, and return void. For example:
 	 * </p>
-	 * <p/>
+	 * <p>
 	 * <pre>
 	 * &#064;DatabaseField
 	 * private Integer orderCount;

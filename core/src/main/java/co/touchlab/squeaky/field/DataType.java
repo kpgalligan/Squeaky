@@ -44,7 +44,7 @@ public enum DataType
 	BOOLEAN_INTEGER(BooleanIntegerType.getSingleton()),
 	/**
 	 * Persists the {@link java.util.Date} Java class.
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * NOTE: This is <i>not</i> the same as the {@link java.sql.Date} class.
 	 * </p>
@@ -54,7 +54,7 @@ public enum DataType
 	/**
 	 * Persists the {@link java.util.Date} Java class as long milliseconds since epoch. By default this will use
 	 * {@link #DATE} so you will need to specify this using {@link DatabaseField#dataType()}.
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * NOTE: This is <i>not</i> the same as the {@link java.sql.Date} class.
 	 * </p>
@@ -63,11 +63,11 @@ public enum DataType
 	/**
 	 * Persists the {@link java.util.Date} Java class as a string of a format. By default this will use {@link #DATE} so
 	 * you will need to specify this using {@link DatabaseField#dataType()}.
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * NOTE: This is <i>not</i> the same as the {@link java.sql.Date} class.
 	 * </p>
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * <b>WARNING:</b> Because of SimpleDateFormat not being reentrant, this has to do some synchronization with every
 	 * data in/out unfortunately.

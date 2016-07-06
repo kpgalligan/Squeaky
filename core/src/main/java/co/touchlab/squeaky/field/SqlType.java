@@ -2,7 +2,6 @@ package co.touchlab.squeaky.field;
 
 /**
  * The SQL data types that are supported. These are basically an enumeration of the constants in java.sql.Types.
- * <p/>
  * <p>
  * <b>NOTE:</b> If you add types here you will need to add to the various DatabaseType implementors' appendColumnArg()
  * method.

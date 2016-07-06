@@ -13,7 +13,7 @@ import java.sql.SQLException;
 /**
  * A custom persister that is able to store the org.joda.time.DateTime class in the database as epoch-millis long
  * integer. This is done with reflection so we don't have to introduce the dependency.
- * <p/>
+ * <p>
  * <p>
  * <b>NOTE:</b> Because this class uses reflection, you have to specify this using {@link DatabaseField#dataType()}. It
  * won't be detected automatically.

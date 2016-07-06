@@ -89,7 +89,7 @@ public class TableUtils
 	/**
 	 * Clear all data out of the table. For certain database types and with large sized tables, which may take a long
 	 * time. In some configurations, it may be faster to drop and re-create the table.
-	 * <p/>
+	 * <p>
 	 * <p>
 	 * <b>WARNING:</b> This is [obviously] very destructive and is unrecoverable.
 	 * </p>

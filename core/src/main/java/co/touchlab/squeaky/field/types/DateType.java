@@ -11,10 +11,6 @@ import java.text.ParseException;
 
 /**
  * Type that persists a {@link java.util.Date} object.
- * <p/>
- * <p>
- * NOTE: This is <i>not</i> the same as the {@link java.sql.Date} class that is handled by {@link SqlDateType}.
- * </p>
  *
  * @author graywatson
  */
