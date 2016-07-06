@@ -5,11 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.touchlab.squeaky</groupId>
 	<artifactId>squeaky-core</artifactId>
-<<<<<<< HEAD
 	<version>0.5.0.0</version>
-=======
-	<version>0.4.0.3</version>
->>>>>>> master
 	<packaging>jar</packaging>
 	<name>Squeaky ORM</name>
 	<url>https://github.com/touchlab/Squeaky</url>

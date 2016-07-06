@@ -216,7 +216,7 @@ public class BasicEntityTests
 		{
 			try
 			{
-				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), A.class, BPackage.class, CProtected.class);
+				TableUtils.createTables(new SQLiteDatabaseImpl(sqLiteDatabase), A.class, BPackage.class, CProtected.class, DFinal.class);
 			}
 			catch (SQLException e)
 			{
@@ -229,7 +229,7 @@ public class BasicEntityTests
 		{
 			try
 			{
-				TableUtils.dropTables(new SQLiteDatabaseImpl(sqLiteDatabase), true, CProtected.class, BPackage.class, A.class);
+				TableUtils.dropTables(new SQLiteDatabaseImpl(sqLiteDatabase), true, DFinal.class, CProtected.class, BPackage.class, A.class);
 				onCreate(sqLiteDatabase);
 			}
 			catch (SQLException e)
