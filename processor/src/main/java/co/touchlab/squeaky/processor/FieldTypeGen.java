@@ -3,12 +3,9 @@ package co.touchlab.squeaky.processor;
 import co.touchlab.squeaky.field.DataPersister;
 import co.touchlab.squeaky.field.DataType;
 import co.touchlab.squeaky.field.DatabaseField;
-import co.touchlab.squeaky.field.FieldConverter;
 import co.touchlab.squeaky.field.types.IntegerObjectType;
 import co.touchlab.squeaky.field.types.LongObjectType;
 import co.touchlab.squeaky.table.DatabaseTable;
-import co.touchlab.squeaky.table.TableInfo;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.*;
@@ -120,7 +117,7 @@ public class FieldTypeGen
 			}
 		}*/
 
-		if (StringUtils.isEmpty(databaseField.columnName())) {
+		if (isEmpty(databaseField.columnName())) {
 			this.columnName = defaultColumnName;
 		} else {
 			this.columnName = databaseField.columnName();
@@ -156,6 +153,11 @@ public class FieldTypeGen
 		{
 			throw new RuntimeException(e);
 		}
+	}
+
+	boolean isEmpty(String arg)
+	{
+		return arg == null || arg.trim().length() == 0;
 	}
 
 	private void assignDataType(DatabaseField databaseField) throws SQLException {
@@ -274,11 +276,19 @@ public class FieldTypeGen
 
 	private static String extractColumnName(VariableElement element) {
 		DatabaseField databaseField = element.getAnnotation(DatabaseField.class);
-		String columnName = StringUtils.trimToNull(databaseField.columnName());
+		String columnName = trimToNull(databaseField.columnName());
 		if(columnName == null)
 			columnName = element.getSimpleName().toString();
 
 		return columnName;
+	}
+
+	static String trimToNull(String arg)
+	{
+		if(arg == null)
+			return null;
+		arg = arg.trim();
+		return arg.length() == 0 ? null : arg;
 	}
 
 	private static String findPersisterClass(DatabaseField databaseField, Types typeUtils, Messager messager)
