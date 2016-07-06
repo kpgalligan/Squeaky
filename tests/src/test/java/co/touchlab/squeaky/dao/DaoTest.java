@@ -59,12 +59,12 @@ public class DaoTest extends BaseTypeTest
 		createFoo("asdf", 444, 23523534255l, new Date());
 		createFoo("asdf", 123, 23523534234l, new Date());
 		Assert.assertEquals(getFooDao().queryForEq(
-				DaoTest$Foo$$Configuration.Fields.ival.name(),
+				DaoTest$Foo$Configuration.Fields.ival.name(),
 				123
 		).list().size(), 2);
 
 		Assert.assertEquals(getFooDao().queryForEq(
-				DaoTest$Foo$$Configuration.Fields.ival.name(),
+				DaoTest$Foo$Configuration.Fields.ival.name(),
 				444).list().get(0).lval, 23523534255l);
 	}
 

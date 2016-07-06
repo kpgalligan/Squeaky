@@ -24,14 +24,12 @@
 package co.touchlab.squeaky.processor;
 
 import android.database.Cursor;
-
 import co.touchlab.squeaky.dao.Dao;
 import co.touchlab.squeaky.dao.DaoHelper;
 import co.touchlab.squeaky.dao.ModelDao;
 import co.touchlab.squeaky.db.SQLiteStatement;
 import co.touchlab.squeaky.field.*;
 import co.touchlab.squeaky.table.*;
-import com.google.common.base.Joiner;
 import com.squareup.javapoet.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -405,7 +403,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			fillCollectionMethod.addStatement("ForeignCollectionInfo foreignCollectionInfo = modelDao.findForeignCollectionInfo($S)", foreignCollectionInfo.variableName);
 			fillCollectionMethod.addStatement("data.$L = foreignDao.queryForEq(foreignCollectionInfo.foreignFieldName, data).orderBy(foreignCollectionInfo.orderBy).list()", foreignCollectionInfo.variableName);
 /*
-			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$$Configuration");
+			ClassName configName = ClassName.get(className.packageName(), Joiner.on('$').join(ClassName.bestGuess(foreignCollectionInfo.foreignTypeName).simpleNames()) + "$Configuration");
 			fillCollectionMethod.addStatement("data.$N = foreignDao.queryForEq($L$L, $S, modelDao.extractId(data))",
 					foreignCollectionInfo.variableName,
 					configName, ".Fields."+ foreignCollectionInfo.variableName +".getColumnName()");//, StringUtils.trimToNull(foreignCollectionInfo.foreignCollectionField.orderBy()));
@@ -1229,7 +1227,7 @@ public class AnnotationProcessor extends AbstractProcessor
 			{
 				idType = typeForString(idFieldGen.dataTypeClassname);
 			}
-			configName = ClassName.get(className.packageName(), Joiner.on('$').join(className.simpleNames()) + "$$Configuration");
+			configName = ClassName.get(className.packageName(), StringUtils.join(className.simpleNames(), "$") + "$Configuration");
 			return this;
 		}
 	}

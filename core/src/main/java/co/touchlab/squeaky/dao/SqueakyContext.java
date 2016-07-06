@@ -83,7 +83,7 @@ public class SqueakyContext
 	{
 		try
 		{
-			return (GeneratedTableMapper) Class.forName(clazz.getName() + "$$Configuration").newInstance();
+			return (GeneratedTableMapper) Class.forName(clazz.getName() + "$Configuration").newInstance();
 		}
 		catch (Exception e)
 		{
